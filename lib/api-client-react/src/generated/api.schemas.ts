@@ -21,8 +21,94 @@ export type ScanStatus = typeof ScanStatus[keyof typeof ScanStatus];
 
 
 export const ScanStatus = {
-  queued: 'queued',
+  analyzing: 'analyzing',
+  completed: 'completed',
+  failed: 'failed',
 } as const;
+
+export type CategoryScoreKey = typeof CategoryScoreKey[keyof typeof CategoryScoreKey];
+
+
+export const CategoryScoreKey = {
+  conversie: 'conversie',
+  seo: 'seo',
+  mobiel: 'mobiel',
+  techniek: 'techniek',
+  content: 'content',
+  vertrouwen: 'vertrouwen',
+  lokaal: 'lokaal',
+} as const;
+
+export interface CategoryScore {
+  key: CategoryScoreKey;
+  label: string;
+  /**
+     * @minimum 0
+     * @maximum 100
+     */
+  score: number;
+  checked: boolean;
+  note: string;
+}
+
+export interface DetectedFacts {
+  /** @nullable */
+  pageTitle: string | null;
+  /** @nullable */
+  metaDescription: string | null;
+  /** @minimum 0 */
+  h1Count: number;
+  /** @minimum 0 */
+  headingCount: number;
+  headings: string[];
+  /** @minimum 0 */
+  visibleTextLength: number;
+  /** @minimum 0 */
+  linkCount: number;
+  /** @minimum 0 */
+  imageCount: number;
+  /** @minimum 0 */
+  imagesWithAlt: number;
+  /** @minimum 0 */
+  ctaCount: number;
+  callsToAction: string[];
+  contactSignals: string[];
+  technicalSignals: string[];
+  /** @minimum 0 */
+  responseTimeMs: number;
+  /** @minimum 0 */
+  pageSizeKb: number;
+  https: boolean;
+}
+
+export type ScanIssueSeverity = typeof ScanIssueSeverity[keyof typeof ScanIssueSeverity];
+
+
+export const ScanIssueSeverity = {
+  high: 'high',
+  medium: 'medium',
+  low: 'low',
+} as const;
+
+export interface ScanIssue {
+  id: string;
+  title: string;
+  severity: ScanIssueSeverity;
+  fact: string;
+  recommendation: string;
+}
+
+export interface ScanAnalysis {
+  /**
+     * @minimum 0
+     * @maximum 100
+     */
+  overallScore: number;
+  categoryScores: CategoryScore[];
+  detectedFacts: DetectedFacts;
+  notChecked: string[];
+  issues: ScanIssue[];
+}
 
 export interface Scan {
   /** @minimum 1 */
@@ -30,6 +116,9 @@ export interface Scan {
   url: string;
   status: ScanStatus;
   createdAt: string;
+  analysis: ScanAnalysis | null;
+  /** @nullable */
+  error: string | null;
 }
 
 export interface ErrorResponse {

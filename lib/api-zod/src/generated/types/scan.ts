@@ -5,6 +5,7 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
+import type { ScanAnalysis } from './scanAnalysis';
 import type { ScanStatus } from './scanStatus';
 
 export interface Scan {
@@ -13,4 +14,7 @@ export interface Scan {
   url: string;
   status: ScanStatus;
   createdAt: Date;
+  analysis: ScanAnalysis | null;
+  /** @nullable */
+  error: string | null;
 }

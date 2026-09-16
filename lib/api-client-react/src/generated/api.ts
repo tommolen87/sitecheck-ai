@@ -140,7 +140,7 @@ export const getCreateScanUrl = () => {
 }
 
 /**
- * Creates a scan request for a website. Analysis is queued for a later processing step.
+ * Fetches the public homepage and creates a first analysis from the information that can actually be checked.
  * @summary Start a website scan
  */
 export const createScan = async (scanInput: ScanInput, options?: Parameters<typeof customFetch>[1]): Promise<Scan> => {
@@ -229,7 +229,7 @@ export const getListScansUrl = () => {
 }
 
 /**
- * Returns the most recent scan requests without analysis results.
+ * Returns the most recent scan requests and any available first analysis.
  * @summary List recent website scans
  */
 export const listScans = async ( options?: Parameters<typeof customFetch>[1]): Promise<Scan[]> => {
@@ -307,8 +307,8 @@ export const getGetScanUrl = (scanId: number,) => {
 }
 
 /**
- * Returns the current lifecycle status of a scan request. Analysis results are not included until available.
- * @summary Get a website scan status
+ * Returns the current lifecycle status and any available first analysis.
+ * @summary Get a website scan result
  */
 export const getScan = async (scanId: number, options?: Parameters<typeof customFetch>[1]): Promise<Scan> => {
 
@@ -355,7 +355,7 @@ export type GetScanQueryError = ErrorType<ErrorResponse>
 
 
 /**
- * @summary Get a website scan status
+ * @summary Get a website scan result
  */
 
 export function useGetScan<TData = Awaited<ReturnType<typeof getScan>>, TError = ErrorType<ErrorResponse>>(

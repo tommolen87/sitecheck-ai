@@ -31,7 +31,7 @@ paths:
       operationId: createScan
       tags: [scans]
       summary: Start a website scan
-      description: Creates a scan request for a website. Analysis is queued for a later processing step.
+      description: Fetches the public homepage and creates a first analysis from the information that can actually be checked.
       requestBody:
         required: true
         content:
@@ -39,8 +39,8 @@ paths:
             schema:
               $ref: "#/components/schemas/ScanInput"
       responses:
-        "202":
-          description: Scan request accepted
+        "201":
+          description: Scan completed or marked as unable to complete
           content:
             application/json:
               schema:
@@ -55,7 +55,7 @@ paths:
       operationId: listScans
       tags: [scans]
       summary: List recent website scans
-      description: Returns the most recent scan requests without analysis results.
+      description: Returns the most recent scan requests and any available first analysis.
       responses:
         "200":
           description: Recent scan requests
@@ -69,8 +69,8 @@ paths:
     get:
       operationId: getScan
       tags: [scans]
-      summary: Get a website scan status
-      description: Returns the current lifecycle status of a scan request. Analysis results are not included until available.
+      summary: Get a website scan result
+      description: Returns the current lifecycle status and any available first analysis.
       parameters:
         - name: scanId
           in: path
@@ -121,15 +121,161 @@ components:
           format: uri
         status:
           type: string
-          enum: [queued]
+          enum: [analyzing, completed, failed]
         createdAt:
           type: string
           format: date-time
+        analysis:
+          oneOf:
+            - $ref: "#/components/schemas/ScanAnalysis"
+            - type: "null"
+        error:
+          type: ["string", "null"]
       required:
         - id
         - url
         - status
         - createdAt
+        - analysis
+        - error
+    ScanAnalysis:
+      type: object
+      properties:
+        overallScore:
+          type: integer
+          minimum: 0
+          maximum: 100
+        categoryScores:
+          type: array
+          items:
+            $ref: "#/components/schemas/CategoryScore"
+        detectedFacts:
+          $ref: "#/components/schemas/DetectedFacts"
+        notChecked:
+          type: array
+          items:
+            type: string
+        issues:
+          type: array
+          items:
+            $ref: "#/components/schemas/ScanIssue"
+      required:
+        - overallScore
+        - categoryScores
+        - detectedFacts
+        - notChecked
+        - issues
+    CategoryScore:
+      type: object
+      properties:
+        key:
+          type: string
+          enum: [conversie, seo, mobiel, techniek, content, vertrouwen, lokaal]
+        label:
+          type: string
+        score:
+          type: integer
+          minimum: 0
+          maximum: 100
+        checked:
+          type: boolean
+        note:
+          type: string
+      required:
+        - key
+        - label
+        - score
+        - checked
+        - note
+    DetectedFacts:
+      type: object
+      properties:
+        pageTitle:
+          type: ["string", "null"]
+        metaDescription:
+          type: ["string", "null"]
+        h1Count:
+          type: integer
+          minimum: 0
+        headingCount:
+          type: integer
+          minimum: 0
+        headings:
+          type: array
+          items:
+            type: string
+        visibleTextLength:
+          type: integer
+          minimum: 0
+        linkCount:
+          type: integer
+          minimum: 0
+        imageCount:
+          type: integer
+          minimum: 0
+        imagesWithAlt:
+          type: integer
+          minimum: 0
+        ctaCount:
+          type: integer
+          minimum: 0
+        callsToAction:
+          type: array
+          items:
+            type: string
+        contactSignals:
+          type: array
+          items:
+            type: string
+        technicalSignals:
+          type: array
+          items:
+            type: string
+        responseTimeMs:
+          type: integer
+          minimum: 0
+        pageSizeKb:
+          type: number
+          minimum: 0
+        https:
+          type: boolean
+      required:
+        - pageTitle
+        - metaDescription
+        - h1Count
+        - headingCount
+        - headings
+        - visibleTextLength
+        - linkCount
+        - imageCount
+        - imagesWithAlt
+        - ctaCount
+        - callsToAction
+        - contactSignals
+        - technicalSignals
+        - responseTimeMs
+        - pageSizeKb
+        - https
+    ScanIssue:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        severity:
+          type: string
+          enum: [high, medium, low]
+        fact:
+          type: string
+        recommendation:
+          type: string
+      required:
+        - id
+        - title
+        - severity
+        - fact
+        - recommendation
     ErrorResponse:
       type: object
       properties:

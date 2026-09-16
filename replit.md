@@ -31,14 +31,14 @@ Een Nederlandse website-check die ondernemers helpt om hun website te laten scan
 
 ## Architecture decisions
 
-- Scan requests are persisted immediately, but the first version returns only `queued`; no scores or analysis findings are fabricated.
-- The frontend uses generated API hooks from the shared OpenAPI contract, so future crawling and analysis workers can extend the same scan lifecycle.
+- Scan requests are persisted immediately, and the first analysis synchronously inspects one public homepage; no scores or findings are fabricated beyond detected signals.
+- The frontend uses generated API hooks from the shared OpenAPI contract, so future crawling and AI analysis can extend the same scan lifecycle.
 - The landing page validates website URLs in the browser and again on the server; the server only accepts HTTP and HTTPS URLs.
 
 ## Product
 
-- Visitors can submit a website URL without an account and receive an honest queued confirmation.
-- The API supports creating, listing, and retrieving scan requests, ready for future crawling, scoring, and report modules.
+- Visitors can submit a website URL without an account and receive a first factual analysis.
+- The API supports creating, listing, and retrieving scan requests with scores, detected facts, recommendations, and explicit not-checked areas.
 
 ## User preferences
 

@@ -8,6 +8,7 @@ import {
   GetScanResponse,
   ListScansResponse,
 } from "@workspace/api-zod";
+import { analyzeWebsite } from "../lib/website-analysis";
 
 const router: IRouter = Router();
 
@@ -29,11 +30,34 @@ router.post("/scans", async (req, res): Promise<void> => {
 
   const [scan] = await db
     .insert(scansTable)
-    .values({ url: parsed.data.url, status: "queued" })
+    .values({ url: parsed.data.url, status: "analyzing" })
     .returning();
 
   req.log.info({ scanId: scan.id }, "Website scan request accepted");
-  res.status(202).json(CreateScanResponse.parse(scan));
+
+  try {
+    const analysis = await analyzeWebsite(parsed.data.url);
+    const [completedScan] = await db
+      .update(scansTable)
+      .set({ status: "completed", analysis, error: null })
+      .where(eq(scansTable.id, scan.id))
+      .returning();
+
+    res.status(201).json(CreateScanResponse.parse(completedScan));
+  } catch (error) {
+    const message =
+      error instanceof Error
+        ? error.message
+        : "De website kon niet worden geanalyseerd.";
+    const [failedScan] = await db
+      .update(scansTable)
+      .set({ status: "failed", analysis: null, error: message })
+      .where(eq(scansTable.id, scan.id))
+      .returning();
+
+    req.log.warn({ scanId: scan.id, error: message }, "Website scan failed");
+    res.status(201).json(CreateScanResponse.parse(failedScan));
+  }
 });
 
 router.get("/scans", async (_req, res): Promise<void> => {

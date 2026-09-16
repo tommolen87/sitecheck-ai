@@ -18,7 +18,7 @@ export const HealthCheckResponse = zod.object({
 
 
 /**
- * Creates a scan request for a website. Analysis is queued for a later processing step.
+ * Fetches the public homepage and creates a first analysis from the information that can actually be checked.
  * @summary Start a website scan
  */
 
@@ -29,35 +29,157 @@ export const CreateScanBody = zod.object({
 })
 
 
+export const createScanResponseAnalysisOneOverallScoreMin = 0;
+export const createScanResponseAnalysisOneOverallScoreMax = 100;
+
+export const createScanResponseAnalysisOneCategoryScoresItemScoreMin = 0;
+export const createScanResponseAnalysisOneCategoryScoresItemScoreMax = 100;
+
+export const createScanResponseAnalysisOneDetectedFactsH1CountMin = 0;
+
+export const createScanResponseAnalysisOneDetectedFactsHeadingCountMin = 0;
+
+export const createScanResponseAnalysisOneDetectedFactsVisibleTextLengthMin = 0;
+
+export const createScanResponseAnalysisOneDetectedFactsLinkCountMin = 0;
+
+export const createScanResponseAnalysisOneDetectedFactsImageCountMin = 0;
+
+export const createScanResponseAnalysisOneDetectedFactsImagesWithAltMin = 0;
+
+export const createScanResponseAnalysisOneDetectedFactsCtaCountMin = 0;
+
+export const createScanResponseAnalysisOneDetectedFactsResponseTimeMsMin = 0;
+
+export const createScanResponseAnalysisOneDetectedFactsPageSizeKbMin = 0;
+
 
 
 export const CreateScanResponse = zod.object({
   "id": zod.number().int().min(1),
   "url": zod.string().url(),
-  "status": zod.enum(['queued']),
-  "createdAt": zod.coerce.date()
+  "status": zod.enum(['analyzing', 'completed', 'failed']),
+  "createdAt": zod.coerce.date(),
+  "analysis": zod.union([zod.object({
+  "overallScore": zod.number().int().min(createScanResponseAnalysisOneOverallScoreMin).max(createScanResponseAnalysisOneOverallScoreMax),
+  "categoryScores": zod.array(zod.object({
+  "key": zod.enum(['conversie', 'seo', 'mobiel', 'techniek', 'content', 'vertrouwen', 'lokaal']),
+  "label": zod.string(),
+  "score": zod.number().int().min(createScanResponseAnalysisOneCategoryScoresItemScoreMin).max(createScanResponseAnalysisOneCategoryScoresItemScoreMax),
+  "checked": zod.boolean(),
+  "note": zod.string()
+})),
+  "detectedFacts": zod.object({
+  "pageTitle": zod.string().nullable(),
+  "metaDescription": zod.string().nullable(),
+  "h1Count": zod.number().int().min(createScanResponseAnalysisOneDetectedFactsH1CountMin),
+  "headingCount": zod.number().int().min(createScanResponseAnalysisOneDetectedFactsHeadingCountMin),
+  "headings": zod.array(zod.string()),
+  "visibleTextLength": zod.number().int().min(createScanResponseAnalysisOneDetectedFactsVisibleTextLengthMin),
+  "linkCount": zod.number().int().min(createScanResponseAnalysisOneDetectedFactsLinkCountMin),
+  "imageCount": zod.number().int().min(createScanResponseAnalysisOneDetectedFactsImageCountMin),
+  "imagesWithAlt": zod.number().int().min(createScanResponseAnalysisOneDetectedFactsImagesWithAltMin),
+  "ctaCount": zod.number().int().min(createScanResponseAnalysisOneDetectedFactsCtaCountMin),
+  "callsToAction": zod.array(zod.string()),
+  "contactSignals": zod.array(zod.string()),
+  "technicalSignals": zod.array(zod.string()),
+  "responseTimeMs": zod.number().int().min(createScanResponseAnalysisOneDetectedFactsResponseTimeMsMin),
+  "pageSizeKb": zod.number().min(createScanResponseAnalysisOneDetectedFactsPageSizeKbMin),
+  "https": zod.boolean()
+}),
+  "notChecked": zod.array(zod.string()),
+  "issues": zod.array(zod.object({
+  "id": zod.string(),
+  "title": zod.string(),
+  "severity": zod.enum(['high', 'medium', 'low']),
+  "fact": zod.string(),
+  "recommendation": zod.string()
+}))
+}),zod.null()]),
+  "error": zod.string().nullable()
 })
 
 
 /**
- * Returns the most recent scan requests without analysis results.
+ * Returns the most recent scan requests and any available first analysis.
  * @summary List recent website scans
  */
+
+export const listScansResponseAnalysisOneOverallScoreMin = 0;
+export const listScansResponseAnalysisOneOverallScoreMax = 100;
+
+export const listScansResponseAnalysisOneCategoryScoresItemScoreMin = 0;
+export const listScansResponseAnalysisOneCategoryScoresItemScoreMax = 100;
+
+export const listScansResponseAnalysisOneDetectedFactsH1CountMin = 0;
+
+export const listScansResponseAnalysisOneDetectedFactsHeadingCountMin = 0;
+
+export const listScansResponseAnalysisOneDetectedFactsVisibleTextLengthMin = 0;
+
+export const listScansResponseAnalysisOneDetectedFactsLinkCountMin = 0;
+
+export const listScansResponseAnalysisOneDetectedFactsImageCountMin = 0;
+
+export const listScansResponseAnalysisOneDetectedFactsImagesWithAltMin = 0;
+
+export const listScansResponseAnalysisOneDetectedFactsCtaCountMin = 0;
+
+export const listScansResponseAnalysisOneDetectedFactsResponseTimeMsMin = 0;
+
+export const listScansResponseAnalysisOneDetectedFactsPageSizeKbMin = 0;
 
 
 
 export const ListScansResponseItem = zod.object({
   "id": zod.number().int().min(1),
   "url": zod.string().url(),
-  "status": zod.enum(['queued']),
-  "createdAt": zod.coerce.date()
+  "status": zod.enum(['analyzing', 'completed', 'failed']),
+  "createdAt": zod.coerce.date(),
+  "analysis": zod.union([zod.object({
+  "overallScore": zod.number().int().min(listScansResponseAnalysisOneOverallScoreMin).max(listScansResponseAnalysisOneOverallScoreMax),
+  "categoryScores": zod.array(zod.object({
+  "key": zod.enum(['conversie', 'seo', 'mobiel', 'techniek', 'content', 'vertrouwen', 'lokaal']),
+  "label": zod.string(),
+  "score": zod.number().int().min(listScansResponseAnalysisOneCategoryScoresItemScoreMin).max(listScansResponseAnalysisOneCategoryScoresItemScoreMax),
+  "checked": zod.boolean(),
+  "note": zod.string()
+})),
+  "detectedFacts": zod.object({
+  "pageTitle": zod.string().nullable(),
+  "metaDescription": zod.string().nullable(),
+  "h1Count": zod.number().int().min(listScansResponseAnalysisOneDetectedFactsH1CountMin),
+  "headingCount": zod.number().int().min(listScansResponseAnalysisOneDetectedFactsHeadingCountMin),
+  "headings": zod.array(zod.string()),
+  "visibleTextLength": zod.number().int().min(listScansResponseAnalysisOneDetectedFactsVisibleTextLengthMin),
+  "linkCount": zod.number().int().min(listScansResponseAnalysisOneDetectedFactsLinkCountMin),
+  "imageCount": zod.number().int().min(listScansResponseAnalysisOneDetectedFactsImageCountMin),
+  "imagesWithAlt": zod.number().int().min(listScansResponseAnalysisOneDetectedFactsImagesWithAltMin),
+  "ctaCount": zod.number().int().min(listScansResponseAnalysisOneDetectedFactsCtaCountMin),
+  "callsToAction": zod.array(zod.string()),
+  "contactSignals": zod.array(zod.string()),
+  "technicalSignals": zod.array(zod.string()),
+  "responseTimeMs": zod.number().int().min(listScansResponseAnalysisOneDetectedFactsResponseTimeMsMin),
+  "pageSizeKb": zod.number().min(listScansResponseAnalysisOneDetectedFactsPageSizeKbMin),
+  "https": zod.boolean()
+}),
+  "notChecked": zod.array(zod.string()),
+  "issues": zod.array(zod.object({
+  "id": zod.string(),
+  "title": zod.string(),
+  "severity": zod.enum(['high', 'medium', 'low']),
+  "fact": zod.string(),
+  "recommendation": zod.string()
+}))
+}),zod.null()]),
+  "error": zod.string().nullable()
 })
 export const ListScansResponse = zod.array(ListScansResponseItem)
 
 
 /**
- * Returns the current lifecycle status of a scan request. Analysis results are not included until available.
- * @summary Get a website scan status
+ * Returns the current lifecycle status and any available first analysis.
+ * @summary Get a website scan result
  */
 
 
@@ -67,13 +189,74 @@ export const GetScanParams = zod.object({
 })
 
 
+export const getScanResponseAnalysisOneOverallScoreMin = 0;
+export const getScanResponseAnalysisOneOverallScoreMax = 100;
+
+export const getScanResponseAnalysisOneCategoryScoresItemScoreMin = 0;
+export const getScanResponseAnalysisOneCategoryScoresItemScoreMax = 100;
+
+export const getScanResponseAnalysisOneDetectedFactsH1CountMin = 0;
+
+export const getScanResponseAnalysisOneDetectedFactsHeadingCountMin = 0;
+
+export const getScanResponseAnalysisOneDetectedFactsVisibleTextLengthMin = 0;
+
+export const getScanResponseAnalysisOneDetectedFactsLinkCountMin = 0;
+
+export const getScanResponseAnalysisOneDetectedFactsImageCountMin = 0;
+
+export const getScanResponseAnalysisOneDetectedFactsImagesWithAltMin = 0;
+
+export const getScanResponseAnalysisOneDetectedFactsCtaCountMin = 0;
+
+export const getScanResponseAnalysisOneDetectedFactsResponseTimeMsMin = 0;
+
+export const getScanResponseAnalysisOneDetectedFactsPageSizeKbMin = 0;
+
 
 
 export const GetScanResponse = zod.object({
   "id": zod.number().int().min(1),
   "url": zod.string().url(),
-  "status": zod.enum(['queued']),
-  "createdAt": zod.coerce.date()
+  "status": zod.enum(['analyzing', 'completed', 'failed']),
+  "createdAt": zod.coerce.date(),
+  "analysis": zod.union([zod.object({
+  "overallScore": zod.number().int().min(getScanResponseAnalysisOneOverallScoreMin).max(getScanResponseAnalysisOneOverallScoreMax),
+  "categoryScores": zod.array(zod.object({
+  "key": zod.enum(['conversie', 'seo', 'mobiel', 'techniek', 'content', 'vertrouwen', 'lokaal']),
+  "label": zod.string(),
+  "score": zod.number().int().min(getScanResponseAnalysisOneCategoryScoresItemScoreMin).max(getScanResponseAnalysisOneCategoryScoresItemScoreMax),
+  "checked": zod.boolean(),
+  "note": zod.string()
+})),
+  "detectedFacts": zod.object({
+  "pageTitle": zod.string().nullable(),
+  "metaDescription": zod.string().nullable(),
+  "h1Count": zod.number().int().min(getScanResponseAnalysisOneDetectedFactsH1CountMin),
+  "headingCount": zod.number().int().min(getScanResponseAnalysisOneDetectedFactsHeadingCountMin),
+  "headings": zod.array(zod.string()),
+  "visibleTextLength": zod.number().int().min(getScanResponseAnalysisOneDetectedFactsVisibleTextLengthMin),
+  "linkCount": zod.number().int().min(getScanResponseAnalysisOneDetectedFactsLinkCountMin),
+  "imageCount": zod.number().int().min(getScanResponseAnalysisOneDetectedFactsImageCountMin),
+  "imagesWithAlt": zod.number().int().min(getScanResponseAnalysisOneDetectedFactsImagesWithAltMin),
+  "ctaCount": zod.number().int().min(getScanResponseAnalysisOneDetectedFactsCtaCountMin),
+  "callsToAction": zod.array(zod.string()),
+  "contactSignals": zod.array(zod.string()),
+  "technicalSignals": zod.array(zod.string()),
+  "responseTimeMs": zod.number().int().min(getScanResponseAnalysisOneDetectedFactsResponseTimeMsMin),
+  "pageSizeKb": zod.number().min(getScanResponseAnalysisOneDetectedFactsPageSizeKbMin),
+  "https": zod.boolean()
+}),
+  "notChecked": zod.array(zod.string()),
+  "issues": zod.array(zod.object({
+  "id": zod.string(),
+  "title": zod.string(),
+  "severity": zod.enum(['high', 'medium', 'low']),
+  "fact": zod.string(),
+  "recommendation": zod.string()
+}))
+}),zod.null()]),
+  "error": zod.string().nullable()
 })
 
 

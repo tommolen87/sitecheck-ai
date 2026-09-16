@@ -4,6 +4,7 @@ import { ErrorBoundary } from '@/components/error-boundary';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import NotFound from '@/pages/not-found';
+import ScanResults from '@/pages/scan-results';
 import {
   getGetScanQueryKey,
   getListScansQueryKey,
@@ -37,6 +38,7 @@ function Home() {
   const [activeScanId, setActiveScanId] = useState<number | null>(null);
   const [submitError, setSubmitError] = useState('');
   const createScan = useCreateScan();
+  const [, setLocation] = useLocation();
   const queryClient = useQueryClient();
   const recentScans = useListScans({
     query: {
@@ -56,10 +58,10 @@ function Home() {
     () => (Array.isArray(recentScans.data) ? recentScans.data.length : null),
     [recentScans.data],
   );
-  const isQueued = activeScanId !== null && (activeScan.data?.status === 'queued' || activeScan.isLoading);
+  const isQueued = activeScanId !== null && (activeScan.data?.status === 'analyzing' || activeScan.isLoading);
 
   useEffect(() => {
-    if (activeScan.data && activeScan.data.status !== 'queued') {
+    if (activeScan.data && activeScan.data.status !== 'analyzing') {
       setActiveScanId(null);
     }
   }, [activeScan.data]);
@@ -101,13 +103,14 @@ function Home() {
         onSuccess: (scan) => {
           setActiveScanId(scan.id);
           void queryClient.invalidateQueries({ queryKey: getListScansQueryKey() });
+           setLocation(`/scans/${scan.id}`);
         },
         onError: (error) => setSubmitError(getErrorMessage(error)),
       },
     );
   };
 
-  const showQueued = isQueued || Boolean(activeScan.data?.status === 'queued');
+  const showQueued = createScan.isPending || isQueued || Boolean(activeScan.data?.status === 'analyzing');
 
   return (
     <main className="site-shell min-h-[100dvh]">
@@ -165,7 +168,7 @@ function Home() {
               {fieldError && <p className="field-error" id="url-error" data-testid="error-invalid-url">{fieldError}</p>}
               <button className="scan-button" type="submit" disabled={createScan.isPending} data-testid="button-start-scan">
                 {createScan.isPending ? (
-                  <>Scan wordt aangemeld <Timer className="animate-pulse" /></>
+                  <>SiteCheck AI analyseert... <Timer className="animate-pulse" /></>
                 ) : (
                   <>Start gratis scan <ArrowRight /></>
                 )}
@@ -177,16 +180,16 @@ function Home() {
                 {submitError}
               </div>
             )}
-            {showQueued && activeScan.data && (
+            {showQueued && (
               <div className="queued-panel" role="status" data-testid="status-scan-queued">
                 <div className="queued-top">
                   <div className="queued-icon"><Timer /></div>
                   <div className="queued-copy">
-                    <strong>Je scan staat klaar</strong>
-                    <p>We hebben je aanvraag ontvangen. De analyse wordt op de achtergrond voorbereid.</p>
+                    <strong>{createScan.isPending ? 'SiteCheck AI analyseert je website' : 'Je scan staat klaar'}</strong>
+                    <p>{createScan.isPending ? 'We halen de homepage op en controleren alleen wat we daadwerkelijk kunnen meten.' : 'We hebben je aanvraag ontvangen. De analyse wordt op de achtergrond voorbereid.'}</p>
                   </div>
                 </div>
-                <span className="queued-url">{activeScan.data.url}</span>
+                {activeScan.data && <span className="queued-url">{activeScan.data.url}</span>}
                 <div className="queue-track" aria-hidden="true"><span /></div>
               </div>
             )}
@@ -288,7 +291,8 @@ function Router() {
     // survives a page crash.
     <RoutedErrorBoundary>
       <Switch>
-        <Route path="/" component={Home} />
+         <Route path="/" component={Home} />
+         <Route path="/scans/:scanId" component={ScanResults} />
         <Route component={NotFound} />
       </Switch>
     </RoutedErrorBoundary>

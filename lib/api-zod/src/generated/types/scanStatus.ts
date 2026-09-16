@@ -10,5 +10,7 @@ export type ScanStatus = typeof ScanStatus[keyof typeof ScanStatus];
 
 
 export const ScanStatus = {
-  queued: 'queued',
+  analyzing: 'analyzing',
+  completed: 'completed',
+  failed: 'failed',
 } as const;
