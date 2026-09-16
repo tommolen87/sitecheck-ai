@@ -1,0 +1,1 @@
+- [Generated client typecheck](generated-client-typecheck.md) — keep `dom.iterable` enabled for the generated fetch client.

@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "SiteCheck AI"
+description = "Een Nederlandse website-check voor ondernemers die snel inzicht willen in de kwaliteit van hun website en praktische verbeterkansen."
+version = "1.0.0"
+id = "artifacts/sitecheck-ai"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 24183
+
+[services.development]
+run = "pnpm --filter @workspace/sitecheck-ai run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/sitecheck-ai", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/sitecheck-ai/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "24183"
+BASE_PATH = "/"

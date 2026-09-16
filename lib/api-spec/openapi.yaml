@@ -10,6 +10,8 @@ servers:
 tags:
   - name: health
     description: Health operations
+  - name: scans
+    description: Website scan operations
 paths:
   /healthz:
     get:
@@ -24,6 +26,71 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /scans:
+    post:
+      operationId: createScan
+      tags: [scans]
+      summary: Start a website scan
+      description: Creates a scan request for a website. Analysis is queued for a later processing step.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ScanInput"
+      responses:
+        "202":
+          description: Scan request accepted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Scan"
+        "400":
+          description: Invalid website URL
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    get:
+      operationId: listScans
+      tags: [scans]
+      summary: List recent website scans
+      description: Returns the most recent scan requests without analysis results.
+      responses:
+        "200":
+          description: Recent scan requests
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Scan"
+  /scans/{scanId}:
+    get:
+      operationId: getScan
+      tags: [scans]
+      summary: Get a website scan status
+      description: Returns the current lifecycle status of a scan request. Analysis results are not included until available.
+      parameters:
+        - name: scanId
+          in: path
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        "200":
+          description: Scan request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Scan"
+        "404":
+          description: Scan not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 components:
   schemas:
     HealthStatus:
@@ -33,4 +100,41 @@ components:
           type: string
       required:
         - status
+    ScanInput:
+      type: object
+      properties:
+        url:
+          type: string
+          format: uri
+          minLength: 1
+          description: Website URL to scan
+      required:
+        - url
+    Scan:
+      type: object
+      properties:
+        id:
+          type: integer
+          minimum: 1
+        url:
+          type: string
+          format: uri
+        status:
+          type: string
+          enum: [queued]
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - url
+        - status
+        - createdAt
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
 
