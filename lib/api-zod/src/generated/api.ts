@@ -35,6 +35,8 @@ export const createScanResponseAnalysisOneOverallScoreMax = 100;
 export const createScanResponseAnalysisOneCategoryScoresItemScoreMin = 0;
 export const createScanResponseAnalysisOneCategoryScoresItemScoreMax = 100;
 
+export const createScanResponseAnalysisOneCategoryScoresItemChecksItemWeightMax = 3;
+
 export const createScanResponseAnalysisOneDetectedFactsPageTitleLengthMin = 0;
 
 export const createScanResponseAnalysisOneDetectedFactsMetaDescriptionLengthMin = 0;
@@ -83,7 +85,8 @@ export const CreateScanResponse = zod.object({
   "key": zod.string(),
   "label": zod.string(),
   "status": zod.enum(['pass', 'fail', 'unknown']),
-  "evidence": zod.string()
+  "evidence": zod.string(),
+  "weight": zod.number().int().min(1).max(createScanResponseAnalysisOneCategoryScoresItemChecksItemWeightMax)
 }))
 })),
   "detectedFacts": zod.object({
@@ -156,6 +159,8 @@ export const listScansResponseAnalysisOneOverallScoreMax = 100;
 export const listScansResponseAnalysisOneCategoryScoresItemScoreMin = 0;
 export const listScansResponseAnalysisOneCategoryScoresItemScoreMax = 100;
 
+export const listScansResponseAnalysisOneCategoryScoresItemChecksItemWeightMax = 3;
+
 export const listScansResponseAnalysisOneDetectedFactsPageTitleLengthMin = 0;
 
 export const listScansResponseAnalysisOneDetectedFactsMetaDescriptionLengthMin = 0;
@@ -204,7 +209,8 @@ export const ListScansResponseItem = zod.object({
   "key": zod.string(),
   "label": zod.string(),
   "status": zod.enum(['pass', 'fail', 'unknown']),
-  "evidence": zod.string()
+  "evidence": zod.string(),
+  "weight": zod.number().int().min(1).max(listScansResponseAnalysisOneCategoryScoresItemChecksItemWeightMax)
 }))
 })),
   "detectedFacts": zod.object({
@@ -285,6 +291,8 @@ export const getScanResponseAnalysisOneOverallScoreMax = 100;
 export const getScanResponseAnalysisOneCategoryScoresItemScoreMin = 0;
 export const getScanResponseAnalysisOneCategoryScoresItemScoreMax = 100;
 
+export const getScanResponseAnalysisOneCategoryScoresItemChecksItemWeightMax = 3;
+
 export const getScanResponseAnalysisOneDetectedFactsPageTitleLengthMin = 0;
 
 export const getScanResponseAnalysisOneDetectedFactsMetaDescriptionLengthMin = 0;
@@ -333,7 +341,8 @@ export const GetScanResponse = zod.object({
   "key": zod.string(),
   "label": zod.string(),
   "status": zod.enum(['pass', 'fail', 'unknown']),
-  "evidence": zod.string()
+  "evidence": zod.string(),
+  "weight": zod.number().int().min(1).max(getScanResponseAnalysisOneCategoryScoresItemChecksItemWeightMax)
 }))
 })),
   "detectedFacts": zod.object({

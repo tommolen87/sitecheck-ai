@@ -53,6 +53,11 @@ export interface CategoryCheck {
   label: string;
   status: CategoryCheckStatus;
   evidence: string;
+  /**
+     * @minimum 1
+     * @maximum 3
+     */
+  weight: number;
 }
 
 export interface CategoryScore {

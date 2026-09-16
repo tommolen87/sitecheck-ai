@@ -32,6 +32,7 @@ Een Nederlandse website-check die ondernemers helpt om hun website te laten scan
 ## Architecture decisions
 
 - Scan requests are persisted immediately, and the first analysis synchronously inspects one public homepage; no scores or findings are fabricated beyond detected signals.
+- Every category score is built from stored pass/fail/unknown checks with explicit weights; unknown checks never add points and unchecked mobile performance remains outside the total score.
 - The frontend uses generated API hooks from the shared OpenAPI contract, so future crawling and AI analysis can extend the same scan lifecycle.
 - The landing page validates website URLs in the browser and again on the server; the server only accepts HTTP and HTTPS URLs.
 

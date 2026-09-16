@@ -1,4 +1,4 @@
-import { ArrowLeft, Check, CircleAlert, Clock3, ExternalLink, FileWarning, Gauge, LockKeyhole, RefreshCw, ShieldCheck } from 'lucide-react';
+import { ArrowLeft, Check, CheckCircle2, CircleAlert, CircleHelp, Clock3, ExternalLink, FileWarning, Gauge, LockKeyhole, RefreshCw, ShieldCheck, XCircle } from 'lucide-react';
 import { Link, useParams } from 'wouter';
 import { getGetScanQueryKey, useGetScan, type ScanAnalysis, type ScanIssue } from '@workspace/api-client-react';
 
@@ -14,17 +14,27 @@ const categoryOrder = [
 
 const factLabels: Array<{ key: keyof ScanAnalysis['detectedFacts']; label: string; format?: (value: unknown) => string }> = [
   { key: 'pageTitle', label: 'Paginatitel', format: (value) => value ? String(value) : 'Niet aangetroffen' },
+  { key: 'pageTitleLength', label: 'Lengte paginatitel', format: (value) => `${Number(value).toLocaleString('nl-NL')} tekens` },
   { key: 'metaDescription', label: 'Meta description', format: (value) => value ? String(value) : 'Niet aangetroffen' },
+  { key: 'metaDescriptionLength', label: 'Lengte meta description', format: (value) => `${Number(value).toLocaleString('nl-NL')} tekens` },
   { key: 'h1Count', label: 'H1-koppen' },
   { key: 'headingCount', label: 'Alle koppen' },
   { key: 'visibleTextLength', label: 'Zichtbare tekens', format: (value) => `${Number(value).toLocaleString('nl-NL')}` },
-  { key: 'linkCount', label: 'Links' },
+  { key: 'internalLinkCount', label: 'Interne links' },
+  { key: 'externalLinkCount', label: 'Externe links' },
   { key: 'imageCount', label: 'Afbeeldingen' },
   { key: 'imagesWithAlt', label: 'Afbeeldingen met alt-tekst' },
   { key: 'ctaCount', label: 'CTA’s' },
+  { key: 'primaryCta', label: 'Eerste duidelijke CTA', format: (value) => value ? String(value) : 'Niet aangetroffen' },
+  { key: 'canonical', label: 'Canonical', format: (value) => value ? 'Aangetroffen' : 'Niet aangetroffen' },
+  { key: 'hasRobotsTxt', label: 'robots.txt', format: (value) => value ? 'Bereikbaar' : 'Niet gevonden' },
+  { key: 'hasSitemap', label: 'Sitemap', format: (value) => value ? 'Bereikbaar' : 'Niet gevonden' },
+  { key: 'openGraphSignals', label: 'Open Graph-signalen', format: (value) => `${Array.isArray(value) ? value.length : 0}` },
+  { key: 'httpStatus', label: 'HTTP-status' },
   { key: 'responseTimeMs', label: 'Responstijd', format: (value) => `${Number(value).toLocaleString('nl-NL')} ms` },
   { key: 'pageSizeKb', label: 'Paginagrootte', format: (value) => `${Number(value).toLocaleString('nl-NL')} KB` },
   { key: 'https', label: 'HTTPS', format: (value) => value ? 'Ja' : 'Nee' },
+  { key: 'compressed', label: 'Compressie', format: (value) => value === null ? 'Niet vastgesteld' : value ? 'Ja' : 'Nee' },
 ];
 
 function formatDate(value: string) {
@@ -85,6 +95,33 @@ function CategoryScores({ analysis }: { analysis: ScanAnalysis }) {
               <div className="category-score-track" aria-hidden="true">
                 <span style={{ width: `${typeof score === 'number' && result?.checked !== false ? score : 0}%` }} />
               </div>
+              {result && (
+                <details className="category-checks">
+                  <summary>
+                    <span>Bekijk score-opbouw</span>
+                    <span>{result.checks.filter((check) => check.status === 'pass').length} geslaagd · {result.checks.filter((check) => check.status === 'fail').length} niet geslaagd · {result.checks.filter((check) => check.status === 'unknown').length} onbekend</span>
+                  </summary>
+                  <div className="category-check-list">
+                    {result.checks.map((check) => (
+                      <div className={`category-check check-${check.status}`} key={check.key}>
+                        <span className="check-status-icon" aria-hidden="true">
+                          {check.status === 'pass' ? <CheckCircle2 /> : check.status === 'fail' ? <XCircle /> : <CircleHelp />}
+                        </span>
+                        <div>
+                          <div className="check-title-row">
+                            <strong>{check.label}</strong>
+                            <span>Weging {check.weight === 3 ? 'hoog' : check.weight === 2 ? 'middel' : 'laag'}</span>
+                          </div>
+                          <p>{check.evidence}</p>
+                        </div>
+                        <span className="check-status-label">
+                          {check.status === 'pass' ? 'Geslaagd' : check.status === 'fail' ? 'Niet geslaagd' : 'Onbekend'}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </details>
+              )}
             </article>
           );
         })}
@@ -94,20 +131,30 @@ function CategoryScores({ analysis }: { analysis: ScanAnalysis }) {
 }
 
 function IssueCard({ issue, index }: { issue: ScanIssue; index: number }) {
+  const impactLabel = issue.impact === 'high' ? 'Hoog' : issue.impact === 'medium' ? 'Middel' : 'Laag';
+  const difficultyLabel = issue.difficulty === 'easy' ? 'Makkelijk' : issue.difficulty === 'medium' ? 'Gemiddeld' : 'Moeilijk';
   return (
     <article className={`issue-card issue-${issue.severity}`} data-testid={`issue-card-${issue.id}`}>
       <div className="issue-card-top">
         <span className="issue-number">{String(index + 1).padStart(2, '0')}</span>
-        <span className="severity-label">{issue.severity === 'high' ? 'Belangrijk' : issue.severity === 'medium' ? 'Aandacht' : 'Kleine verbetering'}</span>
+        <span className="severity-label">Impact: {impactLabel}</span>
       </div>
       <h3>{issue.title}</h3>
       <div className="issue-detail">
-        <div className="issue-detail-label"><CircleAlert /> Vastgesteld</div>
+        <div className="issue-detail-label"><CircleAlert /> Wat we vonden</div>
         <p>{issue.fact}</p>
       </div>
+      <div className="issue-detail">
+        <div className="issue-detail-label"><CircleHelp /> Waarom dit belangrijk is</div>
+        <p>{issue.whyItMatters}</p>
+      </div>
       <div className="issue-detail recommendation">
-        <div className="issue-detail-label"><Check /> Praktische stap</div>
+        <div className="issue-detail-label"><Check /> Wat je concreet kunt verbeteren</div>
         <p>{issue.recommendation}</p>
+      </div>
+      <div className="issue-meta" aria-label={`Impact ${impactLabel}, moeilijkheid ${difficultyLabel}`}>
+        <span>Impact <strong>{impactLabel}</strong></span>
+        <span>Moeilijkheid <strong>{difficultyLabel}</strong></span>
       </div>
     </article>
   );
