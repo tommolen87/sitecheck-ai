@@ -12,21 +12,147 @@ import { analyzeWebsite } from "../lib/website-analysis";
 import { generateAiRecommendations } from "../lib/ai-website-analysis";
 
 const router: IRouter = Router();
+const TOTAL_CATEGORY_COUNT = 7;
 
 function normalizeScanAnalysis<T extends { analysis: unknown }>(scan: T): T {
   const { analysis } = scan;
-  if (
-    typeof analysis === "object" &&
-    analysis !== null &&
-    !Array.isArray(analysis) &&
-    !Object.prototype.hasOwnProperty.call(analysis, "aiRecommendations")
-  ) {
-    return {
-      ...scan,
-      analysis: { ...analysis, aiRecommendations: null },
-    };
-  }
-  return scan;
+  if (typeof analysis !== "object" || analysis === null || Array.isArray(analysis)) return scan;
+  const analysisRecord = analysis as Record<string, unknown>;
+
+  const categoryScores = Array.isArray(analysisRecord.categoryScores)
+    ? analysisRecord.categoryScores.map((category: unknown) => {
+        if (typeof category !== "object" || category === null || Array.isArray(category)) return category;
+        const categoryRecord = category as Record<string, unknown>;
+        const checks = Array.isArray(categoryRecord.checks) ? categoryRecord.checks : [];
+        const normalizedChecks = checks.map((check) => {
+          if (typeof check !== "object" || check === null || Array.isArray(check)) return check;
+          const checkRecord = check as Record<string, unknown>;
+          const status = checkRecord.status === "passed" || checkRecord.status === "pass"
+            ? "passed"
+            : checkRecord.status === "failed" || checkRecord.status === "fail"
+              ? "failed"
+              : "unknown";
+          return {
+            ...checkRecord,
+            status,
+            value: Object.prototype.hasOwnProperty.call(checkRecord, "value") ? checkRecord.value : null,
+          };
+        });
+        const statuses = normalizedChecks.map((check) =>
+          typeof check === "object" && check !== null && !Array.isArray(check)
+            ? (check as Record<string, unknown>).status
+            : "unknown",
+        );
+        const passedCount =
+          typeof categoryRecord.passedCount === "number"
+            ? categoryRecord.passedCount
+            : statuses.filter((status) => status === "passed").length;
+        const failedCount =
+          typeof categoryRecord.failedCount === "number"
+            ? categoryRecord.failedCount
+            : statuses.filter((status) => status === "failed").length;
+        const unknownCount =
+          typeof categoryRecord.unknownCount === "number"
+            ? categoryRecord.unknownCount
+            : statuses.filter((status) => status === "unknown").length;
+        const executedCount =
+          typeof categoryRecord.executedCount === "number"
+            ? categoryRecord.executedCount
+            : passedCount + failedCount;
+        const checked = executedCount > 0;
+        const coveragePercent =
+          typeof categoryRecord.coveragePercent === "number"
+            ? categoryRecord.coveragePercent
+            : checks.length > 0
+              ? Math.round((executedCount / checks.length) * 100)
+              : 0;
+        const knownWeights = normalizedChecks.reduce(
+          (totals, check) => {
+            if (typeof check !== "object" || check === null || Array.isArray(check)) return totals;
+            const checkRecord = check as Record<string, unknown>;
+            const status =
+              checkRecord.status === "passed" || checkRecord.status === "pass"
+                ? "passed"
+                : checkRecord.status === "failed" || checkRecord.status === "fail"
+                  ? "failed"
+                  : "unknown";
+            const weight = typeof checkRecord.weight === "number" ? checkRecord.weight : 1;
+            if (status !== "unknown") totals.total += weight;
+            if (status === "passed") totals.passed += weight;
+            return totals;
+          },
+          { passed: 0, total: 0 },
+        );
+        const score =
+          !checked
+            ? null
+            : typeof categoryRecord.score === "number"
+              ? categoryRecord.score
+              : knownWeights.total > 0
+                ? Math.round((knownWeights.passed / knownWeights.total) * 100)
+                : null;
+        return {
+          ...categoryRecord,
+          score,
+          checked,
+          passedCount,
+          failedCount,
+          unknownCount,
+          executedCount,
+          coveragePercent,
+          checks: normalizedChecks,
+        };
+      })
+    : analysisRecord.categoryScores;
+  const overallCoveragePercent =
+    typeof analysisRecord.overallCoveragePercent === "number"
+      ? analysisRecord.overallCoveragePercent
+      : Array.isArray(categoryScores) && categoryScores.length > 0
+        ? Math.round(
+            categoryScores.reduce(
+              (total, category) =>
+                total +
+                (typeof category === "object" &&
+                category !== null &&
+                !Array.isArray(category) &&
+                typeof category.coveragePercent === "number"
+                  ? category.coveragePercent
+                  : 0),
+              0,
+            ) / TOTAL_CATEGORY_COUNT,
+          )
+        : 0;
+  const usesCurrentScoring = typeof analysisRecord.overallCoveragePercent === "number";
+  const overallScore =
+    usesCurrentScoring
+      ? analysisRecord.overallScore
+      : Array.isArray(categoryScores) && categoryScores.length > 0
+        ? Math.round(
+            categoryScores.reduce((total, category) => {
+              if (typeof category !== "object" || category === null || Array.isArray(category)) return total;
+              const categoryRecord = category as Record<string, unknown>;
+              const score = typeof categoryRecord.score === "number" ? categoryRecord.score : 0;
+              const coverage =
+                typeof categoryRecord.coveragePercent === "number"
+                  ? categoryRecord.coveragePercent
+                  : 0;
+              return total + score * (coverage / 100);
+            }, 0) / TOTAL_CATEGORY_COUNT,
+          )
+        : 0;
+
+  return {
+    ...scan,
+    analysis: {
+      ...analysisRecord,
+      aiRecommendations: Object.prototype.hasOwnProperty.call(analysisRecord, "aiRecommendations")
+        ? analysisRecord.aiRecommendations
+        : null,
+      overallScore,
+      overallCoveragePercent,
+      categoryScores,
+    },
+  };
 }
 
 function isWebsiteUrl(value: string): boolean {

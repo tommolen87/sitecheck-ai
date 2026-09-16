@@ -11,11 +11,7 @@ import type { CategoryScoreKey } from './categoryScoreKey';
 export interface CategoryScore {
   key: CategoryScoreKey;
   label: string;
-  /**
-     * @minimum 0
-     * @maximum 100
-     */
-  score: number;
+  score: number | null;
   checked: boolean;
   /** @minimum 0 */
   passedCount: number;
@@ -23,6 +19,8 @@ export interface CategoryScore {
   failedCount: number;
   /** @minimum 0 */
   unknownCount: number;
+  /** @minimum 0 */
+  executedCount: number;
   /**
      * @minimum 0
      * @maximum 100

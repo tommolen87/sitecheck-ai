@@ -1,3 +1,3 @@
 - [Generated client typecheck](generated-client-typecheck.md) — keep `dom.iterable` enabled for the generated fetch client.
-- [Scoring reliability](scoring-reliability.md) — separate measured quality from coverage; mobile remains unscored without a real mobile measurement.
+- [Scoring reliability](scoring-reliability.md) — category quality uses executed checks; total score discounts every category by coverage across seven fixed shares.
 - [AI recommendation grounding](ai-recommendation-grounding.md) — AI may prioritize eligible measured issues, but server-owned evidence and advice remain authoritative.

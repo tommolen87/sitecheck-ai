@@ -92,6 +92,7 @@ function CategoryScores({ analysis }: { analysis: ScanAnalysis }) {
                   <p>{result ? result.note : 'Niet beschikbaar in deze analyse.'}</p>
                   {result && (
                     <div className="category-coverage">
+                      <span>Uitgevoerd: <strong>{result.executedCount} van {result.checks.length}</strong></span>
                       <span>Meetdekking: <strong>{result.coveragePercent}%</strong></span>
                       {result.checked && score === 100 && result.unknownCount > 0 && (
                         <span>Op de meetbare onderdelen sterk</span>
@@ -114,7 +115,7 @@ function CategoryScores({ analysis }: { analysis: ScanAnalysis }) {
                 <details className="category-checks">
                   <summary>
                     <span>Bekijk score-opbouw</span>
-                    <span>{result.passedCount} geslaagd · {result.failedCount} niet geslaagd · {result.unknownCount} onbekend</span>
+                    <span>{result.passedCount} geslaagd · {result.failedCount} niet geslaagd · {result.unknownCount} onbekend · {result.executedCount} uitgevoerd</span>
                   </summary>
                   <div className="category-check-list">
                     {result.checks.map((check) => (
@@ -261,7 +262,7 @@ function DetectedFacts({ analysis }: { analysis: ScanAnalysis }) {
 
 function ResultHeader({ scan, analysis }: { scan: { url: string; createdAt: string }; analysis: ScanAnalysis }) {
   const checkedCategoryCount = analysis.categoryScores.filter((category) => category.checked).length;
-  const mobileWasMeasured = analysis.categoryScores.find((category) => category.key === 'mobiel')?.checked === true;
+  const allCategoriesMeasured = checkedCategoryCount === analysis.categoryScores.length;
   return (
     <header className="results-hero">
       <div className="page-frame">
@@ -281,10 +282,15 @@ function ResultHeader({ scan, analysis }: { scan: { url: string; createdAt: stri
               <ScoreRing score={analysis.overallScore} />
               <div>
                 <strong className="score-verdict">{analysis.overallScore >= 70 ? 'Een stevige basis' : analysis.overallScore >= 40 ? 'Ruimte om te groeien' : 'Tijd voor aandacht'}</strong>
-                <p>De score laat zien hoe de website presteert op de onderdelen die we betrouwbaar konden controleren.</p>
+                <p>De totaalscore combineert kwaliteit en meetdekking. Niet-gemeten onderdelen leveren geen punten op.</p>
                 <div className="overall-coverage">
-                  <strong>{checkedCategoryCount} van {analysis.categoryScores.length} categorieën gecontroleerd</strong>
-                  {!mobileWasMeasured && <span>Mobiel is nog niet gemeten.</span>}
+                  <strong>Totale meetdekking: {analysis.overallCoveragePercent}%</strong>
+                  {!allCategoriesMeasured && (
+                    <span>
+                      {checkedCategoryCount} van de {analysis.categoryScores.length} onderdelen zijn gecontroleerd.
+                      Niet-gemeten onderdelen tellen niet positief mee; een volledige score is pas mogelijk wanneer alle onderdelen meetbaar zijn.
+                    </span>
+                  )}
                 </div>
               </div>
             </div>

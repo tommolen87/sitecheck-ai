@@ -6,6 +6,7 @@ const MAX_AUXILIARY_BYTES = 400_000;
 const REQUEST_TIMEOUT_MS = 10_000;
 const AUXILIARY_TIMEOUT_MS = 5_000;
 const MAX_REDIRECTS = 3;
+const TOTAL_CATEGORY_COUNT = 7;
 
 export type CheckStatus = "passed" | "failed" | "unknown";
 
@@ -20,15 +21,17 @@ export type CategoryCheck = {
 
 export type ScanAnalysisResult = {
   overallScore: number;
+  overallCoveragePercent: number;
   aiRecommendations: import("./ai-website-analysis").AiRecommendation[] | null;
   categoryScores: Array<{
     key: string;
     label: string;
-    score: number;
+    score: number | null;
     checked: boolean;
     passedCount: number;
     failedCount: number;
     unknownCount: number;
+    executedCount: number;
     coveragePercent: number;
     note: string;
     checks: CategoryCheck[];
@@ -564,11 +567,12 @@ function scoreCategory(
   const knownChecks = checks.filter((check) => check.status !== "unknown");
   const totalWeight = knownChecks.reduce((sum, check) => sum + check.weight, 0);
   const passedWeight = knownChecks.reduce((sum, check) => sum + (check.status === "pass" ? check.weight : 0), 0);
-  const score = totalWeight > 0 ? Math.round((passedWeight / totalWeight) * 100) : 0;
+  const score = totalWeight > 0 ? Math.round((passedWeight / totalWeight) * 100) : null;
   const passedCount = knownChecks.filter((check) => check.status === "pass").length;
   const failedCount = knownChecks.filter((check) => check.status === "fail").length;
   const unknownCount = checks.length - knownChecks.length;
-  const coveragePercent = checks.length > 0 ? Math.round((knownChecks.length / checks.length) * 100) : 0;
+  const executedCount = knownChecks.length;
+  const coveragePercent = checks.length > 0 ? Math.round((executedCount / checks.length) * 100) : 0;
   const note =
     knownChecks.length === 0
       ? "Niet gecontroleerd: voor deze categorie zijn geen meetbare signalen beschikbaar."
@@ -582,6 +586,7 @@ function scoreCategory(
     passedCount,
     failedCount,
     unknownCount,
+    executedCount,
     coveragePercent,
     note,
     checks: checks.map((check) => ({
@@ -929,14 +934,21 @@ async function createAnalysis(snapshot: WebsiteSnapshot): Promise<WebsiteAnalysi
     duplicateTextDetected: detectDuplicateText(visibleText),
   };
   const categoryScores = getCategoryScores(detectedFacts);
-  const checkedScores = categoryScores.filter((category) => category.checked);
-  const overallScore = checkedScores.length
-    ? Math.round(checkedScores.reduce((total, category) => total + category.score, 0) / checkedScores.length)
-    : 0;
+  const overallCoveragePercent = Math.round(
+    categoryScores.reduce((total, category) => total + category.coveragePercent, 0) /
+      TOTAL_CATEGORY_COUNT,
+  );
+  const overallScore = Math.round(
+    categoryScores.reduce(
+      (total, category) => total + (category.score ?? 0) * (category.coveragePercent / 100),
+      0,
+    ) / TOTAL_CATEGORY_COUNT,
+  );
 
   return {
     analysis: {
       overallScore,
+      overallCoveragePercent,
       categoryScores,
       detectedFacts,
       notChecked: [

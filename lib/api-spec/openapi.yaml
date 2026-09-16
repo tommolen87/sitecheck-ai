@@ -145,6 +145,10 @@ components:
           type: integer
           minimum: 0
           maximum: 100
+        overallCoveragePercent:
+          type: integer
+          minimum: 0
+          maximum: 100
         aiRecommendations:
           oneOf:
             - type: array
@@ -168,6 +172,7 @@ components:
             $ref: "#/components/schemas/ScanIssue"
       required:
         - overallScore
+        - overallCoveragePercent
         - aiRecommendations
         - categoryScores
         - detectedFacts
@@ -182,9 +187,11 @@ components:
         label:
           type: string
         score:
-          type: integer
-          minimum: 0
-          maximum: 100
+          oneOf:
+            - type: integer
+              minimum: 0
+              maximum: 100
+            - type: "null"
         checked:
           type: boolean
         passedCount:
@@ -194,6 +201,9 @@ components:
           type: integer
           minimum: 0
         unknownCount:
+          type: integer
+          minimum: 0
+        executedCount:
           type: integer
           minimum: 0
         coveragePercent:
@@ -214,6 +224,7 @@ components:
         - passedCount
         - failedCount
         - unknownCount
+        - executedCount
         - coveragePercent
         - note
         - checks

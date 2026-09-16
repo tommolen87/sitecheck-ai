@@ -16,6 +16,11 @@ export interface ScanAnalysis {
      * @maximum 100
      */
   overallScore: number;
+  /**
+     * @minimum 0
+     * @maximum 100
+     */
+  overallCoveragePercent: number;
   aiRecommendations: AiRecommendation[] | null;
   categoryScores: CategoryScore[];
   detectedFacts: DetectedFacts;
