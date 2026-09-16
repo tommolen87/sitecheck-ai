@@ -38,6 +38,8 @@ export interface DetectedFacts {
   /** @nullable */
   primaryCta: string | null;
   /** @nullable */
+  primaryCtaClearlyMarked: boolean | null;
+  /** @nullable */
   ctaAboveFold: boolean | null;
   contactSignals: string[];
   legalSignals: string[];
@@ -71,8 +73,12 @@ export interface DetectedFacts {
   sitemapUrl: string | null;
   localBusinessStructuredData: boolean;
   mapsLink: boolean;
+  placeSignal: boolean;
+  regionSignal: boolean;
   /** @nullable */
   valuePropositionSignal: boolean | null;
+  /** @nullable */
+  targetAudienceSignal: boolean | null;
   /** @nullable */
   duplicateTextDetected: boolean | null;
 }

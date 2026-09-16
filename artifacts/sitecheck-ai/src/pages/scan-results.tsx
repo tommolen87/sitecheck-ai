@@ -99,13 +99,13 @@ function CategoryScores({ analysis }: { analysis: ScanAnalysis }) {
                 <details className="category-checks">
                   <summary>
                     <span>Bekijk score-opbouw</span>
-                    <span>{result.checks.filter((check) => check.status === 'pass').length} geslaagd · {result.checks.filter((check) => check.status === 'fail').length} niet geslaagd · {result.checks.filter((check) => check.status === 'unknown').length} onbekend</span>
+                    <span>{result.checks.filter((check) => check.status === 'passed').length} geslaagd · {result.checks.filter((check) => check.status === 'failed').length} niet geslaagd · {result.checks.filter((check) => check.status === 'unknown').length} onbekend</span>
                   </summary>
                   <div className="category-check-list">
                     {result.checks.map((check) => (
                       <div className={`category-check check-${check.status}`} key={check.key}>
                         <span className="check-status-icon" aria-hidden="true">
-                          {check.status === 'pass' ? <CheckCircle2 /> : check.status === 'fail' ? <XCircle /> : <CircleHelp />}
+                          {check.status === 'passed' ? <CheckCircle2 /> : check.status === 'failed' ? <XCircle /> : <CircleHelp />}
                         </span>
                         <div>
                           <div className="check-title-row">
@@ -115,7 +115,7 @@ function CategoryScores({ analysis }: { analysis: ScanAnalysis }) {
                           <p>{check.evidence}</p>
                         </div>
                         <span className="check-status-label">
-                          {check.status === 'pass' ? 'Geslaagd' : check.status === 'fail' ? 'Niet geslaagd' : 'Onbekend'}
+                          {check.status === 'passed' ? 'Geslaagd' : check.status === 'failed' ? 'Niet geslaagd' : 'Onbekend'}
                         </span>
                       </div>
                     ))}
@@ -141,7 +141,7 @@ function IssueCard({ issue, index }: { issue: ScanIssue; index: number }) {
       </div>
       <h3>{issue.title}</h3>
       <div className="issue-detail">
-        <div className="issue-detail-label"><CircleAlert /> Wat we vonden</div>
+        <div className="issue-detail-label"><CircleAlert /> Waar we het vonden</div>
         <p>{issue.fact}</p>
       </div>
       <div className="issue-detail">
@@ -156,6 +156,9 @@ function IssueCard({ issue, index }: { issue: ScanIssue; index: number }) {
         <span>Impact <strong>{impactLabel}</strong></span>
         <span>Moeilijkheid <strong>{difficultyLabel}</strong></span>
       </div>
+      {issue.relatedChecks.length > 0 && (
+        <p className="issue-related-checks">Gebaseerd op: {issue.relatedChecks.join(' · ')}</p>
+      )}
     </article>
   );
 }

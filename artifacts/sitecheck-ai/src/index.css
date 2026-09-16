@@ -327,14 +327,14 @@
 .category-check { display: grid; grid-template-columns: 19px minmax(0, 1fr) auto; gap: 9px; align-items: start; min-height: 72px; padding: 12px; background: hsl(var(--card)); }
 .check-status-icon { display: flex; color: hsl(var(--primary)); }
 .check-status-icon svg { width: 16px; height: 16px; }
-.check-fail .check-status-icon { color: hsl(var(--destructive)); }
+.check-failed .check-status-icon { color: hsl(var(--destructive)); }
 .check-unknown .check-status-icon { color: hsl(var(--muted-foreground)); }
 .category-check strong { display: block; font-size: .72rem; line-height: 1.3; }
 .check-title-row { display: flex; flex-wrap: wrap; align-items: baseline; gap: 5px 9px; }
 .check-title-row > span { color: hsl(var(--muted-foreground)); font-size: .56rem; text-transform: uppercase; letter-spacing: .06em; }
 .category-check p { color: hsl(var(--muted-foreground)); font-size: .67rem; line-height: 1.45; margin-top: 4px; }
 .check-status-label { border-radius: 99px; padding: 4px 7px; color: hsl(var(--primary)); background: hsl(var(--primary) / .08); font-size: .56rem; font-weight: 700; white-space: nowrap; }
-.check-fail .check-status-label { color: hsl(var(--destructive)); background: hsl(var(--destructive) / .08); }
+.check-failed .check-status-label { color: hsl(var(--destructive)); background: hsl(var(--destructive) / .08); }
 .check-unknown .check-status-label { color: hsl(var(--muted-foreground)); background: hsl(var(--secondary)); }
 .issues-section { padding-top: clamp(85px, 12vw, 145px); }
 .issues-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-top: 47px; }
@@ -355,6 +355,7 @@
 .issue-meta { display: flex; flex-wrap: wrap; gap: 8px; border-top: 1px solid hsl(var(--border)); margin-top: 20px; padding-top: 13px; }
 .issue-meta span { border-radius: 99px; padding: 6px 9px; background: hsl(var(--secondary)); color: hsl(var(--muted-foreground)); font-size: .62rem; }
 .issue-meta strong { color: hsl(var(--foreground)); font-weight: 700; }
+.issue-related-checks { color: hsl(var(--muted-foreground)); font-size: .62rem; line-height: 1.45; margin-top: 11px; }
 .facts-section { background: hsl(var(--secondary) / .52); margin-inline: calc((1160px - 100vw) / 2); padding-left: max(20px, calc((100vw - 1160px) / 2)); padding-right: max(20px, calc((100vw - 1160px) / 2)); padding-bottom: clamp(66px, 9vw, 110px); }
 .facts-layout { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(260px, .75fr); gap: 35px; margin-top: 43px; }
 .facts-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: hsl(var(--border)); border: 1px solid hsl(var(--border)); }

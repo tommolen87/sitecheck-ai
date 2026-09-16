@@ -43,8 +43,8 @@ export type CategoryCheckStatus = typeof CategoryCheckStatus[keyof typeof Catego
 
 
 export const CategoryCheckStatus = {
-  pass: 'pass',
-  fail: 'fail',
+  passed: 'passed',
+  failed: 'failed',
   unknown: 'unknown',
 } as const;
 
@@ -52,6 +52,8 @@ export interface CategoryCheck {
   key: string;
   label: string;
   status: CategoryCheckStatus;
+  /** @nullable */
+  value: string | null;
   evidence: string;
   /**
      * @minimum 1
@@ -105,6 +107,8 @@ export interface DetectedFacts {
   /** @nullable */
   primaryCta: string | null;
   /** @nullable */
+  primaryCtaClearlyMarked: boolean | null;
+  /** @nullable */
   ctaAboveFold: boolean | null;
   contactSignals: string[];
   legalSignals: string[];
@@ -138,8 +142,12 @@ export interface DetectedFacts {
   sitemapUrl: string | null;
   localBusinessStructuredData: boolean;
   mapsLink: boolean;
+  placeSignal: boolean;
+  regionSignal: boolean;
   /** @nullable */
   valuePropositionSignal: boolean | null;
+  /** @nullable */
+  targetAudienceSignal: boolean | null;
   /** @nullable */
   duplicateTextDetected: boolean | null;
 }
@@ -180,6 +188,7 @@ export interface ScanIssue {
   fact: string;
   whyItMatters: string;
   recommendation: string;
+  relatedChecks: string[];
 }
 
 export interface ScanAnalysis {

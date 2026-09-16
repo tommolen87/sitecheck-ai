@@ -7,12 +7,13 @@ const REQUEST_TIMEOUT_MS = 10_000;
 const AUXILIARY_TIMEOUT_MS = 5_000;
 const MAX_REDIRECTS = 3;
 
-export type CheckStatus = "pass" | "fail" | "unknown";
+export type CheckStatus = "passed" | "failed" | "unknown";
 
 export type CategoryCheck = {
   key: string;
   label: string;
   status: CheckStatus;
+  value: string | null;
   evidence: string;
   weight: number;
 };
@@ -45,6 +46,7 @@ export type ScanAnalysisResult = {
     ctaCount: number;
     callsToAction: string[];
     primaryCta: string | null;
+    primaryCtaClearlyMarked: boolean | null;
     ctaAboveFold: boolean | null;
     contactSignals: string[];
     legalSignals: string[];
@@ -68,7 +70,10 @@ export type ScanAnalysisResult = {
     sitemapUrl: string | null;
     localBusinessStructuredData: boolean;
     mapsLink: boolean;
+    placeSignal: boolean;
+    regionSignal: boolean;
     valuePropositionSignal: boolean | null;
+    targetAudienceSignal: boolean | null;
     duplicateTextDetected: boolean | null;
   };
   notChecked: string[];
@@ -81,6 +86,7 @@ export type ScanAnalysisResult = {
     fact: string;
     whyItMatters: string;
     recommendation: string;
+    relatedChecks: string[];
   }>;
 };
 
@@ -97,7 +103,14 @@ type AuxiliaryResource = {
   url: URL;
 } | null;
 
-type WeightedCheck = CategoryCheck;
+type WeightedCheck = {
+  key: string;
+  label: string;
+  status: "pass" | "fail" | "unknown";
+  value?: string | null;
+  evidence: string;
+  weight: number;
+};
 
 function isPrivateAddress(address: string): boolean {
   const normalized = address.toLowerCase().split("%")[0];
@@ -359,24 +372,45 @@ function extractLinks(html: string, baseUrl: URL): {
   };
 }
 
-function extractCallsToAction(html: string): { callsToAction: string[]; primaryCta: string | null } {
-  const ctaPattern =
-    /\b(start|bekijk|lees|ontdek|plan|boek|vraag|neem|contact|bel|offerte|gratis|download|aanmelden|inschrijven|shop|koop|learn|get|book|buy|request|discover|schedule)\b/i;
+function extractCallsToAction(html: string): {
+  callsToAction: string[];
+  primaryCta: string | null;
+  primaryCtaClearlyMarked: boolean | null;
+} {
+  const actionPattern =
+    /^(start|bekijk|lees|ontdek|plan|boek|vraag|neem|contact|bel|offerte|download|aanmelden|inschrijven|shop|koop|lid worden|vrijwilliger worden|learn|get|book|buy|request|discover|schedule|sign up)\b/i;
   const elements = [
     ...(html.match(/<a\b[^>]*>[\s\S]*?<\/a>/gi) ?? []),
     ...(html.match(/<button\b[^>]*>[\s\S]*?<\/button>/gi) ?? []),
     ...(html.match(/<input\b[^>]*>/gi) ?? []),
   ];
-  const callsToAction = elements
+  const candidates = elements
     .map((element) => {
       const label = cleanText(element) || getAttribute(element, "aria-label") || getAttribute(element, "value") || "";
-      return label.slice(0, 100);
+      const marker = [
+        getAttribute(element, "class"),
+        getAttribute(element, "id"),
+        getAttribute(element, "role"),
+      ].filter(Boolean).join(" ");
+      const clearlyMarked = /^<(?:button|input)\b/i.test(element) || /\b(cta|btn|button|primary)\b/i.test(marker);
+      return { label: label.slice(0, 100), clearlyMarked };
     })
-    .filter((text) => text.length > 1 && ctaPattern.test(text))
-    .filter((text, index, list) => list.indexOf(text) === index)
+    .filter((candidate) => {
+      const conversionSpecific = /\b(contact|bel|offerte|afspraak|download|aanmelden|inschrijven|koop|lid worden|vrijwilliger worden|buy|book|request|schedule|sign up|get started)\b/i.test(candidate.label);
+      return candidate.label.length > 1 &&
+        candidate.label.length <= 80 &&
+        (actionPattern.test(candidate.label) || (candidate.clearlyMarked && conversionSpecific));
+    })
+    .filter((candidate, index, list) => list.findIndex((item) => item.label === candidate.label) === index)
     .slice(0, 10);
+  const primaryCandidate = candidates.find((candidate) => candidate.clearlyMarked) ?? candidates[0] ?? null;
+  const callsToAction = candidates.map((candidate) => candidate.label);
 
-  return { callsToAction, primaryCta: callsToAction[0] ?? null };
+  return {
+    callsToAction,
+    primaryCta: primaryCandidate?.label ?? null,
+    primaryCtaClearlyMarked: primaryCandidate?.clearlyMarked ?? null,
+  };
 }
 
 function extractContactSignals(html: string, visibleText: string): string[] {
@@ -400,6 +434,8 @@ function extractSignalList(html: string, visibleText: string): {
   socialProofSignals: string[];
   localSignals: string[];
   localBusinessStructuredData: boolean;
+  placeSignal: boolean;
+  regionSignal: boolean;
 } {
   const legalSignals: string[] = [];
   const companySignals: string[] = [];
@@ -410,6 +446,10 @@ function extractSignalList(html: string, visibleText: string): {
     .join(" ");
   const lowerText = `${visibleText} ${linkTargets}`.toLowerCase();
   const localBusinessStructuredData = /"@type"\s*:\s*"?[a-z]*localbusiness/i.test(html);
+  const placeSignal =
+    /\b(gevestigd|vestiging|locatie|werkzaam|actief)\s+(?:in|te)\s+[A-ZÀ-Ý][A-Za-zÀ-ÿ'-]{2,}/.test(visibleText) ||
+    /\b\d{4}\s?[A-Z]{2}\b/.test(visibleText);
+  const regionSignal = /\b(regio|provincie|omgeving)\s+[A-ZÀ-Ý][A-Za-zÀ-ÿ'-]{2,}/.test(visibleText);
 
   if (/\b(privacy|privacybeleid|privacy policy|cookie|avg|gegevensbescherming)\b/i.test(lowerText)) {
     legalSignals.push("Privacy- of cookiesignaal gevonden");
@@ -420,12 +460,11 @@ function extractSignalList(html: string, visibleText: string): {
   if (/\b(review|reviews|beoordeling|testimonial|klantverhaal|ervaringen|tevreden klanten)\b/i.test(lowerText) || /★|⭐/.test(visibleText)) {
     socialProofSignals.push("Review- of klantreferentiesignaal gevonden");
   }
-  if (/\b(gemeente|provincie|regio|lokaal|local|vestiging|locatie)\b/i.test(lowerText)) {
-    localSignals.push("Plaats- of regiobegrip gevonden");
-  }
+  if (placeSignal) localSignals.push("Plaatssignaal gevonden");
+  if (regionSignal) localSignals.push("Regiosignaal gevonden");
   if (localBusinessStructuredData) localSignals.push("LocalBusiness structured data gevonden");
 
-  return { legalSignals, companySignals, socialProofSignals, localSignals, localBusinessStructuredData };
+  return { legalSignals, companySignals, socialProofSignals, localSignals, localBusinessStructuredData, placeSignal, regionSignal };
 }
 
 function extractCanonical(html: string): string | null {
@@ -467,7 +506,16 @@ function detectValueProposition(visibleText: string): boolean | null {
   const englishProposition =
     /\b(we|our)\b.{0,90}\b(help|provide|build|create|deliver|solve|support)\b/i.test(sample) ||
     /\bfor\s+(businesses|companies|organizations|teams|customers|consumers|professionals)\b/i.test(sample);
-  return dutchProposition || englishProposition;
+  return dutchProposition || englishProposition ? true : null;
+}
+
+function detectTargetAudience(visibleText: string): boolean | null {
+  const sample = visibleText.slice(0, 1_200);
+  if (sample.length < 50) return null;
+  return /\bvoor\s+(ondernemers|bedrijven|organisaties|zzp['’]?ers|teams|consumenten|particulieren|professionals|mkb|verenigingen|families|ouders|studenten)\b/i.test(sample) ||
+    /\bfor\s+(businesses|companies|organizations|teams|customers|consumers|professionals|families|parents|students)\b/i.test(sample)
+    ? true
+    : null;
 }
 
 function detectDuplicateText(visibleText: string): boolean | null {
@@ -480,7 +528,7 @@ function detectDuplicateText(visibleText: string): boolean | null {
 }
 
 function headingStructureIsHealthy(levels: number[]): boolean | null {
-  if (levels.length === 0) return false;
+  if (levels.length === 0) return null;
   let previous = 0;
   for (const level of levels) {
     if (previous > 0 && level > previous + 1) return false;
@@ -489,7 +537,7 @@ function headingStructureIsHealthy(levels: number[]): boolean | null {
   return levels[0] === 1;
 }
 
-function statusFromBoolean(value: boolean | null): CheckStatus {
+function statusFromBoolean(value: boolean | null): WeightedCheck["status"] {
   return value === null ? "unknown" : value ? "pass" : "fail";
 }
 
@@ -499,7 +547,7 @@ function scoreCategory(
   checks: WeightedCheck[],
 ): ScanAnalysisResult["categoryScores"][number] {
   const knownChecks = checks.filter((check) => check.status !== "unknown");
-  const totalWeight = checks.reduce((sum, check) => sum + check.weight, 0);
+  const totalWeight = knownChecks.reduce((sum, check) => sum + check.weight, 0);
   const passedWeight = knownChecks.reduce((sum, check) => sum + (check.status === "pass" ? check.weight : 0), 0);
   const score = totalWeight > 0 ? Math.round((passedWeight / totalWeight) * 100) : 0;
   const passedCount = knownChecks.filter((check) => check.status === "pass").length;
@@ -507,7 +555,7 @@ function scoreCategory(
   const note =
     knownChecks.length === 0
       ? "Niet gecontroleerd: voor deze categorie zijn geen meetbare signalen beschikbaar."
-      : `${passedCount} van ${knownChecks.length} gecontroleerde checks geslaagd${unknownCount > 0 ? `; ${unknownCount} onbekend` : ""}.`;
+      : `${passedCount} van ${knownChecks.length} uitgevoerde checks geslaagd${unknownCount > 0 ? `; ${unknownCount} onbekend en niet meegerekend` : ""}.`;
 
   return {
     key,
@@ -515,7 +563,11 @@ function scoreCategory(
     score,
     checked: knownChecks.length > 0,
     note,
-    checks,
+    checks: checks.map((check) => ({
+      ...check,
+      status: check.status === "pass" ? "passed" : check.status === "fail" ? "failed" : "unknown",
+      value: check.value ?? null,
+    })),
   };
 }
 
@@ -529,6 +581,13 @@ function getCategoryScores(facts: ScanAnalysisResult["detectedFacts"]): ScanAnal
   const hasSpecificCta = facts.callsToAction.some((cta) =>
     /\b(contact|bel|offerte|plan|boek|afspraak|start|download|aanmelden|inschrijven|koop|buy|book|request|schedule|sign up|get started)\b/i.test(cta),
   );
+  const primaryCtaIsSpecific = Boolean(
+    facts.primaryCta &&
+    /\b(contact|bel|offerte|plan|boek|afspraak|start|download|aanmelden|inschrijven|koop|lid worden|vrijwilliger worden|buy|book|request|schedule|sign up|get started)\b/i.test(facts.primaryCta),
+  );
+  const actionableCta = facts.callsToAction.find((cta) =>
+    /^(start|bekijk|lees|ontdek|plan|boek|vraag|neem|contact|bel|offerte|download|aanmelden|inschrijven|shop|koop|lid worden|vrijwilliger worden|learn|get|book|buy|request|discover|schedule|sign up)\b/i.test(cta),
+  ) ?? null;
   const titleH1Relationship =
     facts.pageTitle && facts.headings[0]
       ? facts.pageTitle.toLowerCase().split(/\W+/).some((word) => word.length > 3 && facts.headings[0].toLowerCase().includes(word))
@@ -536,37 +595,43 @@ function getCategoryScores(facts: ScanAnalysisResult["detectedFacts"]): ScanAnal
 
   return [
     scoreCategory("conversie", "Conversie", [
-      { key: "primary-cta", label: "Duidelijke primaire CTA", status: facts.primaryCta ? "pass" : "fail", evidence: facts.primaryCta ? `CTA gevonden: “${facts.primaryCta}”.` : "Geen herkenbare CTA gevonden.", weight: 2 },
-      { key: "cta-quality", label: "Aantal en kwaliteit van CTA’s", status: facts.ctaCount >= 1 && facts.ctaCount <= 5 && hasSpecificCta ? "pass" : "fail", evidence: facts.ctaCount === 0 ? "Geen herkenbare CTA gevonden." : hasSpecificCta ? `${facts.ctaCount} CTA${facts.ctaCount === 1 ? "" : "’s"} gevonden, waaronder een concrete actie.` : `${facts.ctaCount} CTA${facts.ctaCount === 1 ? "" : "’s"} gevonden, maar zonder concrete contact-, aanvraag- of startactie.`, weight: 1 },
-      { key: "contact-option", label: "Contactoptie", status: facts.contactSignals.length > 0 ? "pass" : "fail", evidence: facts.contactSignals.length > 0 ? facts.contactSignals.join(", ") : "Geen contactsignaal gevonden.", weight: 2 },
-      { key: "phone-or-email", label: "Telefoonnummer of e-mail", status: hasPhone || hasEmail ? "pass" : "fail", evidence: hasPhone || hasEmail ? "Telefoonnummer of e-mailadres gevonden." : "Geen telefoonnummer of e-mailadres gevonden.", weight: 2 },
-      { key: "value-proposition", label: "Waardepropositie", status: statusFromBoolean(facts.valuePropositionSignal), evidence: facts.valuePropositionSignal === null ? "Niet betrouwbaar uit statische HTML vast te stellen." : facts.valuePropositionSignal ? "In de eerste tekst staat een concreet aanbod- of doelgroepbegrip." : "Geen duidelijk aanbod- of doelgroepbegrip in de eerste tekst gevonden.", weight: 3 },
-      { key: "logical-next-step", label: "Logische vervolgstap", status: facts.ctaCount > 0 ? "pass" : "fail", evidence: facts.ctaCount > 0 ? "Er is een vervolgstap in een link, knop of invoerveld gevonden." : "Geen vervolgstap gevonden.", weight: 1 },
-      { key: "cta-above-fold", label: "CTA boven de vouw", status: "unknown", evidence: "Niet gecontroleerd: dit vereist een echte browserweergave.", weight: 1 },
+      { key: "cta-found", label: "CTA gevonden", status: facts.ctaCount > 0 ? "pass" : "fail", value: String(facts.ctaCount), evidence: facts.ctaCount > 0 ? `${facts.ctaCount} herkenbare CTA${facts.ctaCount === 1 ? "" : "’s"} gevonden op de gecontroleerde homepage.` : "Geen herkenbare CTA gevonden op de gecontroleerde homepage.", weight: 1 },
+      { key: "primary-cta-clear", label: "Primaire CTA lijkt duidelijk", status: !facts.primaryCta ? "fail" : facts.primaryCtaClearlyMarked && primaryCtaIsSpecific ? "pass" : "unknown", value: facts.primaryCta, evidence: !facts.primaryCta ? "Geen primaire CTA gevonden op de gecontroleerde homepage." : facts.primaryCtaClearlyMarked && primaryCtaIsSpecific ? `De CTA “${facts.primaryCta}” is in de HTML als knop/CTA gemarkeerd en noemt een concrete actie.` : `De CTA-kandidaat “${facts.primaryCta}” is gevonden, maar visuele prioriteit en duidelijkheid zijn niet betrouwbaar automatisch te beoordelen.`, weight: 2 },
+      { key: "cta-action-oriented", label: "CTA lijkt actiegericht", status: !facts.primaryCta ? "fail" : /^(start|bekijk|lees|ontdek|plan|boek|vraag|neem|contact|bel|download|meld|schrijf|koop|learn|get|book|buy|request|discover|schedule)\b/i.test(facts.primaryCta) ? "pass" : "unknown", value: facts.primaryCta, evidence: !facts.primaryCta ? "Geen CTA-tekst beschikbaar." : /^(start|bekijk|lees|ontdek|plan|boek|vraag|neem|contact|bel|download|meld|schrijf|koop|learn|get|book|buy|request|discover|schedule)\b/i.test(facts.primaryCta) ? `De CTA begint met een actiewoord: “${facts.primaryCta}”.` : `De actiekracht van “${facts.primaryCta}” is niet betrouwbaar automatisch te beoordelen.`, weight: 1 },
+      { key: "multiple-ctas", label: "Meerdere CTA’s", status: facts.ctaCount >= 2 ? "pass" : "fail", value: String(facts.ctaCount), evidence: facts.ctaCount >= 2 ? `${facts.ctaCount} herkenbare CTA’s gevonden.` : `${facts.ctaCount} herkenbare CTA${facts.ctaCount === 1 ? "" : "’s"} gevonden; meerdere CTA’s zijn niet aangetroffen op de gecontroleerde homepage.`, weight: 1 },
+      { key: "contact-option", label: "Contactmogelijkheid", status: facts.contactSignals.length > 0 ? "pass" : "fail", value: facts.contactSignals.join(", ") || null, evidence: facts.contactSignals.length > 0 ? facts.contactSignals.join(", ") : "Niet gevonden op de gecontroleerde homepage.", weight: 2 },
+      { key: "phone", label: "Telefoonnummer", status: hasPhone ? "pass" : "fail", value: hasPhone ? "Gevonden" : null, evidence: hasPhone ? "Telefoonnummer gevonden op de gecontroleerde homepage." : "Niet gevonden op de gecontroleerde homepage.", weight: 1 },
+      { key: "email", label: "E-mailadres", status: hasEmail ? "pass" : "fail", value: hasEmail ? "Gevonden" : null, evidence: hasEmail ? "E-mailadres gevonden op de gecontroleerde homepage." : "Niet gevonden op de gecontroleerde homepage.", weight: 1 },
+      { key: "value-proposition", label: "Duidelijke waardepropositie", status: statusFromBoolean(facts.valuePropositionSignal), value: facts.valuePropositionSignal === true ? "Expliciet signaal gevonden" : null, evidence: facts.valuePropositionSignal === true ? "In de eerste zichtbare tekst staat een expliciete combinatie van aanbod en doelgroep." : "Niet betrouwbaar automatisch te beoordelen.", weight: 3 },
+      { key: "target-audience", label: "Duidelijke doelgroep", status: statusFromBoolean(facts.targetAudienceSignal), value: facts.targetAudienceSignal === true ? "Expliciet doelgroepsignaal gevonden" : null, evidence: facts.targetAudienceSignal === true ? "Een expliciete doelgroep staat in de eerste zichtbare homepage-tekst." : "Niet betrouwbaar automatisch te beoordelen.", weight: 2 },
+      { key: "logical-next-step", label: "Logische volgende stap", status: actionableCta ? "pass" : facts.ctaCount === 0 ? "fail" : "unknown", value: actionableCta, evidence: actionableCta ? `Een actiegerichte volgende stap is gevonden: “${actionableCta}”.` : facts.ctaCount === 0 ? "Geen herkenbare volgende stap gevonden op de gecontroleerde homepage." : "Er zijn CTA-kandidaten gevonden, maar een logische volgende stap is niet betrouwbaar automatisch te beoordelen.", weight: 1 },
     ]),
     scoreCategory("seo", "SEO", [
-      { key: "title-quality", label: "Paginatitel", status: titleQuality ? "pass" : "fail", evidence: facts.pageTitle ? `Titel bevat ${facts.pageTitleLength} tekens.` : "Geen paginatitel gevonden.", weight: 3 },
-      { key: "meta-quality", label: "Meta description", status: metaQuality ? "pass" : "fail", evidence: facts.metaDescription ? `Meta description bevat ${facts.metaDescriptionLength} tekens.` : "Geen meta description gevonden.", weight: 3 },
-      { key: "single-h1", label: "Precies één H1", status: facts.h1Count === 1 ? "pass" : "fail", evidence: `${facts.h1Count} H1-kop${facts.h1Count === 1 ? "" : "pen"} gevonden.`, weight: 3 },
+      { key: "title-present", label: "Paginatitel aanwezig", status: facts.pageTitle ? "pass" : "fail", value: facts.pageTitle, evidence: facts.pageTitle ? `Paginatitel gevonden: “${facts.pageTitle}”.` : "Geen paginatitel gevonden op de gecontroleerde homepage.", weight: 2 },
+      { key: "title-length", label: "Lengte paginatitel", status: !facts.pageTitle ? "unknown" : titleQuality ? "pass" : "fail", value: `${facts.pageTitleLength} tekens`, evidence: !facts.pageTitle ? "Niet beoordeeld omdat geen paginatitel is gevonden." : titleQuality ? `De titel bevat ${facts.pageTitleLength} tekens en valt binnen de gebruikte richtlijn van 10–60.` : `De titel bevat ${facts.pageTitleLength} tekens en valt buiten de gebruikte richtlijn van 10–60.`, weight: 1 },
+      { key: "meta-present", label: "Meta description aanwezig", status: facts.metaDescription ? "pass" : "fail", value: facts.metaDescription, evidence: facts.metaDescription ? "Meta description gevonden." : "Geen meta description gevonden op de gecontroleerde homepage.", weight: 2 },
+      { key: "meta-length", label: "Lengte meta description", status: !facts.metaDescription ? "unknown" : metaQuality ? "pass" : "fail", value: `${facts.metaDescriptionLength} tekens`, evidence: !facts.metaDescription ? "Niet beoordeeld omdat geen meta description is gevonden." : metaQuality ? `De meta description bevat ${facts.metaDescriptionLength} tekens en valt binnen de gebruikte richtlijn van 70–160.` : `De meta description bevat ${facts.metaDescriptionLength} tekens en valt buiten de gebruikte richtlijn van 70–160.`, weight: 1 },
+      { key: "h1-present", label: "H1 aanwezig", status: facts.h1Count > 0 ? "pass" : "fail", value: String(facts.h1Count), evidence: facts.h1Count > 0 ? "Minstens één H1-kop gevonden." : "Geen H1-kop gevonden op de gecontroleerde homepage.", weight: 2 },
+      { key: "h1-count", label: "Aantal H1-koppen", status: facts.h1Count === 1 ? "pass" : "fail", value: String(facts.h1Count), evidence: `${facts.h1Count} H1-kop${facts.h1Count === 1 ? "" : "pen"} gevonden; de check verwacht precies één.`, weight: 1 },
       { key: "heading-structure", label: "Headingstructuur", status: statusFromBoolean(headingHealth), evidence: headingHealth === null ? "Geen koppen gevonden." : headingHealth ? "Koppen beginnen met H1 en slaan geen niveaus over." : "De koppenstructuur begint niet met H1 of slaat een niveau over.", weight: 2 },
-      { key: "canonical", label: "Canonical-link", status: facts.canonical ? "pass" : "fail", evidence: facts.canonical ? "Canonical-link gevonden." : "Geen canonical-link gevonden.", weight: 2 },
+      { key: "canonical", label: "Canonical-link", status: facts.canonical ? "pass" : "fail", value: facts.canonical, evidence: facts.canonical ? "Canonical-link gevonden." : "Niet gevonden op de gecontroleerde homepage.", weight: 2 },
       { key: "robots-directives", label: "Robots-directives", status: facts.robotsDirectives.length === 0 ? "unknown" : facts.robotsDirectives.some((directive) => /\bnoindex\b/i.test(directive)) ? "fail" : "pass", evidence: facts.robotsDirectives.length === 0 ? "Geen robots-meta-directive aangetroffen." : facts.robotsDirectives.join(", "), weight: 1 },
-      { key: "robots-file", label: "robots.txt", status: facts.hasRobotsTxt ? "pass" : "fail", evidence: facts.hasRobotsTxt ? "robots.txt kon veilig worden opgehaald." : "Geen bereikbare robots.txt gevonden.", weight: 1 },
-      { key: "open-graph", label: "Open Graph", status: facts.openGraphSignals.length >= 2 ? "pass" : "fail", evidence: facts.openGraphSignals.length > 0 ? `${facts.openGraphSignals.length} Open Graph-signalen gevonden.` : "Geen Open Graph-signalen gevonden.", weight: 2 },
-      { key: "image-alt", label: "Alt-teksten", status: facts.imageCount === 0 ? "unknown" : facts.imagesWithAlt === facts.imageCount ? "pass" : "fail", evidence: facts.imageCount === 0 ? "Niet van toepassing: geen afbeeldingen gevonden." : `${facts.imagesWithAlt} van ${facts.imageCount} afbeeldingen heeft alt-tekst.`, weight: 2 },
-      { key: "internal-links", label: "Interne links", status: facts.internalLinkCount > 0 ? "pass" : "fail", evidence: `${facts.internalLinkCount} interne links gevonden.`, weight: 1 },
-      { key: "sitemap-file", label: "Sitemap", status: facts.hasSitemap ? "pass" : "fail", evidence: facts.hasSitemap ? "Sitemap kon veilig worden opgehaald." : "Geen bereikbare sitemap gevonden.", weight: 1 },
+      { key: "open-graph", label: "Open Graph", status: facts.openGraphSignals.length >= 2 ? "pass" : "fail", value: String(facts.openGraphSignals.length), evidence: facts.openGraphSignals.length > 0 ? `${facts.openGraphSignals.length} Open Graph-signalen gevonden.` : "Niet gevonden op de gecontroleerde homepage.", weight: 2 },
+      { key: "image-alt", label: "Alt-teksten", status: facts.imageCount === 0 ? "unknown" : facts.imagesWithAlt === facts.imageCount ? "pass" : "fail", value: `${facts.imagesWithAlt} van ${facts.imageCount}`, evidence: facts.imageCount === 0 ? "Niet beoordeeld omdat geen afbeeldingen zijn gevonden." : `${facts.imagesWithAlt} van ${facts.imageCount} afbeeldingen heeft een alt-attribuut.`, weight: 2 },
+      { key: "internal-links", label: "Interne links", status: facts.internalLinkCount > 0 ? "pass" : "fail", value: String(facts.internalLinkCount), evidence: `${facts.internalLinkCount} interne links gevonden op de gecontroleerde homepage.`, weight: 1 },
+      { key: "robots-file", label: "robots.txt", status: facts.hasRobotsTxt ? "pass" : "fail", value: facts.hasRobotsTxt ? "Bereikbaar" : null, evidence: facts.hasRobotsTxt ? "robots.txt kon veilig worden opgehaald." : "Niet gevonden op de gecontroleerde host.", weight: 1 },
+      { key: "sitemap-file", label: "sitemap.xml", status: facts.hasSitemap ? "pass" : "fail", value: facts.sitemapUrl, evidence: facts.hasSitemap ? "Een sitemap kon veilig worden opgehaald." : "Niet gevonden op de gecontroleerde host.", weight: 1 },
     ]),
     scoreCategory("mobiel", "Mobiel", [
       { key: "mobile-browser", label: "Mobiele browsercheck", status: "unknown", evidence: "Niet gecontroleerd: er is geen echte mobiele browser- of PageSpeed-check uitgevoerd.", weight: 1 },
       { key: "core-web-vitals", label: "Core Web Vitals", status: "unknown", evidence: "Niet gecontroleerd: Core Web Vitals zijn niet gemeten.", weight: 1 },
     ]),
     scoreCategory("techniek", "Techniek & snelheid", [
-      { key: "https", label: "HTTPS", status: facts.https ? "pass" : "fail", evidence: facts.https ? "Homepage gebruikt HTTPS." : "Homepage gebruikt HTTP zonder HTTPS.", weight: 3 },
-      { key: "http-response", label: "HTTP-respons", status: facts.httpStatus >= 200 && facts.httpStatus < 300 ? "pass" : "fail", evidence: `Homepage gaf HTTP-status ${facts.httpStatus}.`, weight: 2 },
-      { key: "response-time", label: "Eerste responstijd", status: facts.responseTimeMs < 1000 ? "pass" : facts.responseTimeMs < 2500 ? "fail" : "fail", evidence: `Eerste HTML-respons duurde ${facts.responseTimeMs} ms.`, weight: 3 },
-      { key: "html-size", label: "HTML-paginagrootte", status: facts.pageSizeKb < 500 ? "pass" : facts.pageSizeKb < 1500 ? "fail" : "fail", evidence: `HTML-respons is ${facts.pageSizeKb} KB.`, weight: 2 },
-      { key: "compression", label: "Compressie", status: facts.compressed === null ? "unknown" : facts.compressed ? "pass" : "fail", evidence: facts.compressed === null ? "Niet vastgesteld: de responseheader vermeldde geen compressie." : facts.compressed ? `Compressie gevonden (${facts.contentEncoding}).` : "Geen compressieheader gevonden.", weight: 1 },
+      { key: "https", label: "HTTPS", status: facts.https ? "pass" : "fail", value: facts.https ? "HTTPS" : "HTTP", evidence: facts.https ? "Homepage gebruikt HTTPS." : "Homepage gebruikt HTTP zonder HTTPS.", weight: 3 },
+      { key: "http-response", label: "HTTP-respons", status: facts.httpStatus >= 200 && facts.httpStatus < 300 ? "pass" : "fail", value: String(facts.httpStatus), evidence: `Homepage gaf HTTP-status ${facts.httpStatus}.`, weight: 2 },
+      { key: "response-time", label: "Eerste responstijd", status: facts.responseTimeMs < 1000 ? "pass" : "fail", value: `${facts.responseTimeMs} ms`, evidence: `Eerste HTML-respons duurde ${facts.responseTimeMs} ms. Dit is geen volledige PageSpeed-meting.`, weight: 3 },
+      { key: "html-size", label: "HTML-paginagrootte", status: facts.pageSizeKb < 500 ? "pass" : "fail", value: `${facts.pageSizeKb} KB`, evidence: `HTML-respons is ${facts.pageSizeKb} KB.`, weight: 2 },
+      { key: "compression", label: "Compressie", status: facts.compressed === null ? "unknown" : facts.compressed ? "pass" : "fail", value: facts.contentEncoding, evidence: facts.compressed === null ? "Niet betrouwbaar vastgesteld uit de responseheaders." : facts.compressed ? `Compressie gevonden (${facts.contentEncoding}).` : "Geen compressieheader gevonden in de opgehaalde respons.", weight: 1 },
       { key: "browser-performance", label: "Volledige browserprestaties", status: "unknown", evidence: "Niet gecontroleerd: rendering, JavaScript, afbeeldingen en Core Web Vitals zijn niet gemeten.", weight: 3 },
     ]),
     scoreCategory("content", "Content", [
@@ -577,28 +642,44 @@ function getCategoryScores(facts: ScanAnalysisResult["detectedFacts"]): ScanAnal
       { key: "duplicate-text", label: "Geen herhaalde tekstblokken", status: facts.duplicateTextDetected === null ? "unknown" : facts.duplicateTextDetected ? "fail" : "pass", evidence: facts.duplicateTextDetected === null ? "Niet vast te stellen: te weinig langere zinnen." : facts.duplicateTextDetected ? "Herhaalde langere zinnen gevonden." : "Geen exact herhaalde langere zinnen gevonden.", weight: 1 },
     ]),
     scoreCategory("vertrouwen", "Vertrouwen", [
-      { key: "contact", label: "Contactinformatie", status: facts.contactSignals.length > 0 ? "pass" : "fail", evidence: facts.contactSignals.length > 0 ? facts.contactSignals.join(", ") : "Geen contactinformatie gevonden.", weight: 3 },
-      { key: "address", label: "Adres", status: hasAddress ? "pass" : "fail", evidence: hasAddress ? "Adres- of locatiesignaal gevonden." : "Geen adres- of locatiesignaal gevonden.", weight: 2 },
-      { key: "phone", label: "Telefoon", status: hasPhone ? "pass" : "fail", evidence: hasPhone ? "Telefoonnummer gevonden." : "Geen telefoonnummer gevonden.", weight: 1 },
-      { key: "email", label: "E-mail", status: hasEmail ? "pass" : "fail", evidence: hasEmail ? "E-mailadres gevonden." : "Geen e-mailadres gevonden.", weight: 1 },
-      { key: "privacy", label: "Privacy/cookie-informatie", status: facts.legalSignals.length > 0 ? "pass" : "fail", evidence: facts.legalSignals.length > 0 ? facts.legalSignals.join(", ") : "Geen privacy- of cookiesignaal gevonden.", weight: 2 },
-      { key: "company", label: "Bedrijfsinformatie", status: facts.companySignals.length > 0 ? "pass" : "fail", evidence: facts.companySignals.length > 0 ? facts.companySignals.join(", ") : "Geen bedrijfs- of registratiesignaal gevonden.", weight: 1 },
-      { key: "social-proof", label: "Reviews of klantreferenties", status: facts.socialProofSignals.length > 0 ? "pass" : "fail", evidence: facts.socialProofSignals.length > 0 ? facts.socialProofSignals.join(", ") : "Geen review- of klantreferentiesignaal gevonden.", weight: 1 },
+      { key: "contact", label: "Contactinformatie", status: facts.contactSignals.length > 0 ? "pass" : "fail", value: facts.contactSignals.join(", ") || null, evidence: facts.contactSignals.length > 0 ? facts.contactSignals.join(", ") : "Niet gevonden op de gecontroleerde homepage.", weight: 3 },
+      { key: "address", label: "Adres", status: hasAddress ? "pass" : "fail", value: hasAddress ? "Signaal gevonden" : null, evidence: hasAddress ? "Adres- of locatiesignaal gevonden op de gecontroleerde homepage." : "Niet gevonden op de gecontroleerde homepage.", weight: 2 },
+      { key: "phone", label: "Telefoon", status: hasPhone ? "pass" : "fail", value: hasPhone ? "Gevonden" : null, evidence: hasPhone ? "Telefoonnummer gevonden op de gecontroleerde homepage." : "Niet gevonden op de gecontroleerde homepage.", weight: 1 },
+      { key: "email", label: "E-mail", status: hasEmail ? "pass" : "fail", value: hasEmail ? "Gevonden" : null, evidence: hasEmail ? "E-mailadres gevonden op de gecontroleerde homepage." : "Niet gevonden op de gecontroleerde homepage.", weight: 1 },
+      { key: "privacy", label: "Privacy/cookie-informatie", status: facts.legalSignals.length > 0 ? "pass" : "fail", value: facts.legalSignals.join(", ") || null, evidence: facts.legalSignals.length > 0 ? facts.legalSignals.join(", ") : "Niet gevonden op de gecontroleerde homepage.", weight: 2 },
+      { key: "company", label: "Bedrijfsinformatie", status: facts.companySignals.length > 0 ? "pass" : "fail", value: facts.companySignals.join(", ") || null, evidence: facts.companySignals.length > 0 ? facts.companySignals.join(", ") : "Niet gevonden op de gecontroleerde homepage.", weight: 1 },
+      { key: "social-proof", label: "Reviews of klantreferenties", status: facts.socialProofSignals.length > 0 ? "pass" : "fail", value: facts.socialProofSignals.join(", ") || null, evidence: facts.socialProofSignals.length > 0 ? facts.socialProofSignals.join(", ") : "Niet gevonden op de gecontroleerde homepage.", weight: 1 },
     ]),
     scoreCategory("lokaal", "Lokale vindbaarheid", [
-      { key: "physical-address", label: "Fysiek adres", status: hasAddress ? "pass" : "fail", evidence: hasAddress ? "Adres- of locatiesignaal gevonden." : "Geen fysiek adres gevonden.", weight: 3 },
-      { key: "city-region", label: "Plaats of regio", status: facts.localSignals.some((signal) => signal.includes("Plaats")) ? "pass" : "fail", evidence: facts.localSignals.some((signal) => signal.includes("Plaats")) ? "Plaats- of regiobegrip gevonden." : "Geen duidelijk plaats- of regiobegrip gevonden.", weight: 2 },
-      { key: "telephone", label: "Lokaal telefoonnummer", status: hasPhone ? "pass" : "fail", evidence: hasPhone ? "Telefoonnummer gevonden." : "Geen telefoonnummer gevonden.", weight: 2 },
-      { key: "maps", label: "Google Maps of Waze-link", status: facts.mapsLink ? "pass" : "fail", evidence: facts.mapsLink ? "Kaartlink gevonden." : "Geen Google Maps- of Waze-link gevonden.", weight: 1 },
-      { key: "local-business-data", label: "LocalBusiness structured data", status: facts.localBusinessStructuredData ? "pass" : "fail", evidence: facts.localBusinessStructuredData ? "LocalBusiness structured data gevonden." : "Geen LocalBusiness structured data gevonden.", weight: 2 },
+      { key: "physical-address", label: "Fysiek adres", status: hasAddress ? "pass" : "fail", value: hasAddress ? "Signaal gevonden" : null, evidence: hasAddress ? "Adres- of locatiesignaal gevonden op de gecontroleerde homepage." : "Niet gevonden op de gecontroleerde homepage.", weight: 3 },
+      { key: "place", label: "Plaats", status: facts.placeSignal ? "pass" : "fail", value: facts.placeSignal ? "Signaal gevonden" : null, evidence: facts.placeSignal ? "Een plaats- of postcodesignaal is gevonden op de gecontroleerde homepage." : "Niet gevonden op de gecontroleerde homepage.", weight: 2 },
+      { key: "region", label: "Regio", status: facts.regionSignal ? "pass" : "fail", value: facts.regionSignal ? "Signaal gevonden" : null, evidence: facts.regionSignal ? "Een expliciet regiosignaal is gevonden op de gecontroleerde homepage." : "Niet gevonden op de gecontroleerde homepage.", weight: 1 },
+      { key: "telephone", label: "Telefoonnummer", status: hasPhone ? "pass" : "fail", value: hasPhone ? "Gevonden" : null, evidence: hasPhone ? "Telefoonnummer gevonden op de gecontroleerde homepage." : "Niet gevonden op de gecontroleerde homepage.", weight: 2 },
+      { key: "maps", label: "Google Maps, Business of Waze-link", status: facts.mapsLink ? "pass" : "fail", value: facts.mapsLink ? "Link gevonden" : null, evidence: facts.mapsLink ? "Een kaart- of locatieplatformlink is gevonden op de gecontroleerde homepage." : "Niet gevonden op de gecontroleerde homepage.", weight: 1 },
+      { key: "local-business-data", label: "LocalBusiness structured data", status: facts.localBusinessStructuredData ? "pass" : "fail", value: facts.localBusinessStructuredData ? "Gevonden" : null, evidence: facts.localBusinessStructuredData ? "LocalBusiness structured data gevonden in de gecontroleerde homepage-HTML." : "Niet gevonden in de gecontroleerde homepage-HTML.", weight: 2 },
     ]),
   ];
 }
 
 function issue(
-  value: Omit<ScanAnalysisResult["issues"][number], "severity"> & { severity: "high" | "medium" | "low" },
+  value: Omit<ScanAnalysisResult["issues"][number], "severity" | "relatedChecks"> & { severity: "high" | "medium" | "low" },
 ): ScanAnalysisResult["issues"][number] {
-  return value;
+  const relatedChecks: Record<string, string[]> = {
+    "missing-primary-cta": ["CTA gevonden", "Primaire CTA lijkt duidelijk"],
+    "generic-primary-cta": ["Primaire CTA lijkt duidelijk"],
+    "unclear-value-proposition": ["Duidelijke waardepropositie"],
+    "weak-page-title": ["Paginatitel aanwezig", "Lengte paginatitel"],
+    "weak-meta-description": ["Meta description aanwezig", "Lengte meta description"],
+    "h1-structure": ["H1 aanwezig", "Aantal H1-koppen"],
+    "missing-image-alt": ["Alt-teksten"],
+    "missing-https": ["HTTPS"],
+    "slow-response": ["Eerste responstijd"],
+    "missing-crawl-files": ["robots.txt", "sitemap.xml"],
+    "missing-contact-signal": ["Contactmogelijkheid", "Contactinformatie"],
+    "missing-privacy-signal": ["Privacy/cookie-informatie"],
+    "duplicate-text": ["Geen herhaalde tekstblokken"],
+  };
+  return { ...value, relatedChecks: relatedChecks[value.id] ?? [] };
 }
 
 function getIssues(facts: ScanAnalysisResult["detectedFacts"]): ScanAnalysisResult["issues"] {
@@ -704,16 +785,32 @@ function getIssues(facts: ScanAnalysisResult["detectedFacts"]): ScanAnalysisResu
       recommendation: "Activeer een geldig TLS-certificaat en stuur HTTP automatisch door naar HTTPS.",
     }));
   }
-  if (facts.responseTimeMs >= 2500) {
+  if (facts.responseTimeMs >= 1000) {
     issues.push(issue({
       id: "slow-response",
       title: "De eerste HTML-respons is relatief traag",
-      severity: facts.responseTimeMs >= 5000 ? "high" : "medium",
-      impact: facts.responseTimeMs >= 5000 ? "high" : "medium",
+      severity: facts.responseTimeMs >= 2500 ? "medium" : "low",
+      impact: facts.responseTimeMs >= 2500 ? "medium" : "low",
       difficulty: "hard",
       fact: `De eerste HTML-respons duurde ${facts.responseTimeMs} ms.`,
       whyItMatters: "Een trage serverrespons verlengt de tijd voordat bezoekers inhoud kunnen zien.",
       recommendation: "Onderzoek serverresponstijd, caching en zware serverlogica. Dit is een basismeting, geen volledige snelheidstest.",
+    }));
+  }
+  if (!facts.hasRobotsTxt || !facts.hasSitemap) {
+    const missing = [
+      !facts.hasRobotsTxt ? "robots.txt" : null,
+      !facts.hasSitemap ? "sitemap.xml" : null,
+    ].filter((value): value is string => Boolean(value));
+    issues.push(issue({
+      id: "missing-crawl-files",
+      title: "Niet alle crawlbestanden zijn gevonden",
+      severity: "low",
+      impact: "low",
+      difficulty: "medium",
+      fact: `${missing.join(" en ")} ${missing.length === 1 ? "is" : "zijn"} niet gevonden op de gecontroleerde standaardlocaties of via robots.txt.`,
+      whyItMatters: "Deze bestanden kunnen zoekmachines helpen bij het vinden en begrijpen van openbare pagina’s, maar de scan heeft geen zoekmachinegedrag gemeten.",
+      recommendation: "Controleer of robots.txt en een actuele XML-sitemap bereikbaar zijn en verwijs vanuit robots.txt naar de sitemap.",
     }));
   }
   if (facts.contactSignals.length === 0) {
@@ -769,7 +866,7 @@ async function createAnalysis(snapshot: WebsiteSnapshot): Promise<ScanAnalysisRe
   const links = extractLinks(html, url);
   const imageTags = html.match(/<img\b[^>]*>/gi) ?? [];
   const imagesWithAlt = imageTags.filter((tag) => getAttribute(tag, "alt") !== null).length;
-  const { callsToAction, primaryCta } = extractCallsToAction(html);
+  const { callsToAction, primaryCta, primaryCtaClearlyMarked } = extractCallsToAction(html);
   const contactSignals = extractContactSignals(html, visibleText);
   const signalLists = extractSignalList(html, visibleText);
   const canonical = extractCanonical(html);
@@ -808,6 +905,7 @@ async function createAnalysis(snapshot: WebsiteSnapshot): Promise<ScanAnalysisRe
     ctaCount: callsToAction.length,
     callsToAction,
     primaryCta,
+    primaryCtaClearlyMarked,
     ctaAboveFold: null,
     contactSignals,
     ...signalLists,
@@ -836,6 +934,7 @@ async function createAnalysis(snapshot: WebsiteSnapshot): Promise<ScanAnalysisRe
     hasSitemap: Boolean(sitemapResource),
     sitemapUrl: sitemapResource?.url.href ?? sitemapUrl,
     valuePropositionSignal: detectValueProposition(visibleText),
+    targetAudienceSignal: detectTargetAudience(visibleText),
     duplicateTextDetected: detectDuplicateText(visibleText),
   };
   const categoryScores = getCategoryScores(detectedFacts);

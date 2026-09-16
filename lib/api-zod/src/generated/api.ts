@@ -84,7 +84,8 @@ export const CreateScanResponse = zod.object({
   "checks": zod.array(zod.object({
   "key": zod.string(),
   "label": zod.string(),
-  "status": zod.enum(['pass', 'fail', 'unknown']),
+  "status": zod.enum(['passed', 'failed', 'unknown']),
+  "value": zod.string().nullable(),
   "evidence": zod.string(),
   "weight": zod.number().int().min(1).max(createScanResponseAnalysisOneCategoryScoresItemChecksItemWeightMax)
 }))
@@ -106,6 +107,7 @@ export const CreateScanResponse = zod.object({
   "ctaCount": zod.number().int().min(createScanResponseAnalysisOneDetectedFactsCtaCountMin),
   "callsToAction": zod.array(zod.string()),
   "primaryCta": zod.string().nullable(),
+  "primaryCtaClearlyMarked": zod.boolean().nullable(),
   "ctaAboveFold": zod.boolean().nullable(),
   "contactSignals": zod.array(zod.string()),
   "legalSignals": zod.array(zod.string()),
@@ -129,7 +131,10 @@ export const CreateScanResponse = zod.object({
   "sitemapUrl": zod.string().nullable(),
   "localBusinessStructuredData": zod.boolean(),
   "mapsLink": zod.boolean(),
+  "placeSignal": zod.boolean(),
+  "regionSignal": zod.boolean(),
   "valuePropositionSignal": zod.boolean().nullable(),
+  "targetAudienceSignal": zod.boolean().nullable(),
   "duplicateTextDetected": zod.boolean().nullable()
 }),
   "notChecked": zod.array(zod.string()),
@@ -141,7 +146,8 @@ export const CreateScanResponse = zod.object({
   "difficulty": zod.enum(['easy', 'medium', 'hard']),
   "fact": zod.string(),
   "whyItMatters": zod.string(),
-  "recommendation": zod.string()
+  "recommendation": zod.string(),
+  "relatedChecks": zod.array(zod.string())
 }))
 }),zod.null()]),
   "error": zod.string().nullable()
@@ -208,7 +214,8 @@ export const ListScansResponseItem = zod.object({
   "checks": zod.array(zod.object({
   "key": zod.string(),
   "label": zod.string(),
-  "status": zod.enum(['pass', 'fail', 'unknown']),
+  "status": zod.enum(['passed', 'failed', 'unknown']),
+  "value": zod.string().nullable(),
   "evidence": zod.string(),
   "weight": zod.number().int().min(1).max(listScansResponseAnalysisOneCategoryScoresItemChecksItemWeightMax)
 }))
@@ -230,6 +237,7 @@ export const ListScansResponseItem = zod.object({
   "ctaCount": zod.number().int().min(listScansResponseAnalysisOneDetectedFactsCtaCountMin),
   "callsToAction": zod.array(zod.string()),
   "primaryCta": zod.string().nullable(),
+  "primaryCtaClearlyMarked": zod.boolean().nullable(),
   "ctaAboveFold": zod.boolean().nullable(),
   "contactSignals": zod.array(zod.string()),
   "legalSignals": zod.array(zod.string()),
@@ -253,7 +261,10 @@ export const ListScansResponseItem = zod.object({
   "sitemapUrl": zod.string().nullable(),
   "localBusinessStructuredData": zod.boolean(),
   "mapsLink": zod.boolean(),
+  "placeSignal": zod.boolean(),
+  "regionSignal": zod.boolean(),
   "valuePropositionSignal": zod.boolean().nullable(),
+  "targetAudienceSignal": zod.boolean().nullable(),
   "duplicateTextDetected": zod.boolean().nullable()
 }),
   "notChecked": zod.array(zod.string()),
@@ -265,7 +276,8 @@ export const ListScansResponseItem = zod.object({
   "difficulty": zod.enum(['easy', 'medium', 'hard']),
   "fact": zod.string(),
   "whyItMatters": zod.string(),
-  "recommendation": zod.string()
+  "recommendation": zod.string(),
+  "relatedChecks": zod.array(zod.string())
 }))
 }),zod.null()]),
   "error": zod.string().nullable()
@@ -340,7 +352,8 @@ export const GetScanResponse = zod.object({
   "checks": zod.array(zod.object({
   "key": zod.string(),
   "label": zod.string(),
-  "status": zod.enum(['pass', 'fail', 'unknown']),
+  "status": zod.enum(['passed', 'failed', 'unknown']),
+  "value": zod.string().nullable(),
   "evidence": zod.string(),
   "weight": zod.number().int().min(1).max(getScanResponseAnalysisOneCategoryScoresItemChecksItemWeightMax)
 }))
@@ -362,6 +375,7 @@ export const GetScanResponse = zod.object({
   "ctaCount": zod.number().int().min(getScanResponseAnalysisOneDetectedFactsCtaCountMin),
   "callsToAction": zod.array(zod.string()),
   "primaryCta": zod.string().nullable(),
+  "primaryCtaClearlyMarked": zod.boolean().nullable(),
   "ctaAboveFold": zod.boolean().nullable(),
   "contactSignals": zod.array(zod.string()),
   "legalSignals": zod.array(zod.string()),
@@ -385,7 +399,10 @@ export const GetScanResponse = zod.object({
   "sitemapUrl": zod.string().nullable(),
   "localBusinessStructuredData": zod.boolean(),
   "mapsLink": zod.boolean(),
+  "placeSignal": zod.boolean(),
+  "regionSignal": zod.boolean(),
   "valuePropositionSignal": zod.boolean().nullable(),
+  "targetAudienceSignal": zod.boolean().nullable(),
   "duplicateTextDetected": zod.boolean().nullable()
 }),
   "notChecked": zod.array(zod.string()),
@@ -397,7 +414,8 @@ export const GetScanResponse = zod.object({
   "difficulty": zod.enum(['easy', 'medium', 'hard']),
   "fact": zod.string(),
   "whyItMatters": zod.string(),
-  "recommendation": zod.string()
+  "recommendation": zod.string(),
+  "relatedChecks": zod.array(zod.string())
 }))
 }),zod.null()]),
   "error": zod.string().nullable()

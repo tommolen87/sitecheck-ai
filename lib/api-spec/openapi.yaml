@@ -201,7 +201,9 @@ components:
           type: string
         status:
           type: string
-          enum: [pass, fail, unknown]
+          enum: [passed, failed, unknown]
+        value:
+          type: ["string", "null"]
         evidence:
           type: string
         weight:
@@ -212,6 +214,7 @@ components:
         - key
         - label
         - status
+        - value
         - evidence
         - weight
     DetectedFacts:
@@ -264,6 +267,8 @@ components:
             type: string
         primaryCta:
           type: ["string", "null"]
+        primaryCtaClearlyMarked:
+          type: ["boolean", "null"]
         ctaAboveFold:
           type: ["boolean", "null"]
         contactSignals:
@@ -330,7 +335,13 @@ components:
           type: boolean
         mapsLink:
           type: boolean
+        placeSignal:
+          type: boolean
+        regionSignal:
+          type: boolean
         valuePropositionSignal:
+          type: ["boolean", "null"]
+        targetAudienceSignal:
           type: ["boolean", "null"]
         duplicateTextDetected:
           type: ["boolean", "null"]
@@ -351,6 +362,7 @@ components:
         - ctaCount
         - callsToAction
         - primaryCta
+        - primaryCtaClearlyMarked
         - ctaAboveFold
         - contactSignals
         - legalSignals
@@ -374,7 +386,10 @@ components:
         - sitemapUrl
         - localBusinessStructuredData
         - mapsLink
+        - placeSignal
+        - regionSignal
         - valuePropositionSignal
+        - targetAudienceSignal
         - duplicateTextDetected
     ScanIssue:
       type: object
@@ -398,6 +413,10 @@ components:
           type: string
         recommendation:
           type: string
+        relatedChecks:
+          type: array
+          items:
+            type: string
       required:
         - id
         - title
@@ -407,6 +426,7 @@ components:
         - fact
         - whyItMatters
         - recommendation
+        - relatedChecks
     ErrorResponse:
       type: object
       properties:

@@ -1,0 +1,242 @@
+We gaan nu de bestaande SiteCheck AI scan technisch betrouwbaarder maken.
+
+BELANGRIJK:
+- Behoud het huidige ontwerp en de Nederlandse interface.
+- Verwijder geen bestaande functionaliteit.
+- Voeg nu nog GEEN OpenAI/AI-integratie toe.
+- Voeg nu nog GEEN betaalfunctionaliteit toe.
+- Voeg nu nog GEEN accounts toe.
+- Focus uitsluitend op betrouwbare analyse, scoring en rapportage.
+
+DOEL:
+Een ondernemer moet erop kunnen vertrouwen dat iedere conclusie daadwerkelijk gebaseerd is op iets wat onze scanner op de website heeft gevonden.
+
+1. SCOREBEREKENING
+
+Maak de score per categorie volledig transparant.
+
+Voor iedere check moet intern worden opgeslagen:
+- naam van de check
+- status: passed / failed / unknown
+- eventueel de daadwerkelijk gevonden waarde
+- korte uitleg
+
+Regels:
+- Passed = positief
+- Failed = negatief
+- Unknown = niet meetbaar en telt NIET als positief
+- Unknown mag ook niet automatisch als negatief worden behandeld
+
+De categorie-score moet alleen worden berekend op basis van checks die daadwerkelijk zijn uitgevoerd.
+
+Toon bij iedere categorie:
+- X geslaagd
+- X niet geslaagd
+- X onbekend
+- score /100
+
+Zorg dat de totaalscore wiskundig consistent is met de categorieën.
+
+2. CONVERSIE
+
+Controleer alleen wat we daadwerkelijk betrouwbaar uit de homepage kunnen halen.
+
+Checks:
+- duidelijke primaire CTA
+- meerdere CTA's
+- contactmogelijkheid
+- telefoonnummer
+- e-mailadres
+- duidelijke waardepropositie
+- duidelijke doelgroep
+- logisch volgende stap
+
+BELANGRIJK:
+Een simpele aanwezigheid van een knop of CTA betekent NIET automatisch dat de conversie goed is.
+
+Maak onderscheid tussen:
+- CTA gevonden
+- CTA lijkt duidelijk
+- CTA lijkt actiegericht
+
+Als we de kwaliteit niet betrouwbaar kunnen bepalen, gebruik dan "unknown".
+
+3. WAARDEPROPOSITIE
+
+Dit is heel belangrijk.
+
+Noem alleen "Geen duidelijke waardepropositie gevonden" als daar voldoende bewijs voor is.
+
+Controleer bijvoorbeeld:
+- zichtbare H1
+- eerste relevante tekst op de homepage
+- tekst rondom de H1
+- combinatie van aanbod/dienst/product en doelgroep
+- eventueel voordeel/resultaat
+
+Als de website voldoende informatie bevat maar we niet betrouwbaar kunnen bepalen of de waardepropositie goed is, geef dan:
+"Niet betrouwbaar automatisch te beoordelen."
+
+Gebruik dus geen harde negatieve conclusie op basis van alleen ontbrekende keywords.
+
+4. SEO
+
+Controleer afzonderlijk:
+- title
+- title-lengte
+- meta description
+- meta description-lengte
+- H1
+- aantal H1's
+- heading structuur
+- canonical
+- robots directives
+- Open Graph
+- alt-teksten
+- interne links
+- robots.txt indien bereikbaar
+- sitemap.xml indien bereikbaar
+
+Iedere check moet afzonderlijk passed / failed / unknown zijn.
+
+5. TECHNIEK & SNELHEID
+
+Gebruik uitsluitend daadwerkelijk gemeten gegevens.
+
+Controleer:
+- HTTPS
+- HTTP response
+- response time
+- HTML/page size
+- compressie indien betrouwbaar detecteerbaar
+
+Noem dit NIET een echte PageSpeed- of Core Web Vitals-score.
+
+Als mobiele performance of Core Web Vitals niet gemeten zijn:
+toon "niet gecontroleerd".
+
+6. MOBIEL
+
+Laat deze categorie voorlopig "niet gecontroleerd".
+
+Gebruik geen desktop HTML-analyse als bewijs dat een website mobiel goed werkt.
+
+Dus:
+Mobiel = niet gecontroleerd zolang we geen echte mobiele meting hebben.
+
+7. CONTENT
+
+Controleer:
+- hoeveelheid zichtbare tekst
+- H1
+- headings
+- verhouding titel/inhoud
+- duidelijke beschrijving van aanbod
+- eventuele opvallend korte content
+
+Vermijd subjectieve conclusies die niet betrouwbaar uit HTML/data volgen.
+
+8. VERTROUWEN
+
+Controleer:
+- telefoon
+- e-mail
+- adres
+- bedrijfsinformatie
+- privacy/cookiepagina indien gevonden
+- reviews/testimonials indien duidelijk aanwezig
+
+Als iets niet gevonden wordt, zeg:
+"Niet gevonden op de gecontroleerde homepage."
+
+Zeg niet:
+"Dit bestaat niet."
+
+9. LOKALE VINDBAARHEID
+
+Controleer:
+- adres
+- plaats
+- regio
+- telefoonnummer
+- Google Maps/Google Business link indien aanwezig
+- LocalBusiness structured data indien aanwezig
+
+Ontbreken deze signalen, vermeld dan dat ze niet op de gecontroleerde pagina zijn gevonden.
+
+Zeg niet dat een bedrijf daardoor daadwerkelijk slecht lokaal vindbaar is.
+
+10. BEVINDINGEN
+
+Maak de aanbevelingen volledig gekoppeld aan concrete checks.
+
+Iedere aanbeveling moet verwijzen naar één of meerdere daadwerkelijke bevindingen.
+
+Gebruik deze structuur:
+
+WAAR WE HET VONDEN
+Wat de scanner daadwerkelijk heeft vastgesteld.
+
+WAAROM DIT BELANGRIJK IS
+Algemene uitleg, zonder te doen alsof we het effect exact hebben gemeten.
+
+WAT JE CONCREET KUNT VERBETEREN
+Een praktische actie.
+
+IMPACT
+Laag / Middel / Hoog
+
+MOEILIJKHEID
+Makkelijk / Gemiddeld / Moeilijk
+
+11. GEEN HALLUCINATIES
+
+Dit is een harde regel.
+
+De applicatie mag NOOIT:
+- informatie verzinnen
+- een pagina claimen die niet is gevonden
+- zeggen dat Google iets heeft gevonden als Google niet is geraadpleegd
+- zeggen dat een website snel is zonder meting
+- zeggen dat een website mobiel goed is zonder mobiele test
+- zeggen dat een bedrijf geen reviews heeft omdat wij ze niet op de homepage vonden
+- zeggen dat een waardepropositie ontbreekt wanneer dit niet betrouwbaar kan worden vastgesteld
+
+Gebruik bij twijfel "unknown" of "niet betrouwbaar automatisch te beoordelen".
+
+12. SCORE-OPBOUW
+
+Maak "Bekijk score-opbouw" daadwerkelijk nuttig.
+
+Wanneer de gebruiker erop klikt, toon per check bijvoorbeeld:
+
+✓ HTTPS
+Geslaagd
+HTTPS is actief.
+
+✕ Meta description
+Niet geslaagd
+Geen meta description gevonden.
+
+? Mobiele performance
+Onbekend
+Geen mobiele meting beschikbaar.
+
+De gebruiker moet zo kunnen begrijpen hoe de score tot stand kwam.
+
+13. TEST
+
+Test de scanner opnieuw met:
+
+https://www.udi19.nl
+
+Controleer specifiek:
+- of de score consistent is
+- of onbekende checks niet positief meetellen
+- of mobiel "niet gecontroleerd" blijft
+- of de aanbevelingen alleen uit echte bevindingen komen
+- of de score-opbouw overeenkomt met de uiteindelijke categorie-score
+
+Laat de bestaande visuele stijl volledig intact.
+
+Werk eerst deze betrouwbaarheid en scoring af voordat je nieuwe functies toevoegt.

@@ -10,7 +10,7 @@ export type CategoryCheckStatus = typeof CategoryCheckStatus[keyof typeof Catego
 
 
 export const CategoryCheckStatus = {
-  pass: 'pass',
-  fail: 'fail',
+  passed: 'passed',
+  failed: 'failed',
   unknown: 'unknown',
 } as const;

@@ -11,6 +11,8 @@ export interface CategoryCheck {
   key: string;
   label: string;
   status: CategoryCheckStatus;
+  /** @nullable */
+  value: string | null;
   evidence: string;
   /**
      * @minimum 1

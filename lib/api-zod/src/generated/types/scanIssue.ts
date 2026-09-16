@@ -18,4 +18,5 @@ export interface ScanIssue {
   fact: string;
   whyItMatters: string;
   recommendation: string;
+  relatedChecks: string[];
 }
