@@ -25,6 +25,10 @@ export type ScanAnalysisResult = {
     label: string;
     score: number;
     checked: boolean;
+    passedCount: number;
+    failedCount: number;
+    unknownCount: number;
+    coveragePercent: number;
     note: string;
     checks: CategoryCheck[];
   }>;
@@ -551,7 +555,9 @@ function scoreCategory(
   const passedWeight = knownChecks.reduce((sum, check) => sum + (check.status === "pass" ? check.weight : 0), 0);
   const score = totalWeight > 0 ? Math.round((passedWeight / totalWeight) * 100) : 0;
   const passedCount = knownChecks.filter((check) => check.status === "pass").length;
+  const failedCount = knownChecks.filter((check) => check.status === "fail").length;
   const unknownCount = checks.length - knownChecks.length;
+  const coveragePercent = checks.length > 0 ? Math.round((knownChecks.length / checks.length) * 100) : 0;
   const note =
     knownChecks.length === 0
       ? "Niet gecontroleerd: voor deze categorie zijn geen meetbare signalen beschikbaar."
@@ -562,6 +568,10 @@ function scoreCategory(
     label,
     score,
     checked: knownChecks.length > 0,
+    passedCount,
+    failedCount,
+    unknownCount,
+    coveragePercent,
     note,
     checks: checks.map((check) => ({
       ...check,
@@ -666,8 +676,6 @@ function issue(
 ): ScanAnalysisResult["issues"][number] {
   const relatedChecks: Record<string, string[]> = {
     "missing-primary-cta": ["CTA gevonden", "Primaire CTA lijkt duidelijk"],
-    "generic-primary-cta": ["Primaire CTA lijkt duidelijk"],
-    "unclear-value-proposition": ["Duidelijke waardepropositie"],
     "weak-page-title": ["Paginatitel aanwezig", "Lengte paginatitel"],
     "weak-meta-description": ["Meta description aanwezig", "Lengte meta description"],
     "h1-structure": ["H1 aanwezig", "Aantal H1-koppen"],
@@ -683,11 +691,6 @@ function issue(
 }
 
 function getIssues(facts: ScanAnalysisResult["detectedFacts"]): ScanAnalysisResult["issues"] {
-  const hasEmail = facts.contactSignals.includes("E-mailadres gevonden");
-  const hasPhone = facts.contactSignals.includes("Telefoonnummer gevonden");
-  const hasSpecificCta = facts.callsToAction.some((cta) =>
-    /\b(contact|bel|offerte|plan|boek|afspraak|start|download|aanmelden|inschrijven|koop|buy|book|request|schedule|sign up|get started)\b/i.test(cta),
-  );
   const issues: ScanAnalysisResult["issues"] = [];
 
   if (!facts.primaryCta) {
@@ -700,29 +703,6 @@ function getIssues(facts: ScanAnalysisResult["detectedFacts"]): ScanAnalysisResu
       fact: "We vonden geen herkenbare call-to-action in links, knoppen of invoervelden op de homepage.",
       whyItMatters: "Bezoekers zien daardoor minder duidelijk wat de logische volgende stap is.",
       recommendation: "Kies één hoofdactie, zoals contact opnemen, een offerte aanvragen of een afspraak plannen, en maak die zichtbaar.",
-    }));
-  } else if (!hasSpecificCta) {
-    issues.push(issue({
-      id: "generic-primary-cta",
-      title: "De gevonden CTA is weinig specifiek",
-      severity: "medium",
-      impact: "medium",
-      difficulty: "easy",
-      fact: `De eerste herkenbare CTA is “${facts.primaryCta}”, maar noemt geen concrete contact-, aanvraag- of startactie.`,
-      whyItMatters: "Een specifieke knoptekst maakt duidelijker wat er na de klik gebeurt en wat de bezoeker kan verwachten.",
-      recommendation: "Vervang algemene tekst door een concrete actie, bijvoorbeeld “Plan een kennismaking” of “Vraag een offerte aan”.",
-    }));
-  }
-  if (facts.valuePropositionSignal === false) {
-    issues.push(issue({
-      id: "unclear-value-proposition",
-      title: "Geen duidelijke waardepropositie gevonden",
-      severity: "high",
-      impact: "high",
-      difficulty: "medium",
-      fact: "In de eerste zichtbare homepage-tekst vonden we geen duidelijke combinatie van aanbod en doelgroep.",
-      whyItMatters: "Bezoekers moeten snel kunnen begrijpen wat je aanbiedt en voor wie het bedoeld is.",
-      recommendation: "Zet vroeg op de pagina één concrete zin die aanbod, doelgroep en belangrijkste resultaat met elkaar verbindt.",
     }));
   }
   if (!facts.pageTitle || facts.pageTitleLength < 10 || facts.pageTitleLength > 60) {

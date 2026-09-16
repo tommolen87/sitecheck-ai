@@ -1,2 +1,2 @@
 - [Generated client typecheck](generated-client-typecheck.md) — keep `dom.iterable` enabled for the generated fetch client.
-- [Scoring reliability](scoring-reliability.md) — unknown checks are excluded, and mobile quality remains unscored without a real mobile measurement.
+- [Scoring reliability](scoring-reliability.md) — separate measured quality from coverage; mobile remains unscored without a real mobile measurement.

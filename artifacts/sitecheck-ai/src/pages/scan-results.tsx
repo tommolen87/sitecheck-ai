@@ -65,6 +65,7 @@ function ScoreRing({ score }: { score: number }) {
 
 function CategoryScores({ analysis }: { analysis: ScanAnalysis }) {
   const scoresByKey = new Map(analysis.categoryScores.map((category) => [category.key, category]));
+  const importantConversionChecks = new Set(['primary-cta-clear', 'value-proposition', 'target-audience']);
 
   return (
     <section className="results-section" aria-labelledby="category-scores-title">
@@ -79,6 +80,9 @@ function CategoryScores({ analysis }: { analysis: ScanAnalysis }) {
         {categoryOrder.map((category) => {
           const result = scoresByKey.get(category.key);
           const score = result?.score;
+          const importantUnknownCount = result?.key === 'conversie'
+            ? result.checks.filter((check) => check.status === 'unknown' && importantConversionChecks.has(check.key)).length
+            : 0;
           return (
             <article className={`category-score-row ${result?.checked === false ? 'is-unchecked' : ''}`} key={category.key} data-testid={`score-category-${category.key}`}>
               <div className="category-score-name">
@@ -86,6 +90,17 @@ function CategoryScores({ analysis }: { analysis: ScanAnalysis }) {
                 <div>
                   <h3>{result?.label || category.label}</h3>
                   <p>{result ? result.note : 'Niet beschikbaar in deze analyse.'}</p>
+                  {result && (
+                    <div className="category-coverage">
+                      <span>Meetdekking: <strong>{result.coveragePercent}%</strong></span>
+                      {result.checked && score === 100 && result.unknownCount > 0 && (
+                        <span>Op de meetbare onderdelen sterk</span>
+                      )}
+                      {importantUnknownCount > 0 && (
+                        <span>{importantUnknownCount} belangrijke {importantUnknownCount === 1 ? 'check kon' : 'checks konden'} we niet betrouwbaar beoordelen.</span>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
               <div className="category-score-value">
@@ -99,7 +114,7 @@ function CategoryScores({ analysis }: { analysis: ScanAnalysis }) {
                 <details className="category-checks">
                   <summary>
                     <span>Bekijk score-opbouw</span>
-                    <span>{result.checks.filter((check) => check.status === 'passed').length} geslaagd · {result.checks.filter((check) => check.status === 'failed').length} niet geslaagd · {result.checks.filter((check) => check.status === 'unknown').length} onbekend</span>
+                    <span>{result.passedCount} geslaagd · {result.failedCount} niet geslaagd · {result.unknownCount} onbekend</span>
                   </summary>
                   <div className="category-check-list">
                     {result.checks.map((check) => (
@@ -199,6 +214,8 @@ function DetectedFacts({ analysis }: { analysis: ScanAnalysis }) {
 }
 
 function ResultHeader({ scan, analysis }: { scan: { url: string; createdAt: string }; analysis: ScanAnalysis }) {
+  const checkedCategoryCount = analysis.categoryScores.filter((category) => category.checked).length;
+  const mobileWasMeasured = analysis.categoryScores.find((category) => category.key === 'mobiel')?.checked === true;
   return (
     <header className="results-hero">
       <div className="page-frame">
@@ -218,7 +235,11 @@ function ResultHeader({ scan, analysis }: { scan: { url: string; createdAt: stri
               <ScoreRing score={analysis.overallScore} />
               <div>
                 <strong className="score-verdict">{analysis.overallScore >= 70 ? 'Een stevige basis' : analysis.overallScore >= 40 ? 'Ruimte om te groeien' : 'Tijd voor aandacht'}</strong>
-                <p>De score is gebaseerd op wat deze scan kon controleren.</p>
+                <p>De score laat zien hoe de website presteert op de onderdelen die we betrouwbaar konden controleren.</p>
+                <div className="overall-coverage">
+                  <strong>{checkedCategoryCount} van {analysis.categoryScores.length} categorieën gecontroleerd</strong>
+                  {!mobileWasMeasured && <span>Mobiel is nog niet gemeten.</span>}
+                </div>
               </div>
             </div>
           </div>

@@ -1,0 +1,140 @@
+De technische validatie is goed. We moeten nu nog één laatste verbetering aanbrengen in de scorepresentatie voordat we AI toevoegen.
+
+BELANGRIJK:
+- Behoud alle bestaande functionaliteit.
+- Behoud het huidige ontwerp.
+- Verander de bestaande checks niet onnodig.
+- Voeg geen AI toe.
+- Voeg geen nieuwe categorieën toe.
+
+PROBLEEM:
+
+Op dit moment kan een categorie bijvoorbeeld tonen:
+
+7 geslaagd
+0 mislukt
+3 onbekend
+Score 100/100
+
+Hoewel dit technisch verklaarbaar is omdat alleen meetbare checks worden gemiddeld, voelt 100/100 commercieel misleidend wanneer belangrijke onderdelen onbekend zijn.
+
+We willen daarom onderscheid maken tussen:
+1. de kwaliteit van wat daadwerkelijk gemeten kon worden
+2. de volledigheid van de meting
+
+PAS DIT AAN:
+
+1. BEHOUD DE SCORE OP BASIS VAN MEETBARE CHECKS
+
+Een unknown mag niet als failed worden behandeld.
+
+Dus:
+- passed = positief
+- failed = negatief
+- unknown = niet meegenomen in de inhoudelijke score
+
+2. VOEG MEETDEKKING TOE
+
+Bereken daarnaast:
+
+meetdekking = aantal passed + failed / totaal aantal checks
+
+Voorbeeld:
+7 passed
+0 failed
+3 unknown
+
+Meetdekking = 70%
+
+Toon dit duidelijk bij de categorie.
+
+Bijvoorbeeld:
+
+100/100
+Sterk op de onderdelen die we konden controleren
+
+Meetdekking: 70%
+
+3. BELANGRIJKE ONBEKENDE CHECKS
+
+Als belangrijke checks zoals:
+- waardepropositie
+- doelgroep
+- primaire CTA-duidelijkheid
+
+unknown zijn, mag de categorie niet alleen als "100/100" worden gepresenteerd zonder waarschuwing.
+
+Gebruik bijvoorbeeld:
+
+100/100
+Op de meetbare onderdelen sterk
+
+Meetdekking: 70%
+3 onderdelen konden we niet betrouwbaar beoordelen.
+
+4. TOTAALSCORE
+
+Behoud de bestaande methode waarbij alleen gecontroleerde categorieën meetellen.
+
+Maar toon naast de totaalscore ook:
+
+"6 van 7 categorieën gecontroleerd"
+
+en:
+
+"Mobiel is nog niet gemeten."
+
+Zorg dat een gebruiker begrijpt dat de 79/100 geen volledige website-audit is.
+
+5. SCORE-UITLEG
+
+Pas de tekst aan zodat een ondernemer niet denkt dat 100/100 betekent:
+
+"Deze website is perfect."
+
+Bijvoorbeeld:
+
+"De score laat zien hoe de website presteert op de onderdelen die we betrouwbaar konden controleren."
+
+6. CONVERSIE
+
+Zorg dat de drie onbekende checks zichtbaar blijven in de score-opbouw:
+
+? Primaire CTA-duidelijkheid
+Niet automatisch te beoordelen
+
+? Waardepropositie
+Niet betrouwbaar automatisch te beoordelen
+
+? Doelgroep
+Niet betrouwbaar automatisch te beoordelen
+
+Dus NIET:
+
+"Deze checks zijn geslaagd."
+
+7. AANBEVELINGEN
+
+Een unknown check mag NOOIT automatisch een probleem worden.
+
+Dus:
+- failed → kan een aanbeveling opleveren
+- unknown → alleen uitleg dat dit niet automatisch beoordeeld kon worden
+- passed → geen negatieve aanbeveling
+
+8. CONTROLE
+
+Test opnieuw met:
+
+https://www.udi19.nl
+
+Controleer:
+- totaalscore blijft mathematisch correct
+- unknown telt niet als positief
+- unknown telt niet automatisch als negatief
+- meetdekking wordt correct berekend
+- 100/100 wordt duidelijk voorzien van context als er belangrijke unknowns zijn
+- mobiel blijft "niet gecontroleerd"
+- aanbevelingen komen alleen uit echte failed checks
+
+Werk dit af en laat daarna zien welke wijzigingen je hebt gemaakt.

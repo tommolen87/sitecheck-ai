@@ -71,6 +71,17 @@ export interface CategoryScore {
      */
   score: number;
   checked: boolean;
+  /** @minimum 0 */
+  passedCount: number;
+  /** @minimum 0 */
+  failedCount: number;
+  /** @minimum 0 */
+  unknownCount: number;
+  /**
+     * @minimum 0
+     * @maximum 100
+     */
+  coveragePercent: number;
   note: string;
   checks: CategoryCheck[];
 }

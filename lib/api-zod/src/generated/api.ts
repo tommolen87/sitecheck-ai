@@ -35,6 +35,15 @@ export const createScanResponseAnalysisOneOverallScoreMax = 100;
 export const createScanResponseAnalysisOneCategoryScoresItemScoreMin = 0;
 export const createScanResponseAnalysisOneCategoryScoresItemScoreMax = 100;
 
+export const createScanResponseAnalysisOneCategoryScoresItemPassedCountMin = 0;
+
+export const createScanResponseAnalysisOneCategoryScoresItemFailedCountMin = 0;
+
+export const createScanResponseAnalysisOneCategoryScoresItemUnknownCountMin = 0;
+
+export const createScanResponseAnalysisOneCategoryScoresItemCoveragePercentMin = 0;
+export const createScanResponseAnalysisOneCategoryScoresItemCoveragePercentMax = 100;
+
 export const createScanResponseAnalysisOneCategoryScoresItemChecksItemWeightMax = 3;
 
 export const createScanResponseAnalysisOneDetectedFactsPageTitleLengthMin = 0;
@@ -80,6 +89,10 @@ export const CreateScanResponse = zod.object({
   "label": zod.string(),
   "score": zod.number().int().min(createScanResponseAnalysisOneCategoryScoresItemScoreMin).max(createScanResponseAnalysisOneCategoryScoresItemScoreMax),
   "checked": zod.boolean(),
+  "passedCount": zod.number().int().min(createScanResponseAnalysisOneCategoryScoresItemPassedCountMin),
+  "failedCount": zod.number().int().min(createScanResponseAnalysisOneCategoryScoresItemFailedCountMin),
+  "unknownCount": zod.number().int().min(createScanResponseAnalysisOneCategoryScoresItemUnknownCountMin),
+  "coveragePercent": zod.number().int().min(createScanResponseAnalysisOneCategoryScoresItemCoveragePercentMin).max(createScanResponseAnalysisOneCategoryScoresItemCoveragePercentMax),
   "note": zod.string(),
   "checks": zod.array(zod.object({
   "key": zod.string(),
@@ -165,6 +178,15 @@ export const listScansResponseAnalysisOneOverallScoreMax = 100;
 export const listScansResponseAnalysisOneCategoryScoresItemScoreMin = 0;
 export const listScansResponseAnalysisOneCategoryScoresItemScoreMax = 100;
 
+export const listScansResponseAnalysisOneCategoryScoresItemPassedCountMin = 0;
+
+export const listScansResponseAnalysisOneCategoryScoresItemFailedCountMin = 0;
+
+export const listScansResponseAnalysisOneCategoryScoresItemUnknownCountMin = 0;
+
+export const listScansResponseAnalysisOneCategoryScoresItemCoveragePercentMin = 0;
+export const listScansResponseAnalysisOneCategoryScoresItemCoveragePercentMax = 100;
+
 export const listScansResponseAnalysisOneCategoryScoresItemChecksItemWeightMax = 3;
 
 export const listScansResponseAnalysisOneDetectedFactsPageTitleLengthMin = 0;
@@ -210,6 +232,10 @@ export const ListScansResponseItem = zod.object({
   "label": zod.string(),
   "score": zod.number().int().min(listScansResponseAnalysisOneCategoryScoresItemScoreMin).max(listScansResponseAnalysisOneCategoryScoresItemScoreMax),
   "checked": zod.boolean(),
+  "passedCount": zod.number().int().min(listScansResponseAnalysisOneCategoryScoresItemPassedCountMin),
+  "failedCount": zod.number().int().min(listScansResponseAnalysisOneCategoryScoresItemFailedCountMin),
+  "unknownCount": zod.number().int().min(listScansResponseAnalysisOneCategoryScoresItemUnknownCountMin),
+  "coveragePercent": zod.number().int().min(listScansResponseAnalysisOneCategoryScoresItemCoveragePercentMin).max(listScansResponseAnalysisOneCategoryScoresItemCoveragePercentMax),
   "note": zod.string(),
   "checks": zod.array(zod.object({
   "key": zod.string(),
@@ -303,6 +329,15 @@ export const getScanResponseAnalysisOneOverallScoreMax = 100;
 export const getScanResponseAnalysisOneCategoryScoresItemScoreMin = 0;
 export const getScanResponseAnalysisOneCategoryScoresItemScoreMax = 100;
 
+export const getScanResponseAnalysisOneCategoryScoresItemPassedCountMin = 0;
+
+export const getScanResponseAnalysisOneCategoryScoresItemFailedCountMin = 0;
+
+export const getScanResponseAnalysisOneCategoryScoresItemUnknownCountMin = 0;
+
+export const getScanResponseAnalysisOneCategoryScoresItemCoveragePercentMin = 0;
+export const getScanResponseAnalysisOneCategoryScoresItemCoveragePercentMax = 100;
+
 export const getScanResponseAnalysisOneCategoryScoresItemChecksItemWeightMax = 3;
 
 export const getScanResponseAnalysisOneDetectedFactsPageTitleLengthMin = 0;
@@ -348,6 +383,10 @@ export const GetScanResponse = zod.object({
   "label": zod.string(),
   "score": zod.number().int().min(getScanResponseAnalysisOneCategoryScoresItemScoreMin).max(getScanResponseAnalysisOneCategoryScoresItemScoreMax),
   "checked": zod.boolean(),
+  "passedCount": zod.number().int().min(getScanResponseAnalysisOneCategoryScoresItemPassedCountMin),
+  "failedCount": zod.number().int().min(getScanResponseAnalysisOneCategoryScoresItemFailedCountMin),
+  "unknownCount": zod.number().int().min(getScanResponseAnalysisOneCategoryScoresItemUnknownCountMin),
+  "coveragePercent": zod.number().int().min(getScanResponseAnalysisOneCategoryScoresItemCoveragePercentMin).max(getScanResponseAnalysisOneCategoryScoresItemCoveragePercentMax),
   "note": zod.string(),
   "checks": zod.array(zod.object({
   "key": zod.string(),

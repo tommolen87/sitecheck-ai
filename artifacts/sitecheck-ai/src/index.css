@@ -299,6 +299,8 @@
 .score-ring-inner span { color: hsl(var(--muted-foreground)); font-size: .67rem; margin-top: 11px; }
 .score-verdict { display: block; font-family: var(--app-font-serif); font-size: 1.55rem; line-height: 1; font-weight: 500; letter-spacing: -.035em; }
 .score-card-main p { max-width: 160px; color: hsl(var(--muted-foreground)); font-size: .76rem; line-height: 1.5; margin-top: 10px; }
+.overall-coverage { display: grid; gap: 3px; margin-top: 12px; color: hsl(var(--muted-foreground)); font-size: .64rem; line-height: 1.4; }
+.overall-coverage strong { color: hsl(var(--foreground)); font-weight: 700; }
 .results-body { padding-bottom: 70px; }
 .results-section { padding: clamp(66px, 9vw, 110px) 0 0; }
 .results-section-heading { display: flex; align-items: end; justify-content: space-between; gap: 28px; }
@@ -310,6 +312,9 @@
 .category-score-index { color: hsl(var(--primary)); font-family: var(--app-font-serif); font-size: 1.23rem; line-height: 1; }
 .category-score-name h3 { font-size: .89rem; letter-spacing: -.015em; }
 .category-score-name p { color: hsl(var(--muted-foreground)); font-size: .73rem; line-height: 1.4; margin-top: 4px; }
+.category-coverage { display: flex; flex-wrap: wrap; gap: 5px 12px; margin-top: 7px; color: hsl(var(--muted-foreground)); font-size: .63rem; line-height: 1.4; }
+.category-coverage strong { color: hsl(var(--foreground)); }
+.category-coverage span:not(:first-child) { color: hsl(var(--accent-foreground)); }
 .category-score-value { display: flex; align-items: baseline; gap: 5px; }
 .category-score-value strong { font-family: var(--app-font-serif); color: hsl(var(--primary)); font-size: 2.1rem; line-height: .8; font-weight: 500; }
 .category-score-value > span { color: hsl(var(--muted-foreground)); font-family: var(--app-font-serif); font-size: 1.8rem; }

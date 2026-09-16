@@ -179,6 +179,19 @@ components:
           maximum: 100
         checked:
           type: boolean
+        passedCount:
+          type: integer
+          minimum: 0
+        failedCount:
+          type: integer
+          minimum: 0
+        unknownCount:
+          type: integer
+          minimum: 0
+        coveragePercent:
+          type: integer
+          minimum: 0
+          maximum: 100
         note:
           type: string
         checks:
@@ -190,6 +203,10 @@ components:
         - label
         - score
         - checked
+        - passedCount
+        - failedCount
+        - unknownCount
+        - coveragePercent
         - note
         - checks
     CategoryCheck:
