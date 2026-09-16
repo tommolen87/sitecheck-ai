@@ -1,6 +1,6 @@
 import { ArrowLeft, Check, CheckCircle2, CircleAlert, CircleHelp, Clock3, ExternalLink, FileWarning, Gauge, LockKeyhole, RefreshCw, ShieldCheck, XCircle } from 'lucide-react';
 import { Link, useParams } from 'wouter';
-import { getGetScanQueryKey, useGetScan, type ScanAnalysis, type ScanIssue } from '@workspace/api-client-react';
+import { getGetScanQueryKey, useGetScan, type AiRecommendation, type ScanAnalysis, type ScanIssue } from '@workspace/api-client-react';
 
 const categoryOrder = [
   { key: 'conversie', label: 'Conversie' },
@@ -145,9 +145,48 @@ function CategoryScores({ analysis }: { analysis: ScanAnalysis }) {
   );
 }
 
-function IssueCard({ issue, index }: { issue: ScanIssue; index: number }) {
+type RecommendationDisplay = {
+  id: string;
+  title: string;
+  severity: 'high' | 'medium' | 'low';
+  impact: 'high' | 'medium' | 'low';
+  difficulty: 'easy' | 'medium' | 'hard';
+  confidence: 'high' | 'medium' | 'low' | null;
+  fact: string;
+  whyItMatters: string;
+  recommendation: string;
+  proposal: string | null;
+  relatedChecks: string[];
+};
+
+function deterministicRecommendation(issue: ScanIssue): RecommendationDisplay {
+  return {
+    ...issue,
+    confidence: null,
+    proposal: null,
+  };
+}
+
+function aiRecommendation(recommendation: AiRecommendation, index: number): RecommendationDisplay {
+  return {
+    id: `ai-${index}`,
+    title: recommendation.title,
+    severity: recommendation.impact,
+    impact: recommendation.impact,
+    difficulty: recommendation.difficulty,
+    confidence: recommendation.confidence,
+    fact: recommendation.whatFound,
+    whyItMatters: recommendation.whyImportant,
+    recommendation: recommendation.whatToImprove,
+    proposal: recommendation.proposal,
+    relatedChecks: recommendation.basedOnChecks,
+  };
+}
+
+function IssueCard({ issue, index }: { issue: RecommendationDisplay; index: number }) {
   const impactLabel = issue.impact === 'high' ? 'Hoog' : issue.impact === 'medium' ? 'Middel' : 'Laag';
   const difficultyLabel = issue.difficulty === 'easy' ? 'Makkelijk' : issue.difficulty === 'medium' ? 'Gemiddeld' : 'Moeilijk';
+  const confidenceLabel = issue.confidence === 'high' ? 'Hoog' : issue.confidence === 'medium' ? 'Gemiddeld' : issue.confidence === 'low' ? 'Laag' : null;
   return (
     <article className={`issue-card issue-${issue.severity}`} data-testid={`issue-card-${issue.id}`}>
       <div className="issue-card-top">
@@ -167,9 +206,16 @@ function IssueCard({ issue, index }: { issue: ScanIssue; index: number }) {
         <div className="issue-detail-label"><Check /> Wat je concreet kunt verbeteren</div>
         <p>{issue.recommendation}</p>
       </div>
+      {issue.proposal && (
+        <div className="issue-detail proposal">
+          <div className="issue-detail-label"><FileWarning /> Voorstel</div>
+          <p>{issue.proposal}</p>
+        </div>
+      )}
       <div className="issue-meta" aria-label={`Impact ${impactLabel}, moeilijkheid ${difficultyLabel}`}>
         <span>Impact <strong>{impactLabel}</strong></span>
         <span>Moeilijkheid <strong>{difficultyLabel}</strong></span>
+        {confidenceLabel && <span>Vertrouwen <strong>{confidenceLabel}</strong></span>}
       </div>
       {issue.relatedChecks.length > 0 && (
         <p className="issue-related-checks">Gebaseerd op: {issue.relatedChecks.join(' · ')}</p>
@@ -250,17 +296,25 @@ function ResultHeader({ scan, analysis }: { scan: { url: string; createdAt: stri
 }
 
 function ResultsContent({ analysis }: { analysis: ScanAnalysis }) {
-  const issues = analysis.issues.slice(0, 5);
+  const aiRecommendations = analysis.aiRecommendations ?? null;
+  const hasAiAnalysis = aiRecommendations !== null;
+  const issues = aiRecommendations !== null
+    ? aiRecommendations.slice(0, 5).map(aiRecommendation)
+    : analysis.issues.slice(0, 5).map(deterministicRecommendation);
   return (
     <>
       <CategoryScores analysis={analysis} />
       <section className="results-section issues-section" aria-labelledby="issues-title">
         <div className="results-section-heading">
           <div>
-            <div className="section-kicker">Van inzicht naar actie</div>
+            <div className="section-kicker">{hasAiAnalysis ? 'AI-analyse op basis van de gevonden websitegegevens' : 'Van inzicht naar actie'}</div>
             <h2 className="results-title" id="issues-title">De belangrijkste aandachtspunten.</h2>
           </div>
-          <p className="results-section-note">De aanbevelingen hieronder volgen direct uit de bevindingen van deze scan.</p>
+          <p className="results-section-note">
+            {hasAiAnalysis
+              ? 'De AI interpreteert uitsluitend gegevens die onze scanner heeft verzameld. AI-beoordelingen vervangen geen menselijke website-audit.'
+              : 'De aanbevelingen hieronder volgen direct uit de bevindingen van deze scan.'}
+          </p>
         </div>
         {issues.length > 0 ? (
           <div className="issues-grid">{issues.map((issue, index) => <IssueCard issue={issue} index={index} key={issue.id} />)}</div>

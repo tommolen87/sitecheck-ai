@@ -9,8 +9,25 @@ import {
   ListScansResponse,
 } from "@workspace/api-zod";
 import { analyzeWebsite } from "../lib/website-analysis";
+import { generateAiRecommendations } from "../lib/ai-website-analysis";
 
 const router: IRouter = Router();
+
+function normalizeScanAnalysis<T extends { analysis: unknown }>(scan: T): T {
+  const { analysis } = scan;
+  if (
+    typeof analysis === "object" &&
+    analysis !== null &&
+    !Array.isArray(analysis) &&
+    !Object.prototype.hasOwnProperty.call(analysis, "aiRecommendations")
+  ) {
+    return {
+      ...scan,
+      analysis: { ...analysis, aiRecommendations: null },
+    };
+  }
+  return scan;
+}
 
 function isWebsiteUrl(value: string): boolean {
   try {
@@ -36,14 +53,27 @@ router.post("/scans", async (req, res): Promise<void> => {
   req.log.info({ scanId: scan.id }, "Website scan request accepted");
 
   try {
-    const analysis = await analyzeWebsite(parsed.data.url);
+    const { analysis: measuredAnalysis, aiContext } = await analyzeWebsite(parsed.data.url);
+    let aiRecommendations = null;
+    try {
+      aiRecommendations = await generateAiRecommendations(
+        { ...measuredAnalysis, aiRecommendations: null },
+        aiContext,
+      );
+    } catch (error) {
+      req.log.warn(
+        { scanId: scan.id, error: error instanceof Error ? error.message : "Unknown AI error" },
+        "AI analysis unavailable; using measured recommendations",
+      );
+    }
+    const analysis = { ...measuredAnalysis, aiRecommendations };
     const [completedScan] = await db
       .update(scansTable)
       .set({ status: "completed", analysis, error: null })
       .where(eq(scansTable.id, scan.id))
       .returning();
 
-    res.status(201).json(CreateScanResponse.parse(completedScan));
+    res.status(201).json(CreateScanResponse.parse(normalizeScanAnalysis(completedScan)));
   } catch (error) {
     const message =
       error instanceof Error
@@ -67,7 +97,7 @@ router.get("/scans", async (_req, res): Promise<void> => {
     .orderBy(desc(scansTable.createdAt))
     .limit(10);
 
-  res.json(ListScansResponse.parse(scans));
+  res.json(ListScansResponse.parse(scans.map(normalizeScanAnalysis)));
 });
 
 router.get("/scans/:scanId", async (req, res): Promise<void> => {
@@ -88,7 +118,7 @@ router.get("/scans/:scanId", async (req, res): Promise<void> => {
     return;
   }
 
-  res.json(GetScanResponse.parse(scan));
+  res.json(GetScanResponse.parse(normalizeScanAnalysis(scan)));
 });
 
 export default router;

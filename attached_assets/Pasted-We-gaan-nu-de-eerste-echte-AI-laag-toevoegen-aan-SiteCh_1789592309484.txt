@@ -1,0 +1,301 @@
+We gaan nu de eerste echte AI-laag toevoegen aan SiteCheck AI.
+
+BELANGRIJK:
+- Behoud het huidige ontwerp volledig.
+- Behoud alle bestaande scanfunctionaliteit.
+- Behoud de bestaande objectieve checks en scoreberekening.
+- Voeg geen accounts toe.
+- Voeg geen betalingen toe.
+- Voeg geen abonnementen toe.
+- Voeg geen nieuwe categorieën toe.
+- Verander de bestaande score-engine niet.
+- Gebruik AI alleen als interpretatielaag bovenop de bestaande meetgegevens.
+
+DOEL
+
+De scanner verzamelt nu objectieve gegevens van een website.
+De AI moet deze gegevens interpreteren en er begrijpelijke, concrete aanbevelingen van maken.
+
+ARCHITECTUUR
+
+Gebruik deze volgorde:
+
+Website
+→ bestaande crawler
+→ objectieve meetgegevens
+→ bestaande checks/scores
+→ AI-analyse
+→ aanbevelingen
+→ bestaande resultatenpagina
+
+De AI mag NOOIT zelf websitegegevens verzinnen.
+
+AI-INTEGRATIE
+
+Gebruik de OpenAI API via de backend.
+
+De API-key moet uitsluitend server-side worden opgeslagen als environment secret.
+
+Gebruik een model dat geschikt is voor snelle tekstanalyse en houd de kosten per scan laag.
+
+Als er nog geen OPENAI_API_KEY aanwezig is:
+- laat de bestaande scanner gewoon blijven werken
+- toon geen foutmelding aan de eindgebruiker
+- gebruik voorlopig de bestaande niet-AI-resultaten
+
+AI INPUT
+
+Stuur naar de AI uitsluitend de daadwerkelijk verzamelde informatie, bijvoorbeeld:
+
+- URL
+- page title
+- meta description
+- H1's
+- headings
+- zichtbare homepage-tekst
+- CTA's
+- links
+- afbeeldingen/alt-teksten
+- contactgegevens
+- adres
+- technische meetgegevens
+- SEO checks
+- conversie checks
+- content checks
+- vertrouwen checks
+- lokale vindbaarheid checks
+- bestaande scores
+- failed checks
+- unknown checks
+
+Stuur geen wachtwoorden, API keys of andere gevoelige gegevens.
+
+BELANGRIJK:
+
+De AI moet onderscheid maken tussen:
+
+1. FEIT
+Iets wat de scanner daadwerkelijk heeft vastgesteld.
+
+2. INTERPRETATIE
+Een redelijke conclusie op basis van die feiten.
+
+3. AANBEVELING
+Een concrete verbetering.
+
+De AI mag nooit een aanbeveling presenteren alsof het een gemeten feit is.
+
+AI-TAAK
+
+Laat de AI maximaal 5 belangrijkste verbeterpunten selecteren.
+
+Prioriteer op:
+- potentiële impact
+- duidelijkheid van het probleem
+- betrouwbaarheid van de onderliggende data
+- eenvoud van verbetering
+
+Gebruik alleen echte failed checks en daadwerkelijk verzamelde content/data als basis.
+
+UNKNOWN CHECKS:
+
+Gebruik unknown NIET als bewijs dat iets slecht is.
+
+Bijvoorbeeld:
+
+"Waardepropositie kon niet betrouwbaar automatisch worden beoordeeld."
+
+Mag NIET veranderen in:
+
+"De website heeft geen goede waardepropositie."
+
+Als een inhoudelijk oordeel alleen met menselijke/AI-interpretatie mogelijk is, mag de AI dat als interpretatie aangeven, maar moet zij duidelijk maken dat dit geen harde technische meting is.
+
+AI-ANALYSE PER AANBEVELING
+
+Iedere aanbeveling moet exact deze structuur krijgen:
+
+Titel
+
+WAT WE VONDEN
+Beschrijf alleen wat daadwerkelijk uit de scan/data blijkt.
+
+WAAROM DIT BELANGRIJK IS
+Leg in eenvoudige Nederlandse taal uit waarom dit relevant kan zijn.
+
+WAT JE CONCREET KUNT VERBETEREN
+Geef een praktische actie.
+
+VOORSTEL
+Als de AI voldoende context heeft, geef een concreet voorbeeld van betere tekst, CTA of structuur.
+
+IMPACT
+Laag / Middel / Hoog
+
+MOEILIJKHEID
+Makkelijk / Gemiddeld / Moeilijk
+
+VERTROUWEN
+Geef ook een confidence:
+Hoog / Gemiddeld / Laag
+
+Gebruik "Laag" wanneer de conclusie vooral interpretatief is.
+
+AI-SCHRIJFREGELS
+
+De AI schrijft:
+- Nederlands
+- begrijpelijk
+- concreet
+- kort
+- professioneel
+- gericht op een Nederlandse ondernemer
+
+Geen:
+- marketingjargon
+- overdreven claims
+- "dit zal je conversie met X% verhogen"
+- verzonnen statistieken
+- verzonnen bedrijfsinformatie
+
+Gebruik geen exacte percentages tenzij die daadwerkelijk uit de scan komen.
+
+VOORBEELD
+
+Als de scanner bijvoorbeeld vaststelt:
+
+H1: "Welkom bij ons"
+Geen duidelijke CTA gevonden
+
+Dan mag AI schrijven:
+
+Titel:
+"Maak de eerste stap duidelijker"
+
+Wat we vonden:
+"De homepage bevat wel een H1, maar in de gecontroleerde homepage-data is geen duidelijke primaire CTA gevonden."
+
+Waarom dit belangrijk is:
+"Een bezoeker moet snel kunnen zien wat hij hierna kan doen."
+
+Wat je concreet kunt verbeteren:
+"Voeg één duidelijke primaire actie toe die aansluit op het belangrijkste doel van de website."
+
+Voorstel:
+"Bekijk onze mogelijkheden"
+
+Impact:
+Hoog
+
+Moeilijkheid:
+Makkelijk
+
+Vertrouwen:
+Hoog
+
+Maar als de scanner iets niet kan vaststellen, moet de AI dat expliciet aangeven.
+
+GEEN AI-SCORE
+
+BELANGRIJK:
+
+Laat AI voorlopig NIET de bestaande scores aanpassen.
+
+De scores blijven volledig afkomstig van de bestaande score-engine.
+
+AI geeft alleen:
+- interpretatie
+- prioritering
+- aanbevelingen
+- tekstvoorstellen
+
+Zo houden we de score objectief en controleerbaar.
+
+RESULTATENPAGINA
+
+Behoud de bestaande sectie:
+
+"De belangrijkste aandachtspunten."
+
+Verbeter deze zodat AI-aanbevelingen daar zichtbaar worden.
+
+Zet duidelijk boven de AI-sectie:
+
+"AI-analyse op basis van de gevonden websitegegevens"
+
+Voeg eventueel een kleine uitleg toe:
+
+"De AI interpreteert de gegevens die onze scanner heeft verzameld. AI-beoordelingen zijn geen vervanging voor een menselijke website-audit."
+
+Als AI niet beschikbaar is:
+gebruik de bestaande aanbevelingen.
+
+FOUTAFHANDELING
+
+Als de OpenAI API:
+- niet beschikbaar is
+- een timeout geeft
+- een fout geeft
+- geen geldig antwoord geeft
+
+dan:
+1. laat de scan succesvol afronden
+2. laat de bestaande resultaten zien
+3. toon geen technische fout aan de klant
+4. log de fout server-side
+
+STRUCTURED OUTPUT
+
+Laat OpenAI een strikt JSON-object teruggeven met maximaal 5 aanbevelingen.
+
+Gebruik bijvoorbeeld:
+
+{
+  "recommendations": [
+    {
+      "title": "...",
+      "whatFound": "...",
+      "whyImportant": "...",
+      "whatToImprove": "...",
+      "proposal": "...",
+      "impact": "hoog",
+      "difficulty": "makkelijk",
+      "confidence": "hoog",
+      "basedOnChecks": ["..."]
+    }
+  ]
+}
+
+Valideer dit JSON-object server-side voordat het naar de frontend gaat.
+
+Als het antwoord ongeldig is:
+gebruik de bestaande aanbevelingen.
+
+TEST
+
+Gebruik opnieuw:
+
+https://www.udi19.nl
+
+Controleer specifiek:
+
+1. De bestaande score blijft exact hetzelfde.
+2. De bestaande checks blijven hetzelfde.
+3. Mobiel blijft niet gecontroleerd.
+4. AI krijgt alleen verzamelde data.
+5. AI verzint geen informatie.
+6. Maximaal 5 AI-aanbevelingen.
+7. Iedere aanbeveling verwijst naar daadwerkelijke scaninformatie.
+8. AI verandert geen scores.
+9. Zonder OPENAI_API_KEY blijft de app gewoon werken.
+10. Met OPENAI_API_KEY verschijnt de AI-analyse netjes op de resultatenpagina.
+
+Maak eerst de backend-integratie en test deze.
+Pas daarna de frontend aan.
+
+Laat na afloop duidelijk zien:
+- welke bestanden zijn aangepast
+- hoe de API-key als secret moet worden ingesteld
+- of de test met UDI'19 succesvol was
+
+Nogmaals: geen accounts, betalingen, abonnementen of nieuwe categorieën toevoegen.

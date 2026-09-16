@@ -145,6 +145,13 @@ components:
           type: integer
           minimum: 0
           maximum: 100
+        aiRecommendations:
+          oneOf:
+            - type: array
+              maxItems: 5
+              items:
+                $ref: "#/components/schemas/AiRecommendation"
+            - type: "null"
         categoryScores:
           type: array
           items:
@@ -161,6 +168,7 @@ components:
             $ref: "#/components/schemas/ScanIssue"
       required:
         - overallScore
+        - aiRecommendations
         - categoryScores
         - detectedFacts
         - notChecked
@@ -444,6 +452,42 @@ components:
         - whyItMatters
         - recommendation
         - relatedChecks
+    AiRecommendation:
+      type: object
+      properties:
+        title:
+          type: string
+        whatFound:
+          type: string
+        whyImportant:
+          type: string
+        whatToImprove:
+          type: string
+        proposal:
+          type: ["string", "null"]
+        impact:
+          type: string
+          enum: [high, medium, low]
+        difficulty:
+          type: string
+          enum: [easy, medium, hard]
+        confidence:
+          type: string
+          enum: [high, medium, low]
+        basedOnChecks:
+          type: array
+          items:
+            type: string
+      required:
+        - title
+        - whatFound
+        - whyImportant
+        - whatToImprove
+        - proposal
+        - impact
+        - difficulty
+        - confidence
+        - basedOnChecks
     ErrorResponse:
       type: object
       properties:

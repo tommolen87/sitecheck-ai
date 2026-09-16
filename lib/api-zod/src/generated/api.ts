@@ -32,6 +32,8 @@ export const CreateScanBody = zod.object({
 export const createScanResponseAnalysisOneOverallScoreMin = 0;
 export const createScanResponseAnalysisOneOverallScoreMax = 100;
 
+export const createScanResponseAnalysisOneAiRecommendationsOneMax = 5;
+
 export const createScanResponseAnalysisOneCategoryScoresItemScoreMin = 0;
 export const createScanResponseAnalysisOneCategoryScoresItemScoreMax = 100;
 
@@ -84,6 +86,17 @@ export const CreateScanResponse = zod.object({
   "createdAt": zod.coerce.date(),
   "analysis": zod.union([zod.object({
   "overallScore": zod.number().int().min(createScanResponseAnalysisOneOverallScoreMin).max(createScanResponseAnalysisOneOverallScoreMax),
+  "aiRecommendations": zod.union([zod.array(zod.object({
+  "title": zod.string(),
+  "whatFound": zod.string(),
+  "whyImportant": zod.string(),
+  "whatToImprove": zod.string(),
+  "proposal": zod.string().nullable(),
+  "impact": zod.enum(['high', 'medium', 'low']),
+  "difficulty": zod.enum(['easy', 'medium', 'hard']),
+  "confidence": zod.enum(['high', 'medium', 'low']),
+  "basedOnChecks": zod.array(zod.string())
+})).max(createScanResponseAnalysisOneAiRecommendationsOneMax),zod.null()]),
   "categoryScores": zod.array(zod.object({
   "key": zod.enum(['conversie', 'seo', 'mobiel', 'techniek', 'content', 'vertrouwen', 'lokaal']),
   "label": zod.string(),
@@ -175,6 +188,8 @@ export const CreateScanResponse = zod.object({
 export const listScansResponseAnalysisOneOverallScoreMin = 0;
 export const listScansResponseAnalysisOneOverallScoreMax = 100;
 
+export const listScansResponseAnalysisOneAiRecommendationsOneMax = 5;
+
 export const listScansResponseAnalysisOneCategoryScoresItemScoreMin = 0;
 export const listScansResponseAnalysisOneCategoryScoresItemScoreMax = 100;
 
@@ -227,6 +242,17 @@ export const ListScansResponseItem = zod.object({
   "createdAt": zod.coerce.date(),
   "analysis": zod.union([zod.object({
   "overallScore": zod.number().int().min(listScansResponseAnalysisOneOverallScoreMin).max(listScansResponseAnalysisOneOverallScoreMax),
+  "aiRecommendations": zod.union([zod.array(zod.object({
+  "title": zod.string(),
+  "whatFound": zod.string(),
+  "whyImportant": zod.string(),
+  "whatToImprove": zod.string(),
+  "proposal": zod.string().nullable(),
+  "impact": zod.enum(['high', 'medium', 'low']),
+  "difficulty": zod.enum(['easy', 'medium', 'hard']),
+  "confidence": zod.enum(['high', 'medium', 'low']),
+  "basedOnChecks": zod.array(zod.string())
+})).max(listScansResponseAnalysisOneAiRecommendationsOneMax),zod.null()]),
   "categoryScores": zod.array(zod.object({
   "key": zod.enum(['conversie', 'seo', 'mobiel', 'techniek', 'content', 'vertrouwen', 'lokaal']),
   "label": zod.string(),
@@ -326,6 +352,8 @@ export const GetScanParams = zod.object({
 export const getScanResponseAnalysisOneOverallScoreMin = 0;
 export const getScanResponseAnalysisOneOverallScoreMax = 100;
 
+export const getScanResponseAnalysisOneAiRecommendationsOneMax = 5;
+
 export const getScanResponseAnalysisOneCategoryScoresItemScoreMin = 0;
 export const getScanResponseAnalysisOneCategoryScoresItemScoreMax = 100;
 
@@ -378,6 +406,17 @@ export const GetScanResponse = zod.object({
   "createdAt": zod.coerce.date(),
   "analysis": zod.union([zod.object({
   "overallScore": zod.number().int().min(getScanResponseAnalysisOneOverallScoreMin).max(getScanResponseAnalysisOneOverallScoreMax),
+  "aiRecommendations": zod.union([zod.array(zod.object({
+  "title": zod.string(),
+  "whatFound": zod.string(),
+  "whyImportant": zod.string(),
+  "whatToImprove": zod.string(),
+  "proposal": zod.string().nullable(),
+  "impact": zod.enum(['high', 'medium', 'low']),
+  "difficulty": zod.enum(['easy', 'medium', 'hard']),
+  "confidence": zod.enum(['high', 'medium', 'low']),
+  "basedOnChecks": zod.array(zod.string())
+})).max(getScanResponseAnalysisOneAiRecommendationsOneMax),zod.null()]),
   "categoryScores": zod.array(zod.object({
   "key": zod.enum(['conversie', 'seo', 'mobiel', 'techniek', 'content', 'vertrouwen', 'lokaal']),
   "label": zod.string(),

@@ -357,6 +357,8 @@
 .issue-detail-label svg { width: 13px; color: hsl(var(--primary)); }
 .issue-detail p { color: hsl(var(--foreground)); font-size: .78rem; line-height: 1.52; margin-top: 6px; max-width: 500px; }
 .recommendation p { color: hsl(var(--muted-foreground)); }
+.proposal { background: hsl(var(--accent) / .24); border: 0; border-radius: 9px; margin-top: 12px; padding: 12px; }
+.proposal p { color: hsl(var(--foreground)); }
 .issue-meta { display: flex; flex-wrap: wrap; gap: 8px; border-top: 1px solid hsl(var(--border)); margin-top: 20px; padding-top: 13px; }
 .issue-meta span { border-radius: 99px; padding: 6px 9px; background: hsl(var(--secondary)); color: hsl(var(--muted-foreground)); font-size: .62rem; }
 .issue-meta strong { color: hsl(var(--foreground)); font-weight: 700; }

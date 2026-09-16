@@ -6,6 +6,10 @@
  * OpenAPI spec version: 0.1.0
  */
 
+export * from './aiRecommendation';
+export * from './aiRecommendationConfidence';
+export * from './aiRecommendationDifficulty';
+export * from './aiRecommendationImpact';
 export * from './categoryCheck';
 export * from './categoryCheckStatus';
 export * from './categoryScore';

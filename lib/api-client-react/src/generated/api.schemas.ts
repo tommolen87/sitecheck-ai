@@ -26,6 +26,46 @@ export const ScanStatus = {
   failed: 'failed',
 } as const;
 
+export type AiRecommendationImpact = typeof AiRecommendationImpact[keyof typeof AiRecommendationImpact];
+
+
+export const AiRecommendationImpact = {
+  high: 'high',
+  medium: 'medium',
+  low: 'low',
+} as const;
+
+export type AiRecommendationDifficulty = typeof AiRecommendationDifficulty[keyof typeof AiRecommendationDifficulty];
+
+
+export const AiRecommendationDifficulty = {
+  easy: 'easy',
+  medium: 'medium',
+  hard: 'hard',
+} as const;
+
+export type AiRecommendationConfidence = typeof AiRecommendationConfidence[keyof typeof AiRecommendationConfidence];
+
+
+export const AiRecommendationConfidence = {
+  high: 'high',
+  medium: 'medium',
+  low: 'low',
+} as const;
+
+export interface AiRecommendation {
+  title: string;
+  whatFound: string;
+  whyImportant: string;
+  whatToImprove: string;
+  /** @nullable */
+  proposal: string | null;
+  impact: AiRecommendationImpact;
+  difficulty: AiRecommendationDifficulty;
+  confidence: AiRecommendationConfidence;
+  basedOnChecks: string[];
+}
+
 export type CategoryScoreKey = typeof CategoryScoreKey[keyof typeof CategoryScoreKey];
 
 
@@ -208,6 +248,7 @@ export interface ScanAnalysis {
      * @maximum 100
      */
   overallScore: number;
+  aiRecommendations: AiRecommendation[] | null;
   categoryScores: CategoryScore[];
   detectedFacts: DetectedFacts;
   notChecked: string[];

@@ -5,6 +5,7 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
+import type { AiRecommendation } from './aiRecommendation';
 import type { CategoryScore } from './categoryScore';
 import type { DetectedFacts } from './detectedFacts';
 import type { ScanIssue } from './scanIssue';
@@ -15,6 +16,7 @@ export interface ScanAnalysis {
      * @maximum 100
      */
   overallScore: number;
+  aiRecommendations: AiRecommendation[] | null;
   categoryScores: CategoryScore[];
   detectedFacts: DetectedFacts;
   notChecked: string[];

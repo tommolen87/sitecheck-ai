@@ -20,6 +20,7 @@ export type CategoryCheck = {
 
 export type ScanAnalysisResult = {
   overallScore: number;
+  aiRecommendations: import("./ai-website-analysis").AiRecommendation[] | null;
   categoryScores: Array<{
     key: string;
     label: string;
@@ -92,6 +93,16 @@ export type ScanAnalysisResult = {
     recommendation: string;
     relatedChecks: string[];
   }>;
+};
+
+export type WebsiteAiContext = {
+  url: string;
+  visibleTextSnippet: string;
+};
+
+export type WebsiteAnalysisWithContext = {
+  analysis: Omit<ScanAnalysisResult, "aiRecommendations">;
+  aiContext: WebsiteAiContext;
 };
 
 type WebsiteSnapshot = {
@@ -836,7 +847,7 @@ function getIssues(facts: ScanAnalysisResult["detectedFacts"]): ScanAnalysisResu
     .slice(0, 5);
 }
 
-async function createAnalysis(snapshot: WebsiteSnapshot): Promise<ScanAnalysisResult> {
+async function createAnalysis(snapshot: WebsiteSnapshot): Promise<WebsiteAnalysisWithContext> {
   const { html, url, responseTimeMs } = snapshot;
   const titleMatch = html.match(/<title\b[^>]*>([\s\S]*?)<\/title>/i);
   const pageTitle = titleMatch ? cleanText(titleMatch[1]) || null : null;
@@ -924,22 +935,28 @@ async function createAnalysis(snapshot: WebsiteSnapshot): Promise<ScanAnalysisRe
     : 0;
 
   return {
-    overallScore,
-    categoryScores,
-    detectedFacts,
-    notChecked: [
-      "Mobiele weergave is niet met een echte mobiele browser getest.",
-      "Core Web Vitals en interactiesnelheid zijn niet gemeten.",
-      "Alleen de homepage en de vaste robots.txt/sitemap-locaties zijn opgehaald; interne pagina's zijn niet gecrawld.",
-      "De inhoud en kwaliteit van externe backlinks zijn niet gecontroleerd.",
-      "De volledigheid van juridische teksten, reviews en bedrijfsgegevens is niet juridisch of handmatig beoordeeld.",
-      "CTA-plaatsing boven de vouw is niet gecontroleerd zonder browserrendering.",
-    ],
-    issues: getIssues(detectedFacts),
+    analysis: {
+      overallScore,
+      categoryScores,
+      detectedFacts,
+      notChecked: [
+        "Mobiele weergave is niet met een echte mobiele browser getest.",
+        "Core Web Vitals en interactiesnelheid zijn niet gemeten.",
+        "Alleen de homepage en de vaste robots.txt/sitemap-locaties zijn opgehaald; interne pagina's zijn niet gecrawld.",
+        "De inhoud en kwaliteit van externe backlinks zijn niet gecontroleerd.",
+        "De volledigheid van juridische teksten, reviews en bedrijfsgegevens is niet juridisch of handmatig beoordeeld.",
+        "CTA-plaatsing boven de vouw is niet gecontroleerd zonder browserrendering.",
+      ],
+      issues: getIssues(detectedFacts),
+    },
+    aiContext: {
+      url: snapshot.url.href,
+      visibleTextSnippet: visibleText.slice(0, 6_000),
+    },
   };
 }
 
-export async function analyzeWebsite(rawUrl: string): Promise<ScanAnalysisResult> {
+export async function analyzeWebsite(rawUrl: string): Promise<WebsiteAnalysisWithContext> {
   const snapshot = await fetchHomepage(rawUrl);
   return createAnalysis(snapshot);
 }
