@@ -1,0 +1,92 @@
+The real scan is working, but now improve the scoring engine so the results are credible and commercially useful.
+
+Important: never give a high score simply because one positive signal was found.
+
+Change the scoring system as follows:
+
+1. CONVERSIE
+Check multiple signals:
+- clear primary CTA
+- CTA above the fold if detectable
+- contact option
+- phone/email
+- clear value proposition
+- logical next step
+- number and quality of CTA elements
+A website should not receive 100 just because a CTA exists.
+
+2. SEO
+Check separately:
+- page title exists and quality/length
+- meta description exists and quality/length
+- exactly one H1 where possible
+- heading structure
+- canonical
+- robots directives where detectable
+- Open Graph data
+- image alt text
+- internal links
+- sitemap/robots.txt where safely checkable
+Do not give 100 unless the relevant checks actually pass.
+
+3. MOBIEL
+Keep this as "niet gecontroleerd" until we have a real mobile browser/PageSpeed check.
+Do not convert an unchecked category into a positive score.
+
+4. TECHNIEK & SNELHEID
+Use only measurable signals we actually collected:
+- HTTPS
+- HTTP response
+- response time
+- HTML/page size
+- compression where detectable
+Do not claim a real performance score unless we actually measured it.
+
+5. CONTENT
+Check:
+- amount of useful visible text
+- title/H1 relationship
+- clarity of proposition
+- headings
+- duplicate/repetitive text where detectable
+
+6. VERTROUWEN
+Check:
+- contact information
+- address
+- phone
+- email
+- privacy/cookie information where detectable
+- company information
+- testimonials/reviews if visible on the homepage
+Do not assume something exists if it was not detected.
+
+7. LOKALE VINDBAARHEID
+Check:
+- physical address
+- city/region
+- telephone number
+- local business signals
+- Google Business/Maps links if present
+- LocalBusiness structured data if present
+A missing signal should reduce the score.
+
+SCORING RULES:
+- Every category must be based on individual checks.
+- Store the checks and their pass/fail/unknown status.
+- "Unknown/not checked" must never count as a positive.
+- Show the reason behind every category score.
+- Never invent findings.
+- Never claim that something was checked if it wasn't.
+- Make the total score mathematically consistent with the category scores.
+- Keep the existing SiteCheck AI design and Dutch language.
+
+Also improve the report:
+For every problem show:
+1. Wat we vonden
+2. Waarom dit belangrijk is
+3. Wat je concreet kunt verbeteren
+4. Impact: laag / middel / hoog
+5. Moeilijkheid: makkelijk / gemiddeld / moeilijk
+
+The goal is a trustworthy website audit that a Dutch business owner could realistically pay for.

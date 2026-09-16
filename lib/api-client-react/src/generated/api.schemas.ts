@@ -39,6 +39,22 @@ export const CategoryScoreKey = {
   lokaal: 'lokaal',
 } as const;
 
+export type CategoryCheckStatus = typeof CategoryCheckStatus[keyof typeof CategoryCheckStatus];
+
+
+export const CategoryCheckStatus = {
+  pass: 'pass',
+  fail: 'fail',
+  unknown: 'unknown',
+} as const;
+
+export interface CategoryCheck {
+  key: string;
+  label: string;
+  status: CategoryCheckStatus;
+  evidence: string;
+}
+
 export interface CategoryScore {
   key: CategoryScoreKey;
   label: string;
@@ -49,13 +65,18 @@ export interface CategoryScore {
   score: number;
   checked: boolean;
   note: string;
+  checks: CategoryCheck[];
 }
 
 export interface DetectedFacts {
   /** @nullable */
   pageTitle: string | null;
+  /** @minimum 0 */
+  pageTitleLength: number;
   /** @nullable */
   metaDescription: string | null;
+  /** @minimum 0 */
+  metaDescriptionLength: number;
   /** @minimum 0 */
   h1Count: number;
   /** @minimum 0 */
@@ -66,19 +87,56 @@ export interface DetectedFacts {
   /** @minimum 0 */
   linkCount: number;
   /** @minimum 0 */
+  internalLinkCount: number;
+  /** @minimum 0 */
+  externalLinkCount: number;
+  /** @minimum 0 */
   imageCount: number;
   /** @minimum 0 */
   imagesWithAlt: number;
   /** @minimum 0 */
   ctaCount: number;
   callsToAction: string[];
+  /** @nullable */
+  primaryCta: string | null;
+  /** @nullable */
+  ctaAboveFold: boolean | null;
   contactSignals: string[];
+  legalSignals: string[];
+  companySignals: string[];
+  socialProofSignals: string[];
+  localSignals: string[];
   technicalSignals: string[];
   /** @minimum 0 */
   responseTimeMs: number;
+  /**
+     * @minimum 100
+     * @maximum 599
+     */
+  httpStatus: number;
   /** @minimum 0 */
   pageSizeKb: number;
   https: boolean;
+  /** @nullable */
+  compressed: boolean | null;
+  /** @nullable */
+  contentEncoding: string | null;
+  /** @nullable */
+  canonical: string | null;
+  robotsDirectives: string[];
+  openGraphSignals: string[];
+  hasViewport: boolean;
+  hasLanguage: boolean;
+  hasRobotsTxt: boolean;
+  hasSitemap: boolean;
+  /** @nullable */
+  sitemapUrl: string | null;
+  localBusinessStructuredData: boolean;
+  mapsLink: boolean;
+  /** @nullable */
+  valuePropositionSignal: boolean | null;
+  /** @nullable */
+  duplicateTextDetected: boolean | null;
 }
 
 export type ScanIssueSeverity = typeof ScanIssueSeverity[keyof typeof ScanIssueSeverity];
@@ -90,11 +148,32 @@ export const ScanIssueSeverity = {
   low: 'low',
 } as const;
 
+export type ScanIssueImpact = typeof ScanIssueImpact[keyof typeof ScanIssueImpact];
+
+
+export const ScanIssueImpact = {
+  high: 'high',
+  medium: 'medium',
+  low: 'low',
+} as const;
+
+export type ScanIssueDifficulty = typeof ScanIssueDifficulty[keyof typeof ScanIssueDifficulty];
+
+
+export const ScanIssueDifficulty = {
+  easy: 'easy',
+  medium: 'medium',
+  hard: 'hard',
+} as const;
+
 export interface ScanIssue {
   id: string;
   title: string;
   severity: ScanIssueSeverity;
+  impact: ScanIssueImpact;
+  difficulty: ScanIssueDifficulty;
   fact: string;
+  whyItMatters: string;
   recommendation: string;
 }
 

@@ -5,12 +5,17 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
+import type { ScanIssueDifficulty } from './scanIssueDifficulty';
+import type { ScanIssueImpact } from './scanIssueImpact';
 import type { ScanIssueSeverity } from './scanIssueSeverity';
 
 export interface ScanIssue {
   id: string;
   title: string;
   severity: ScanIssueSeverity;
+  impact: ScanIssueImpact;
+  difficulty: ScanIssueDifficulty;
   fact: string;
+  whyItMatters: string;
   recommendation: string;
 }

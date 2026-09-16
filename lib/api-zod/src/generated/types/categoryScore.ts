@@ -5,6 +5,7 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
+import type { CategoryCheck } from './categoryCheck';
 import type { CategoryScoreKey } from './categoryScoreKey';
 
 export interface CategoryScore {
@@ -17,4 +18,5 @@ export interface CategoryScore {
   score: number;
   checked: boolean;
   note: string;
+  checks: CategoryCheck[];
 }

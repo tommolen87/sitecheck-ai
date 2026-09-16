@@ -35,6 +35,10 @@ export const createScanResponseAnalysisOneOverallScoreMax = 100;
 export const createScanResponseAnalysisOneCategoryScoresItemScoreMin = 0;
 export const createScanResponseAnalysisOneCategoryScoresItemScoreMax = 100;
 
+export const createScanResponseAnalysisOneDetectedFactsPageTitleLengthMin = 0;
+
+export const createScanResponseAnalysisOneDetectedFactsMetaDescriptionLengthMin = 0;
+
 export const createScanResponseAnalysisOneDetectedFactsH1CountMin = 0;
 
 export const createScanResponseAnalysisOneDetectedFactsHeadingCountMin = 0;
@@ -43,6 +47,10 @@ export const createScanResponseAnalysisOneDetectedFactsVisibleTextLengthMin = 0;
 
 export const createScanResponseAnalysisOneDetectedFactsLinkCountMin = 0;
 
+export const createScanResponseAnalysisOneDetectedFactsInternalLinkCountMin = 0;
+
+export const createScanResponseAnalysisOneDetectedFactsExternalLinkCountMin = 0;
+
 export const createScanResponseAnalysisOneDetectedFactsImageCountMin = 0;
 
 export const createScanResponseAnalysisOneDetectedFactsImagesWithAltMin = 0;
@@ -50,6 +58,9 @@ export const createScanResponseAnalysisOneDetectedFactsImagesWithAltMin = 0;
 export const createScanResponseAnalysisOneDetectedFactsCtaCountMin = 0;
 
 export const createScanResponseAnalysisOneDetectedFactsResponseTimeMsMin = 0;
+
+export const createScanResponseAnalysisOneDetectedFactsHttpStatusMin = 100;
+export const createScanResponseAnalysisOneDetectedFactsHttpStatusMax = 599;
 
 export const createScanResponseAnalysisOneDetectedFactsPageSizeKbMin = 0;
 
@@ -67,32 +78,66 @@ export const CreateScanResponse = zod.object({
   "label": zod.string(),
   "score": zod.number().int().min(createScanResponseAnalysisOneCategoryScoresItemScoreMin).max(createScanResponseAnalysisOneCategoryScoresItemScoreMax),
   "checked": zod.boolean(),
-  "note": zod.string()
+  "note": zod.string(),
+  "checks": zod.array(zod.object({
+  "key": zod.string(),
+  "label": zod.string(),
+  "status": zod.enum(['pass', 'fail', 'unknown']),
+  "evidence": zod.string()
+}))
 })),
   "detectedFacts": zod.object({
   "pageTitle": zod.string().nullable(),
+  "pageTitleLength": zod.number().int().min(createScanResponseAnalysisOneDetectedFactsPageTitleLengthMin),
   "metaDescription": zod.string().nullable(),
+  "metaDescriptionLength": zod.number().int().min(createScanResponseAnalysisOneDetectedFactsMetaDescriptionLengthMin),
   "h1Count": zod.number().int().min(createScanResponseAnalysisOneDetectedFactsH1CountMin),
   "headingCount": zod.number().int().min(createScanResponseAnalysisOneDetectedFactsHeadingCountMin),
   "headings": zod.array(zod.string()),
   "visibleTextLength": zod.number().int().min(createScanResponseAnalysisOneDetectedFactsVisibleTextLengthMin),
   "linkCount": zod.number().int().min(createScanResponseAnalysisOneDetectedFactsLinkCountMin),
+  "internalLinkCount": zod.number().int().min(createScanResponseAnalysisOneDetectedFactsInternalLinkCountMin),
+  "externalLinkCount": zod.number().int().min(createScanResponseAnalysisOneDetectedFactsExternalLinkCountMin),
   "imageCount": zod.number().int().min(createScanResponseAnalysisOneDetectedFactsImageCountMin),
   "imagesWithAlt": zod.number().int().min(createScanResponseAnalysisOneDetectedFactsImagesWithAltMin),
   "ctaCount": zod.number().int().min(createScanResponseAnalysisOneDetectedFactsCtaCountMin),
   "callsToAction": zod.array(zod.string()),
+  "primaryCta": zod.string().nullable(),
+  "ctaAboveFold": zod.boolean().nullable(),
   "contactSignals": zod.array(zod.string()),
+  "legalSignals": zod.array(zod.string()),
+  "companySignals": zod.array(zod.string()),
+  "socialProofSignals": zod.array(zod.string()),
+  "localSignals": zod.array(zod.string()),
   "technicalSignals": zod.array(zod.string()),
   "responseTimeMs": zod.number().int().min(createScanResponseAnalysisOneDetectedFactsResponseTimeMsMin),
+  "httpStatus": zod.number().int().min(createScanResponseAnalysisOneDetectedFactsHttpStatusMin).max(createScanResponseAnalysisOneDetectedFactsHttpStatusMax),
   "pageSizeKb": zod.number().min(createScanResponseAnalysisOneDetectedFactsPageSizeKbMin),
-  "https": zod.boolean()
+  "https": zod.boolean(),
+  "compressed": zod.boolean().nullable(),
+  "contentEncoding": zod.string().nullable(),
+  "canonical": zod.string().nullable(),
+  "robotsDirectives": zod.array(zod.string()),
+  "openGraphSignals": zod.array(zod.string()),
+  "hasViewport": zod.boolean(),
+  "hasLanguage": zod.boolean(),
+  "hasRobotsTxt": zod.boolean(),
+  "hasSitemap": zod.boolean(),
+  "sitemapUrl": zod.string().nullable(),
+  "localBusinessStructuredData": zod.boolean(),
+  "mapsLink": zod.boolean(),
+  "valuePropositionSignal": zod.boolean().nullable(),
+  "duplicateTextDetected": zod.boolean().nullable()
 }),
   "notChecked": zod.array(zod.string()),
   "issues": zod.array(zod.object({
   "id": zod.string(),
   "title": zod.string(),
   "severity": zod.enum(['high', 'medium', 'low']),
+  "impact": zod.enum(['high', 'medium', 'low']),
+  "difficulty": zod.enum(['easy', 'medium', 'hard']),
   "fact": zod.string(),
+  "whyItMatters": zod.string(),
   "recommendation": zod.string()
 }))
 }),zod.null()]),
@@ -111,6 +156,10 @@ export const listScansResponseAnalysisOneOverallScoreMax = 100;
 export const listScansResponseAnalysisOneCategoryScoresItemScoreMin = 0;
 export const listScansResponseAnalysisOneCategoryScoresItemScoreMax = 100;
 
+export const listScansResponseAnalysisOneDetectedFactsPageTitleLengthMin = 0;
+
+export const listScansResponseAnalysisOneDetectedFactsMetaDescriptionLengthMin = 0;
+
 export const listScansResponseAnalysisOneDetectedFactsH1CountMin = 0;
 
 export const listScansResponseAnalysisOneDetectedFactsHeadingCountMin = 0;
@@ -119,6 +168,10 @@ export const listScansResponseAnalysisOneDetectedFactsVisibleTextLengthMin = 0;
 
 export const listScansResponseAnalysisOneDetectedFactsLinkCountMin = 0;
 
+export const listScansResponseAnalysisOneDetectedFactsInternalLinkCountMin = 0;
+
+export const listScansResponseAnalysisOneDetectedFactsExternalLinkCountMin = 0;
+
 export const listScansResponseAnalysisOneDetectedFactsImageCountMin = 0;
 
 export const listScansResponseAnalysisOneDetectedFactsImagesWithAltMin = 0;
@@ -126,6 +179,9 @@ export const listScansResponseAnalysisOneDetectedFactsImagesWithAltMin = 0;
 export const listScansResponseAnalysisOneDetectedFactsCtaCountMin = 0;
 
 export const listScansResponseAnalysisOneDetectedFactsResponseTimeMsMin = 0;
+
+export const listScansResponseAnalysisOneDetectedFactsHttpStatusMin = 100;
+export const listScansResponseAnalysisOneDetectedFactsHttpStatusMax = 599;
 
 export const listScansResponseAnalysisOneDetectedFactsPageSizeKbMin = 0;
 
@@ -143,32 +199,66 @@ export const ListScansResponseItem = zod.object({
   "label": zod.string(),
   "score": zod.number().int().min(listScansResponseAnalysisOneCategoryScoresItemScoreMin).max(listScansResponseAnalysisOneCategoryScoresItemScoreMax),
   "checked": zod.boolean(),
-  "note": zod.string()
+  "note": zod.string(),
+  "checks": zod.array(zod.object({
+  "key": zod.string(),
+  "label": zod.string(),
+  "status": zod.enum(['pass', 'fail', 'unknown']),
+  "evidence": zod.string()
+}))
 })),
   "detectedFacts": zod.object({
   "pageTitle": zod.string().nullable(),
+  "pageTitleLength": zod.number().int().min(listScansResponseAnalysisOneDetectedFactsPageTitleLengthMin),
   "metaDescription": zod.string().nullable(),
+  "metaDescriptionLength": zod.number().int().min(listScansResponseAnalysisOneDetectedFactsMetaDescriptionLengthMin),
   "h1Count": zod.number().int().min(listScansResponseAnalysisOneDetectedFactsH1CountMin),
   "headingCount": zod.number().int().min(listScansResponseAnalysisOneDetectedFactsHeadingCountMin),
   "headings": zod.array(zod.string()),
   "visibleTextLength": zod.number().int().min(listScansResponseAnalysisOneDetectedFactsVisibleTextLengthMin),
   "linkCount": zod.number().int().min(listScansResponseAnalysisOneDetectedFactsLinkCountMin),
+  "internalLinkCount": zod.number().int().min(listScansResponseAnalysisOneDetectedFactsInternalLinkCountMin),
+  "externalLinkCount": zod.number().int().min(listScansResponseAnalysisOneDetectedFactsExternalLinkCountMin),
   "imageCount": zod.number().int().min(listScansResponseAnalysisOneDetectedFactsImageCountMin),
   "imagesWithAlt": zod.number().int().min(listScansResponseAnalysisOneDetectedFactsImagesWithAltMin),
   "ctaCount": zod.number().int().min(listScansResponseAnalysisOneDetectedFactsCtaCountMin),
   "callsToAction": zod.array(zod.string()),
+  "primaryCta": zod.string().nullable(),
+  "ctaAboveFold": zod.boolean().nullable(),
   "contactSignals": zod.array(zod.string()),
+  "legalSignals": zod.array(zod.string()),
+  "companySignals": zod.array(zod.string()),
+  "socialProofSignals": zod.array(zod.string()),
+  "localSignals": zod.array(zod.string()),
   "technicalSignals": zod.array(zod.string()),
   "responseTimeMs": zod.number().int().min(listScansResponseAnalysisOneDetectedFactsResponseTimeMsMin),
+  "httpStatus": zod.number().int().min(listScansResponseAnalysisOneDetectedFactsHttpStatusMin).max(listScansResponseAnalysisOneDetectedFactsHttpStatusMax),
   "pageSizeKb": zod.number().min(listScansResponseAnalysisOneDetectedFactsPageSizeKbMin),
-  "https": zod.boolean()
+  "https": zod.boolean(),
+  "compressed": zod.boolean().nullable(),
+  "contentEncoding": zod.string().nullable(),
+  "canonical": zod.string().nullable(),
+  "robotsDirectives": zod.array(zod.string()),
+  "openGraphSignals": zod.array(zod.string()),
+  "hasViewport": zod.boolean(),
+  "hasLanguage": zod.boolean(),
+  "hasRobotsTxt": zod.boolean(),
+  "hasSitemap": zod.boolean(),
+  "sitemapUrl": zod.string().nullable(),
+  "localBusinessStructuredData": zod.boolean(),
+  "mapsLink": zod.boolean(),
+  "valuePropositionSignal": zod.boolean().nullable(),
+  "duplicateTextDetected": zod.boolean().nullable()
 }),
   "notChecked": zod.array(zod.string()),
   "issues": zod.array(zod.object({
   "id": zod.string(),
   "title": zod.string(),
   "severity": zod.enum(['high', 'medium', 'low']),
+  "impact": zod.enum(['high', 'medium', 'low']),
+  "difficulty": zod.enum(['easy', 'medium', 'hard']),
   "fact": zod.string(),
+  "whyItMatters": zod.string(),
   "recommendation": zod.string()
 }))
 }),zod.null()]),
@@ -195,6 +285,10 @@ export const getScanResponseAnalysisOneOverallScoreMax = 100;
 export const getScanResponseAnalysisOneCategoryScoresItemScoreMin = 0;
 export const getScanResponseAnalysisOneCategoryScoresItemScoreMax = 100;
 
+export const getScanResponseAnalysisOneDetectedFactsPageTitleLengthMin = 0;
+
+export const getScanResponseAnalysisOneDetectedFactsMetaDescriptionLengthMin = 0;
+
 export const getScanResponseAnalysisOneDetectedFactsH1CountMin = 0;
 
 export const getScanResponseAnalysisOneDetectedFactsHeadingCountMin = 0;
@@ -203,6 +297,10 @@ export const getScanResponseAnalysisOneDetectedFactsVisibleTextLengthMin = 0;
 
 export const getScanResponseAnalysisOneDetectedFactsLinkCountMin = 0;
 
+export const getScanResponseAnalysisOneDetectedFactsInternalLinkCountMin = 0;
+
+export const getScanResponseAnalysisOneDetectedFactsExternalLinkCountMin = 0;
+
 export const getScanResponseAnalysisOneDetectedFactsImageCountMin = 0;
 
 export const getScanResponseAnalysisOneDetectedFactsImagesWithAltMin = 0;
@@ -210,6 +308,9 @@ export const getScanResponseAnalysisOneDetectedFactsImagesWithAltMin = 0;
 export const getScanResponseAnalysisOneDetectedFactsCtaCountMin = 0;
 
 export const getScanResponseAnalysisOneDetectedFactsResponseTimeMsMin = 0;
+
+export const getScanResponseAnalysisOneDetectedFactsHttpStatusMin = 100;
+export const getScanResponseAnalysisOneDetectedFactsHttpStatusMax = 599;
 
 export const getScanResponseAnalysisOneDetectedFactsPageSizeKbMin = 0;
 
@@ -227,32 +328,66 @@ export const GetScanResponse = zod.object({
   "label": zod.string(),
   "score": zod.number().int().min(getScanResponseAnalysisOneCategoryScoresItemScoreMin).max(getScanResponseAnalysisOneCategoryScoresItemScoreMax),
   "checked": zod.boolean(),
-  "note": zod.string()
+  "note": zod.string(),
+  "checks": zod.array(zod.object({
+  "key": zod.string(),
+  "label": zod.string(),
+  "status": zod.enum(['pass', 'fail', 'unknown']),
+  "evidence": zod.string()
+}))
 })),
   "detectedFacts": zod.object({
   "pageTitle": zod.string().nullable(),
+  "pageTitleLength": zod.number().int().min(getScanResponseAnalysisOneDetectedFactsPageTitleLengthMin),
   "metaDescription": zod.string().nullable(),
+  "metaDescriptionLength": zod.number().int().min(getScanResponseAnalysisOneDetectedFactsMetaDescriptionLengthMin),
   "h1Count": zod.number().int().min(getScanResponseAnalysisOneDetectedFactsH1CountMin),
   "headingCount": zod.number().int().min(getScanResponseAnalysisOneDetectedFactsHeadingCountMin),
   "headings": zod.array(zod.string()),
   "visibleTextLength": zod.number().int().min(getScanResponseAnalysisOneDetectedFactsVisibleTextLengthMin),
   "linkCount": zod.number().int().min(getScanResponseAnalysisOneDetectedFactsLinkCountMin),
+  "internalLinkCount": zod.number().int().min(getScanResponseAnalysisOneDetectedFactsInternalLinkCountMin),
+  "externalLinkCount": zod.number().int().min(getScanResponseAnalysisOneDetectedFactsExternalLinkCountMin),
   "imageCount": zod.number().int().min(getScanResponseAnalysisOneDetectedFactsImageCountMin),
   "imagesWithAlt": zod.number().int().min(getScanResponseAnalysisOneDetectedFactsImagesWithAltMin),
   "ctaCount": zod.number().int().min(getScanResponseAnalysisOneDetectedFactsCtaCountMin),
   "callsToAction": zod.array(zod.string()),
+  "primaryCta": zod.string().nullable(),
+  "ctaAboveFold": zod.boolean().nullable(),
   "contactSignals": zod.array(zod.string()),
+  "legalSignals": zod.array(zod.string()),
+  "companySignals": zod.array(zod.string()),
+  "socialProofSignals": zod.array(zod.string()),
+  "localSignals": zod.array(zod.string()),
   "technicalSignals": zod.array(zod.string()),
   "responseTimeMs": zod.number().int().min(getScanResponseAnalysisOneDetectedFactsResponseTimeMsMin),
+  "httpStatus": zod.number().int().min(getScanResponseAnalysisOneDetectedFactsHttpStatusMin).max(getScanResponseAnalysisOneDetectedFactsHttpStatusMax),
   "pageSizeKb": zod.number().min(getScanResponseAnalysisOneDetectedFactsPageSizeKbMin),
-  "https": zod.boolean()
+  "https": zod.boolean(),
+  "compressed": zod.boolean().nullable(),
+  "contentEncoding": zod.string().nullable(),
+  "canonical": zod.string().nullable(),
+  "robotsDirectives": zod.array(zod.string()),
+  "openGraphSignals": zod.array(zod.string()),
+  "hasViewport": zod.boolean(),
+  "hasLanguage": zod.boolean(),
+  "hasRobotsTxt": zod.boolean(),
+  "hasSitemap": zod.boolean(),
+  "sitemapUrl": zod.string().nullable(),
+  "localBusinessStructuredData": zod.boolean(),
+  "mapsLink": zod.boolean(),
+  "valuePropositionSignal": zod.boolean().nullable(),
+  "duplicateTextDetected": zod.boolean().nullable()
 }),
   "notChecked": zod.array(zod.string()),
   "issues": zod.array(zod.object({
   "id": zod.string(),
   "title": zod.string(),
   "severity": zod.enum(['high', 'medium', 'low']),
+  "impact": zod.enum(['high', 'medium', 'low']),
+  "difficulty": zod.enum(['easy', 'medium', 'hard']),
   "fact": zod.string(),
+  "whyItMatters": zod.string(),
   "recommendation": zod.string()
 }))
 }),zod.null()]),

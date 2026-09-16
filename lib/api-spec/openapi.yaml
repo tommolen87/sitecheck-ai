@@ -181,19 +181,47 @@ components:
           type: boolean
         note:
           type: string
+        checks:
+          type: array
+          items:
+            $ref: "#/components/schemas/CategoryCheck"
       required:
         - key
         - label
         - score
         - checked
         - note
+        - checks
+    CategoryCheck:
+      type: object
+      properties:
+        key:
+          type: string
+        label:
+          type: string
+        status:
+          type: string
+          enum: [pass, fail, unknown]
+        evidence:
+          type: string
+      required:
+        - key
+        - label
+        - status
+        - evidence
     DetectedFacts:
       type: object
       properties:
         pageTitle:
           type: ["string", "null"]
+        pageTitleLength:
+          type: integer
+          minimum: 0
         metaDescription:
           type: ["string", "null"]
+        metaDescriptionLength:
+          type: integer
+          minimum: 0
         h1Count:
           type: integer
           minimum: 0
@@ -210,6 +238,12 @@ components:
         linkCount:
           type: integer
           minimum: 0
+        internalLinkCount:
+          type: integer
+          minimum: 0
+        externalLinkCount:
+          type: integer
+          minimum: 0
         imageCount:
           type: integer
           minimum: 0
@@ -223,7 +257,27 @@ components:
           type: array
           items:
             type: string
+        primaryCta:
+          type: ["string", "null"]
+        ctaAboveFold:
+          type: ["boolean", "null"]
         contactSignals:
+          type: array
+          items:
+            type: string
+        legalSignals:
+          type: array
+          items:
+            type: string
+        companySignals:
+          type: array
+          items:
+            type: string
+        socialProofSignals:
+          type: array
+          items:
+            type: string
+        localSignals:
           type: array
           items:
             type: string
@@ -234,28 +288,89 @@ components:
         responseTimeMs:
           type: integer
           minimum: 0
+        httpStatus:
+          type: integer
+          minimum: 100
+          maximum: 599
         pageSizeKb:
           type: number
           minimum: 0
         https:
           type: boolean
+        compressed:
+          type: ["boolean", "null"]
+        contentEncoding:
+          type: ["string", "null"]
+        canonical:
+          type: ["string", "null"]
+        robotsDirectives:
+          type: array
+          items:
+            type: string
+        openGraphSignals:
+          type: array
+          items:
+            type: string
+        hasViewport:
+          type: boolean
+        hasLanguage:
+          type: boolean
+        hasRobotsTxt:
+          type: boolean
+        hasSitemap:
+          type: boolean
+        sitemapUrl:
+          type: ["string", "null"]
+        localBusinessStructuredData:
+          type: boolean
+        mapsLink:
+          type: boolean
+        valuePropositionSignal:
+          type: ["boolean", "null"]
+        duplicateTextDetected:
+          type: ["boolean", "null"]
       required:
         - pageTitle
+        - pageTitleLength
         - metaDescription
+        - metaDescriptionLength
         - h1Count
         - headingCount
         - headings
         - visibleTextLength
         - linkCount
+        - internalLinkCount
+        - externalLinkCount
         - imageCount
         - imagesWithAlt
         - ctaCount
         - callsToAction
+        - primaryCta
+        - ctaAboveFold
         - contactSignals
+        - legalSignals
+        - companySignals
+        - socialProofSignals
+        - localSignals
         - technicalSignals
         - responseTimeMs
+        - httpStatus
         - pageSizeKb
         - https
+        - compressed
+        - contentEncoding
+        - canonical
+        - robotsDirectives
+        - openGraphSignals
+        - hasViewport
+        - hasLanguage
+        - hasRobotsTxt
+        - hasSitemap
+        - sitemapUrl
+        - localBusinessStructuredData
+        - mapsLink
+        - valuePropositionSignal
+        - duplicateTextDetected
     ScanIssue:
       type: object
       properties:
@@ -266,7 +381,15 @@ components:
         severity:
           type: string
           enum: [high, medium, low]
+        impact:
+          type: string
+          enum: [high, medium, low]
+        difficulty:
+          type: string
+          enum: [easy, medium, hard]
         fact:
+          type: string
+        whyItMatters:
           type: string
         recommendation:
           type: string
@@ -274,7 +397,10 @@ components:
         - id
         - title
         - severity
+        - impact
+        - difficulty
         - fact
+        - whyItMatters
         - recommendation
     ErrorResponse:
       type: object

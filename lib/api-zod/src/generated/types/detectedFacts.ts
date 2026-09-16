@@ -9,8 +9,12 @@
 export interface DetectedFacts {
   /** @nullable */
   pageTitle: string | null;
+  /** @minimum 0 */
+  pageTitleLength: number;
   /** @nullable */
   metaDescription: string | null;
+  /** @minimum 0 */
+  metaDescriptionLength: number;
   /** @minimum 0 */
   h1Count: number;
   /** @minimum 0 */
@@ -21,17 +25,54 @@ export interface DetectedFacts {
   /** @minimum 0 */
   linkCount: number;
   /** @minimum 0 */
+  internalLinkCount: number;
+  /** @minimum 0 */
+  externalLinkCount: number;
+  /** @minimum 0 */
   imageCount: number;
   /** @minimum 0 */
   imagesWithAlt: number;
   /** @minimum 0 */
   ctaCount: number;
   callsToAction: string[];
+  /** @nullable */
+  primaryCta: string | null;
+  /** @nullable */
+  ctaAboveFold: boolean | null;
   contactSignals: string[];
+  legalSignals: string[];
+  companySignals: string[];
+  socialProofSignals: string[];
+  localSignals: string[];
   technicalSignals: string[];
   /** @minimum 0 */
   responseTimeMs: number;
+  /**
+     * @minimum 100
+     * @maximum 599
+     */
+  httpStatus: number;
   /** @minimum 0 */
   pageSizeKb: number;
   https: boolean;
+  /** @nullable */
+  compressed: boolean | null;
+  /** @nullable */
+  contentEncoding: string | null;
+  /** @nullable */
+  canonical: string | null;
+  robotsDirectives: string[];
+  openGraphSignals: string[];
+  hasViewport: boolean;
+  hasLanguage: boolean;
+  hasRobotsTxt: boolean;
+  hasSitemap: boolean;
+  /** @nullable */
+  sitemapUrl: string | null;
+  localBusinessStructuredData: boolean;
+  mapsLink: boolean;
+  /** @nullable */
+  valuePropositionSignal: boolean | null;
+  /** @nullable */
+  duplicateTextDetected: boolean | null;
 }

@@ -6,6 +6,8 @@
  * OpenAPI spec version: 0.1.0
  */
 
+export * from './categoryCheck';
+export * from './categoryCheckStatus';
 export * from './categoryScore';
 export * from './categoryScoreKey';
 export * from './detectedFacts';
@@ -15,5 +17,7 @@ export * from './scan';
 export * from './scanAnalysis';
 export * from './scanInput';
 export * from './scanIssue';
+export * from './scanIssueDifficulty';
+export * from './scanIssueImpact';
 export * from './scanIssueSeverity';
 export * from './scanStatus';
