@@ -5,6 +5,7 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
+import type { ScanIssueConfidence } from './scanIssueConfidence';
 import type { ScanIssueDifficulty } from './scanIssueDifficulty';
 import type { ScanIssueImpact } from './scanIssueImpact';
 import type { ScanIssueSeverity } from './scanIssueSeverity';
@@ -15,6 +16,7 @@ export interface ScanIssue {
   severity: ScanIssueSeverity;
   impact: ScanIssueImpact;
   difficulty: ScanIssueDifficulty;
+  confidence: ScanIssueConfidence;
   fact: string;
   whyItMatters: string;
   recommendation: string;

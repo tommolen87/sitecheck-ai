@@ -12,7 +12,15 @@ import { analyzeWebsite } from "../lib/website-analysis";
 import { generateAiRecommendations } from "../lib/ai-website-analysis";
 
 const router: IRouter = Router();
-const TOTAL_CATEGORY_COUNT = 7;
+const CATEGORY_WEIGHTS: Record<string, number> = {
+  conversie: 20,
+  seo: 20,
+  mobiel: 15,
+  techniek: 15,
+  content: 10,
+  vertrouwen: 10,
+  lokaal: 10,
+};
 
 function normalizeScanAnalysis<T extends { analysis: unknown }>(scan: T): T {
   const { analysis } = scan;
@@ -83,17 +91,19 @@ function normalizeScanAnalysis<T extends { analysis: unknown }>(scan: T): T {
           },
           { passed: 0, total: 0 },
         );
+        const qualityScore =
+          checked && knownWeights.total > 0
+            ? Math.round((knownWeights.passed / knownWeights.total) * 100)
+            : null;
         const score =
-          !checked
-            ? null
-            : typeof categoryRecord.score === "number"
-              ? categoryRecord.score
-              : knownWeights.total > 0
-                ? Math.round((knownWeights.passed / knownWeights.total) * 100)
-                : null;
+          qualityScore === null ? null : Math.round(qualityScore * (coveragePercent / 100));
+        const key = typeof categoryRecord.key === "string" ? categoryRecord.key : "";
+        const weightPercent = CATEGORY_WEIGHTS[key] ?? 0;
         return {
           ...categoryRecord,
           score,
+          qualityScore,
+          weightPercent,
           checked,
           passedCount,
           failedCount,
@@ -104,42 +114,66 @@ function normalizeScanAnalysis<T extends { analysis: unknown }>(scan: T): T {
         };
       })
     : analysisRecord.categoryScores;
-  const overallCoveragePercent =
-    typeof analysisRecord.overallCoveragePercent === "number"
-      ? analysisRecord.overallCoveragePercent
-      : Array.isArray(categoryScores) && categoryScores.length > 0
-        ? Math.round(
-            categoryScores.reduce(
-              (total, category) =>
-                total +
-                (typeof category === "object" &&
-                category !== null &&
-                !Array.isArray(category) &&
-                typeof category.coveragePercent === "number"
-                  ? category.coveragePercent
-                  : 0),
-              0,
-            ) / TOTAL_CATEGORY_COUNT,
+  const normalizedCategories = Array.isArray(categoryScores)
+    ? categoryScores.filter(
+        (category): category is Record<string, unknown> =>
+          typeof category === "object" && category !== null && !Array.isArray(category),
+      )
+    : [];
+  const overallCoveragePercent = Math.round(
+    normalizedCategories.reduce((total, category) => {
+      const coverage = typeof category.coveragePercent === "number" ? category.coveragePercent : 0;
+      const weight = typeof category.weightPercent === "number" ? category.weightPercent : 0;
+      return total + coverage * (weight / 100);
+    }, 0),
+  );
+  const overallScore = Math.round(
+    normalizedCategories.reduce((total, category) => {
+      const score = typeof category.score === "number" ? category.score : 0;
+      const weight = typeof category.weightPercent === "number" ? category.weightPercent : 0;
+      return total + score * (weight / 100);
+    }, 0),
+  );
+  const measuredWeight = normalizedCategories.reduce((total, category) => {
+    const coverage = typeof category.coveragePercent === "number" ? category.coveragePercent : 0;
+    const weight = typeof category.weightPercent === "number" ? category.weightPercent : 0;
+    return total + coverage * (weight / 100);
+  }, 0);
+  const measuredQualityPoints = normalizedCategories.reduce((total, category) => {
+    const quality = typeof category.qualityScore === "number" ? category.qualityScore : 0;
+    const coverage = typeof category.coveragePercent === "number" ? category.coveragePercent : 0;
+    const weight = typeof category.weightPercent === "number" ? category.weightPercent : 0;
+    return total + quality * coverage * (weight / 100);
+  }, 0);
+  const overallQualityScore =
+    measuredWeight > 0 ? Math.round(measuredQualityPoints / measuredWeight) : null;
+  const detectedFacts =
+    typeof analysisRecord.detectedFacts === "object" &&
+    analysisRecord.detectedFacts !== null &&
+    !Array.isArray(analysisRecord.detectedFacts)
+      ? {
+          ...(analysisRecord.detectedFacts as Record<string, unknown>),
+          imageAltTexts: Array.isArray(
+            (analysisRecord.detectedFacts as Record<string, unknown>).imageAltTexts,
           )
-        : 0;
-  const usesCurrentScoring = typeof analysisRecord.overallCoveragePercent === "number";
-  const overallScore =
-    usesCurrentScoring
-      ? analysisRecord.overallScore
-      : Array.isArray(categoryScores) && categoryScores.length > 0
-        ? Math.round(
-            categoryScores.reduce((total, category) => {
-              if (typeof category !== "object" || category === null || Array.isArray(category)) return total;
-              const categoryRecord = category as Record<string, unknown>;
-              const score = typeof categoryRecord.score === "number" ? categoryRecord.score : 0;
-              const coverage =
-                typeof categoryRecord.coveragePercent === "number"
-                  ? categoryRecord.coveragePercent
-                  : 0;
-              return total + score * (coverage / 100);
-            }, 0) / TOTAL_CATEGORY_COUNT,
-          )
-        : 0;
+            ? (analysisRecord.detectedFacts as Record<string, unknown>).imageAltTexts
+            : [],
+        }
+      : analysisRecord.detectedFacts;
+  const issues = Array.isArray(analysisRecord.issues)
+    ? analysisRecord.issues.map((issue) =>
+        typeof issue === "object" && issue !== null && !Array.isArray(issue)
+          ? {
+              ...(issue as Record<string, unknown>),
+              confidence: ["high", "medium", "low"].includes(
+                String((issue as Record<string, unknown>).confidence),
+              )
+                ? (issue as Record<string, unknown>).confidence
+                : "high",
+            }
+          : issue,
+      )
+    : analysisRecord.issues;
 
   return {
     ...scan,
@@ -149,8 +183,11 @@ function normalizeScanAnalysis<T extends { analysis: unknown }>(scan: T): T {
         ? analysisRecord.aiRecommendations
         : null,
       overallScore,
+      overallQualityScore,
       overallCoveragePercent,
       categoryScores,
+      detectedFacts,
+      issues,
     },
   };
 }

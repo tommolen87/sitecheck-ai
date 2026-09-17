@@ -12,6 +12,12 @@ export interface CategoryScore {
   key: CategoryScoreKey;
   label: string;
   score: number | null;
+  qualityScore: number | null;
+  /**
+     * @minimum 0
+     * @maximum 100
+     */
+  weightPercent: number;
   checked: boolean;
   /** @minimum 0 */
   passedCount: number;

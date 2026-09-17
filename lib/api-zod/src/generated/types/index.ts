@@ -21,6 +21,7 @@ export * from './scan';
 export * from './scanAnalysis';
 export * from './scanInput';
 export * from './scanIssue';
+export * from './scanIssueConfidence';
 export * from './scanIssueDifficulty';
 export * from './scanIssueImpact';
 export * from './scanIssueSeverity';

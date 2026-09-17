@@ -6,7 +6,15 @@ const MAX_AUXILIARY_BYTES = 400_000;
 const REQUEST_TIMEOUT_MS = 10_000;
 const AUXILIARY_TIMEOUT_MS = 5_000;
 const MAX_REDIRECTS = 3;
-const TOTAL_CATEGORY_COUNT = 7;
+const CATEGORY_WEIGHTS: Record<string, number> = {
+  conversie: 20,
+  seo: 20,
+  mobiel: 15,
+  techniek: 15,
+  content: 10,
+  vertrouwen: 10,
+  lokaal: 10,
+};
 
 export type CheckStatus = "passed" | "failed" | "unknown";
 
@@ -21,12 +29,15 @@ export type CategoryCheck = {
 
 export type ScanAnalysisResult = {
   overallScore: number;
+  overallQualityScore: number | null;
   overallCoveragePercent: number;
   aiRecommendations: import("./ai-website-analysis").AiRecommendation[] | null;
   categoryScores: Array<{
     key: string;
     label: string;
     score: number | null;
+    qualityScore: number | null;
+    weightPercent: number;
     checked: boolean;
     passedCount: number;
     failedCount: number;
@@ -51,6 +62,7 @@ export type ScanAnalysisResult = {
     externalLinkCount: number;
     imageCount: number;
     imagesWithAlt: number;
+    imageAltTexts: string[];
     ctaCount: number;
     callsToAction: string[];
     primaryCta: string | null;
@@ -91,6 +103,7 @@ export type ScanAnalysisResult = {
     severity: "high" | "medium" | "low";
     impact: "high" | "medium" | "low";
     difficulty: "easy" | "medium" | "hard";
+    confidence: "high" | "medium" | "low";
     fact: string;
     whyItMatters: string;
     recommendation: string;
@@ -567,12 +580,13 @@ function scoreCategory(
   const knownChecks = checks.filter((check) => check.status !== "unknown");
   const totalWeight = knownChecks.reduce((sum, check) => sum + check.weight, 0);
   const passedWeight = knownChecks.reduce((sum, check) => sum + (check.status === "pass" ? check.weight : 0), 0);
-  const score = totalWeight > 0 ? Math.round((passedWeight / totalWeight) * 100) : null;
+  const qualityScore = totalWeight > 0 ? Math.round((passedWeight / totalWeight) * 100) : null;
   const passedCount = knownChecks.filter((check) => check.status === "pass").length;
   const failedCount = knownChecks.filter((check) => check.status === "fail").length;
   const unknownCount = checks.length - knownChecks.length;
   const executedCount = knownChecks.length;
   const coveragePercent = checks.length > 0 ? Math.round((executedCount / checks.length) * 100) : 0;
+  const score = qualityScore === null ? null : Math.round(qualityScore * (coveragePercent / 100));
   const note =
     knownChecks.length === 0
       ? "Niet gecontroleerd: voor deze categorie zijn geen meetbare signalen beschikbaar."
@@ -582,6 +596,8 @@ function scoreCategory(
     key,
     label,
     score,
+    qualityScore,
+    weightPercent: CATEGORY_WEIGHTS[key] ?? 0,
     checked: knownChecks.length > 0,
     passedCount,
     failedCount,
@@ -688,7 +704,7 @@ function getCategoryScores(facts: ScanAnalysisResult["detectedFacts"]): ScanAnal
 }
 
 function issue(
-  value: Omit<ScanAnalysisResult["issues"][number], "severity" | "relatedChecks"> & { severity: "high" | "medium" | "low" },
+  value: Omit<ScanAnalysisResult["issues"][number], "severity" | "confidence" | "relatedChecks"> & { severity: "high" | "medium" | "low" },
 ): ScanAnalysisResult["issues"][number] {
   const relatedChecks: Record<string, string[]> = {
     "missing-primary-cta": ["CTA gevonden", "Primaire CTA lijkt duidelijk"],
@@ -703,7 +719,7 @@ function issue(
     "missing-privacy-signal": ["Privacy/cookie-informatie"],
     "duplicate-text": ["Geen herhaalde tekstblokken"],
   };
-  return { ...value, relatedChecks: relatedChecks[value.id] ?? [] };
+  return { ...value, confidence: "high", relatedChecks: relatedChecks[value.id] ?? [] };
 }
 
 function getIssues(facts: ScanAnalysisResult["detectedFacts"]): ScanAnalysisResult["issues"] {
@@ -862,6 +878,10 @@ async function createAnalysis(snapshot: WebsiteSnapshot): Promise<WebsiteAnalysi
   const links = extractLinks(html, url);
   const imageTags = html.match(/<img\b[^>]*>/gi) ?? [];
   const imagesWithAlt = imageTags.filter((tag) => getAttribute(tag, "alt") !== null).length;
+  const imageAltTexts = imageTags
+    .map((tag) => getAttribute(tag, "alt"))
+    .filter((alt): alt is string => Boolean(alt))
+    .slice(0, 20);
   const { callsToAction, primaryCta, primaryCtaClearlyMarked } = extractCallsToAction(html);
   const contactSignals = extractContactSignals(html, visibleText);
   const signalLists = extractSignalList(html, visibleText);
@@ -898,6 +918,7 @@ async function createAnalysis(snapshot: WebsiteSnapshot): Promise<WebsiteAnalysi
     ...links,
     imageCount: imageTags.length,
     imagesWithAlt,
+    imageAltTexts,
     ctaCount: callsToAction.length,
     callsToAction,
     primaryCta,
@@ -935,19 +956,36 @@ async function createAnalysis(snapshot: WebsiteSnapshot): Promise<WebsiteAnalysi
   };
   const categoryScores = getCategoryScores(detectedFacts);
   const overallCoveragePercent = Math.round(
-    categoryScores.reduce((total, category) => total + category.coveragePercent, 0) /
-      TOTAL_CATEGORY_COUNT,
+    categoryScores.reduce(
+      (total, category) => total + category.coveragePercent * (category.weightPercent / 100),
+      0,
+    ),
   );
   const overallScore = Math.round(
     categoryScores.reduce(
-      (total, category) => total + (category.score ?? 0) * (category.coveragePercent / 100),
+      (total, category) => total + (category.score ?? 0) * (category.weightPercent / 100),
       0,
-    ) / TOTAL_CATEGORY_COUNT,
+    ),
   );
+  const measuredWeight = categoryScores.reduce(
+    (total, category) => total + category.coveragePercent * (category.weightPercent / 100),
+    0,
+  );
+  const measuredQualityPoints = categoryScores.reduce(
+    (total, category) =>
+      total +
+      (category.qualityScore ?? 0) *
+        category.coveragePercent *
+        (category.weightPercent / 100),
+    0,
+  );
+  const overallQualityScore =
+    measuredWeight > 0 ? Math.round(measuredQualityPoints / measuredWeight) : null;
 
   return {
     analysis: {
       overallScore,
+      overallQualityScore,
       overallCoveragePercent,
       categoryScores,
       detectedFacts,

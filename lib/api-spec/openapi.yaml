@@ -145,6 +145,12 @@ components:
           type: integer
           minimum: 0
           maximum: 100
+        overallQualityScore:
+          oneOf:
+            - type: integer
+              minimum: 0
+              maximum: 100
+            - type: "null"
         overallCoveragePercent:
           type: integer
           minimum: 0
@@ -172,6 +178,7 @@ components:
             $ref: "#/components/schemas/ScanIssue"
       required:
         - overallScore
+        - overallQualityScore
         - overallCoveragePercent
         - aiRecommendations
         - categoryScores
@@ -192,6 +199,16 @@ components:
               minimum: 0
               maximum: 100
             - type: "null"
+        qualityScore:
+          oneOf:
+            - type: integer
+              minimum: 0
+              maximum: 100
+            - type: "null"
+        weightPercent:
+          type: integer
+          minimum: 0
+          maximum: 100
         checked:
           type: boolean
         passedCount:
@@ -220,6 +237,8 @@ components:
         - key
         - label
         - score
+        - qualityScore
+        - weightPercent
         - checked
         - passedCount
         - failedCount
@@ -294,6 +313,10 @@ components:
         imagesWithAlt:
           type: integer
           minimum: 0
+        imageAltTexts:
+          type: array
+          items:
+            type: string
         ctaCount:
           type: integer
           minimum: 0
@@ -395,6 +418,7 @@ components:
         - externalLinkCount
         - imageCount
         - imagesWithAlt
+        - imageAltTexts
         - ctaCount
         - callsToAction
         - primaryCta
@@ -443,6 +467,9 @@ components:
         difficulty:
           type: string
           enum: [easy, medium, hard]
+        confidence:
+          type: string
+          enum: [high, medium, low]
         fact:
           type: string
         whyItMatters:
@@ -459,6 +486,7 @@ components:
         - severity
         - impact
         - difficulty
+        - confidence
         - fact
         - whyItMatters
         - recommendation

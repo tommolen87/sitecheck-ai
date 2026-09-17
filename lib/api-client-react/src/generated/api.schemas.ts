@@ -106,6 +106,12 @@ export interface CategoryScore {
   key: CategoryScoreKey;
   label: string;
   score: number | null;
+  qualityScore: number | null;
+  /**
+     * @minimum 0
+     * @maximum 100
+     */
+  weightPercent: number;
   checked: boolean;
   /** @minimum 0 */
   passedCount: number;
@@ -150,6 +156,7 @@ export interface DetectedFacts {
   imageCount: number;
   /** @minimum 0 */
   imagesWithAlt: number;
+  imageAltTexts: string[];
   /** @minimum 0 */
   ctaCount: number;
   callsToAction: string[];
@@ -228,12 +235,22 @@ export const ScanIssueDifficulty = {
   hard: 'hard',
 } as const;
 
+export type ScanIssueConfidence = typeof ScanIssueConfidence[keyof typeof ScanIssueConfidence];
+
+
+export const ScanIssueConfidence = {
+  high: 'high',
+  medium: 'medium',
+  low: 'low',
+} as const;
+
 export interface ScanIssue {
   id: string;
   title: string;
   severity: ScanIssueSeverity;
   impact: ScanIssueImpact;
   difficulty: ScanIssueDifficulty;
+  confidence: ScanIssueConfidence;
   fact: string;
   whyItMatters: string;
   recommendation: string;
@@ -246,6 +263,7 @@ export interface ScanAnalysis {
      * @maximum 100
      */
   overallScore: number;
+  overallQualityScore: number | null;
   /**
      * @minimum 0
      * @maximum 100

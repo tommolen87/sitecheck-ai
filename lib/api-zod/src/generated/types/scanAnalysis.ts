@@ -16,6 +16,7 @@ export interface ScanAnalysis {
      * @maximum 100
      */
   overallScore: number;
+  overallQualityScore: number | null;
   /**
      * @minimum 0
      * @maximum 100

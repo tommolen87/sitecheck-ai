@@ -32,6 +32,9 @@ export const CreateScanBody = zod.object({
 export const createScanResponseAnalysisOneOverallScoreMin = 0;
 export const createScanResponseAnalysisOneOverallScoreMax = 100;
 
+export const createScanResponseAnalysisOneOverallQualityScoreOneMin = 0;
+export const createScanResponseAnalysisOneOverallQualityScoreOneMax = 100;
+
 export const createScanResponseAnalysisOneOverallCoveragePercentMin = 0;
 export const createScanResponseAnalysisOneOverallCoveragePercentMax = 100;
 
@@ -39,6 +42,12 @@ export const createScanResponseAnalysisOneAiRecommendationsOneMax = 5;
 
 export const createScanResponseAnalysisOneCategoryScoresItemScoreOneMin = 0;
 export const createScanResponseAnalysisOneCategoryScoresItemScoreOneMax = 100;
+
+export const createScanResponseAnalysisOneCategoryScoresItemQualityScoreOneMin = 0;
+export const createScanResponseAnalysisOneCategoryScoresItemQualityScoreOneMax = 100;
+
+export const createScanResponseAnalysisOneCategoryScoresItemWeightPercentMin = 0;
+export const createScanResponseAnalysisOneCategoryScoresItemWeightPercentMax = 100;
 
 export const createScanResponseAnalysisOneCategoryScoresItemPassedCountMin = 0;
 
@@ -91,6 +100,7 @@ export const CreateScanResponse = zod.object({
   "createdAt": zod.coerce.date(),
   "analysis": zod.union([zod.object({
   "overallScore": zod.number().int().min(createScanResponseAnalysisOneOverallScoreMin).max(createScanResponseAnalysisOneOverallScoreMax),
+  "overallQualityScore": zod.union([zod.number().int().min(createScanResponseAnalysisOneOverallQualityScoreOneMin).max(createScanResponseAnalysisOneOverallQualityScoreOneMax),zod.null()]),
   "overallCoveragePercent": zod.number().int().min(createScanResponseAnalysisOneOverallCoveragePercentMin).max(createScanResponseAnalysisOneOverallCoveragePercentMax),
   "aiRecommendations": zod.union([zod.array(zod.object({
   "title": zod.string(),
@@ -107,6 +117,8 @@ export const CreateScanResponse = zod.object({
   "key": zod.enum(['conversie', 'seo', 'mobiel', 'techniek', 'content', 'vertrouwen', 'lokaal']),
   "label": zod.string(),
   "score": zod.union([zod.number().int().min(createScanResponseAnalysisOneCategoryScoresItemScoreOneMin).max(createScanResponseAnalysisOneCategoryScoresItemScoreOneMax),zod.null()]),
+  "qualityScore": zod.union([zod.number().int().min(createScanResponseAnalysisOneCategoryScoresItemQualityScoreOneMin).max(createScanResponseAnalysisOneCategoryScoresItemQualityScoreOneMax),zod.null()]),
+  "weightPercent": zod.number().int().min(createScanResponseAnalysisOneCategoryScoresItemWeightPercentMin).max(createScanResponseAnalysisOneCategoryScoresItemWeightPercentMax),
   "checked": zod.boolean(),
   "passedCount": zod.number().int().min(createScanResponseAnalysisOneCategoryScoresItemPassedCountMin),
   "failedCount": zod.number().int().min(createScanResponseAnalysisOneCategoryScoresItemFailedCountMin),
@@ -137,6 +149,7 @@ export const CreateScanResponse = zod.object({
   "externalLinkCount": zod.number().int().min(createScanResponseAnalysisOneDetectedFactsExternalLinkCountMin),
   "imageCount": zod.number().int().min(createScanResponseAnalysisOneDetectedFactsImageCountMin),
   "imagesWithAlt": zod.number().int().min(createScanResponseAnalysisOneDetectedFactsImagesWithAltMin),
+  "imageAltTexts": zod.array(zod.string()),
   "ctaCount": zod.number().int().min(createScanResponseAnalysisOneDetectedFactsCtaCountMin),
   "callsToAction": zod.array(zod.string()),
   "primaryCta": zod.string().nullable(),
@@ -177,6 +190,7 @@ export const CreateScanResponse = zod.object({
   "severity": zod.enum(['high', 'medium', 'low']),
   "impact": zod.enum(['high', 'medium', 'low']),
   "difficulty": zod.enum(['easy', 'medium', 'hard']),
+  "confidence": zod.enum(['high', 'medium', 'low']),
   "fact": zod.string(),
   "whyItMatters": zod.string(),
   "recommendation": zod.string(),
@@ -195,6 +209,9 @@ export const CreateScanResponse = zod.object({
 export const listScansResponseAnalysisOneOverallScoreMin = 0;
 export const listScansResponseAnalysisOneOverallScoreMax = 100;
 
+export const listScansResponseAnalysisOneOverallQualityScoreOneMin = 0;
+export const listScansResponseAnalysisOneOverallQualityScoreOneMax = 100;
+
 export const listScansResponseAnalysisOneOverallCoveragePercentMin = 0;
 export const listScansResponseAnalysisOneOverallCoveragePercentMax = 100;
 
@@ -202,6 +219,12 @@ export const listScansResponseAnalysisOneAiRecommendationsOneMax = 5;
 
 export const listScansResponseAnalysisOneCategoryScoresItemScoreOneMin = 0;
 export const listScansResponseAnalysisOneCategoryScoresItemScoreOneMax = 100;
+
+export const listScansResponseAnalysisOneCategoryScoresItemQualityScoreOneMin = 0;
+export const listScansResponseAnalysisOneCategoryScoresItemQualityScoreOneMax = 100;
+
+export const listScansResponseAnalysisOneCategoryScoresItemWeightPercentMin = 0;
+export const listScansResponseAnalysisOneCategoryScoresItemWeightPercentMax = 100;
 
 export const listScansResponseAnalysisOneCategoryScoresItemPassedCountMin = 0;
 
@@ -254,6 +277,7 @@ export const ListScansResponseItem = zod.object({
   "createdAt": zod.coerce.date(),
   "analysis": zod.union([zod.object({
   "overallScore": zod.number().int().min(listScansResponseAnalysisOneOverallScoreMin).max(listScansResponseAnalysisOneOverallScoreMax),
+  "overallQualityScore": zod.union([zod.number().int().min(listScansResponseAnalysisOneOverallQualityScoreOneMin).max(listScansResponseAnalysisOneOverallQualityScoreOneMax),zod.null()]),
   "overallCoveragePercent": zod.number().int().min(listScansResponseAnalysisOneOverallCoveragePercentMin).max(listScansResponseAnalysisOneOverallCoveragePercentMax),
   "aiRecommendations": zod.union([zod.array(zod.object({
   "title": zod.string(),
@@ -270,6 +294,8 @@ export const ListScansResponseItem = zod.object({
   "key": zod.enum(['conversie', 'seo', 'mobiel', 'techniek', 'content', 'vertrouwen', 'lokaal']),
   "label": zod.string(),
   "score": zod.union([zod.number().int().min(listScansResponseAnalysisOneCategoryScoresItemScoreOneMin).max(listScansResponseAnalysisOneCategoryScoresItemScoreOneMax),zod.null()]),
+  "qualityScore": zod.union([zod.number().int().min(listScansResponseAnalysisOneCategoryScoresItemQualityScoreOneMin).max(listScansResponseAnalysisOneCategoryScoresItemQualityScoreOneMax),zod.null()]),
+  "weightPercent": zod.number().int().min(listScansResponseAnalysisOneCategoryScoresItemWeightPercentMin).max(listScansResponseAnalysisOneCategoryScoresItemWeightPercentMax),
   "checked": zod.boolean(),
   "passedCount": zod.number().int().min(listScansResponseAnalysisOneCategoryScoresItemPassedCountMin),
   "failedCount": zod.number().int().min(listScansResponseAnalysisOneCategoryScoresItemFailedCountMin),
@@ -300,6 +326,7 @@ export const ListScansResponseItem = zod.object({
   "externalLinkCount": zod.number().int().min(listScansResponseAnalysisOneDetectedFactsExternalLinkCountMin),
   "imageCount": zod.number().int().min(listScansResponseAnalysisOneDetectedFactsImageCountMin),
   "imagesWithAlt": zod.number().int().min(listScansResponseAnalysisOneDetectedFactsImagesWithAltMin),
+  "imageAltTexts": zod.array(zod.string()),
   "ctaCount": zod.number().int().min(listScansResponseAnalysisOneDetectedFactsCtaCountMin),
   "callsToAction": zod.array(zod.string()),
   "primaryCta": zod.string().nullable(),
@@ -340,6 +367,7 @@ export const ListScansResponseItem = zod.object({
   "severity": zod.enum(['high', 'medium', 'low']),
   "impact": zod.enum(['high', 'medium', 'low']),
   "difficulty": zod.enum(['easy', 'medium', 'hard']),
+  "confidence": zod.enum(['high', 'medium', 'low']),
   "fact": zod.string(),
   "whyItMatters": zod.string(),
   "recommendation": zod.string(),
@@ -366,6 +394,9 @@ export const GetScanParams = zod.object({
 export const getScanResponseAnalysisOneOverallScoreMin = 0;
 export const getScanResponseAnalysisOneOverallScoreMax = 100;
 
+export const getScanResponseAnalysisOneOverallQualityScoreOneMin = 0;
+export const getScanResponseAnalysisOneOverallQualityScoreOneMax = 100;
+
 export const getScanResponseAnalysisOneOverallCoveragePercentMin = 0;
 export const getScanResponseAnalysisOneOverallCoveragePercentMax = 100;
 
@@ -373,6 +404,12 @@ export const getScanResponseAnalysisOneAiRecommendationsOneMax = 5;
 
 export const getScanResponseAnalysisOneCategoryScoresItemScoreOneMin = 0;
 export const getScanResponseAnalysisOneCategoryScoresItemScoreOneMax = 100;
+
+export const getScanResponseAnalysisOneCategoryScoresItemQualityScoreOneMin = 0;
+export const getScanResponseAnalysisOneCategoryScoresItemQualityScoreOneMax = 100;
+
+export const getScanResponseAnalysisOneCategoryScoresItemWeightPercentMin = 0;
+export const getScanResponseAnalysisOneCategoryScoresItemWeightPercentMax = 100;
 
 export const getScanResponseAnalysisOneCategoryScoresItemPassedCountMin = 0;
 
@@ -425,6 +462,7 @@ export const GetScanResponse = zod.object({
   "createdAt": zod.coerce.date(),
   "analysis": zod.union([zod.object({
   "overallScore": zod.number().int().min(getScanResponseAnalysisOneOverallScoreMin).max(getScanResponseAnalysisOneOverallScoreMax),
+  "overallQualityScore": zod.union([zod.number().int().min(getScanResponseAnalysisOneOverallQualityScoreOneMin).max(getScanResponseAnalysisOneOverallQualityScoreOneMax),zod.null()]),
   "overallCoveragePercent": zod.number().int().min(getScanResponseAnalysisOneOverallCoveragePercentMin).max(getScanResponseAnalysisOneOverallCoveragePercentMax),
   "aiRecommendations": zod.union([zod.array(zod.object({
   "title": zod.string(),
@@ -441,6 +479,8 @@ export const GetScanResponse = zod.object({
   "key": zod.enum(['conversie', 'seo', 'mobiel', 'techniek', 'content', 'vertrouwen', 'lokaal']),
   "label": zod.string(),
   "score": zod.union([zod.number().int().min(getScanResponseAnalysisOneCategoryScoresItemScoreOneMin).max(getScanResponseAnalysisOneCategoryScoresItemScoreOneMax),zod.null()]),
+  "qualityScore": zod.union([zod.number().int().min(getScanResponseAnalysisOneCategoryScoresItemQualityScoreOneMin).max(getScanResponseAnalysisOneCategoryScoresItemQualityScoreOneMax),zod.null()]),
+  "weightPercent": zod.number().int().min(getScanResponseAnalysisOneCategoryScoresItemWeightPercentMin).max(getScanResponseAnalysisOneCategoryScoresItemWeightPercentMax),
   "checked": zod.boolean(),
   "passedCount": zod.number().int().min(getScanResponseAnalysisOneCategoryScoresItemPassedCountMin),
   "failedCount": zod.number().int().min(getScanResponseAnalysisOneCategoryScoresItemFailedCountMin),
@@ -471,6 +511,7 @@ export const GetScanResponse = zod.object({
   "externalLinkCount": zod.number().int().min(getScanResponseAnalysisOneDetectedFactsExternalLinkCountMin),
   "imageCount": zod.number().int().min(getScanResponseAnalysisOneDetectedFactsImageCountMin),
   "imagesWithAlt": zod.number().int().min(getScanResponseAnalysisOneDetectedFactsImagesWithAltMin),
+  "imageAltTexts": zod.array(zod.string()),
   "ctaCount": zod.number().int().min(getScanResponseAnalysisOneDetectedFactsCtaCountMin),
   "callsToAction": zod.array(zod.string()),
   "primaryCta": zod.string().nullable(),
@@ -511,6 +552,7 @@ export const GetScanResponse = zod.object({
   "severity": zod.enum(['high', 'medium', 'low']),
   "impact": zod.enum(['high', 'medium', 'low']),
   "difficulty": zod.enum(['easy', 'medium', 'hard']),
+  "confidence": zod.enum(['high', 'medium', 'low']),
   "fact": zod.string(),
   "whyItMatters": zod.string(),
   "recommendation": zod.string(),

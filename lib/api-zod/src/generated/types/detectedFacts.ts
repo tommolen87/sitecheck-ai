@@ -32,6 +32,7 @@ export interface DetectedFacts {
   imageCount: number;
   /** @minimum 0 */
   imagesWithAlt: number;
+  imageAltTexts: string[];
   /** @minimum 0 */
   ctaCount: number;
   callsToAction: string[];

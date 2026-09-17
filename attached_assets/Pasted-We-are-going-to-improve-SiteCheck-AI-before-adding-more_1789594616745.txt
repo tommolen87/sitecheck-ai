@@ -1,0 +1,98 @@
+We are going to improve SiteCheck AI before adding more features.
+
+The current scan is much better, but I found several issues that must be fixed.
+
+1. FIX THE SCORING LOGIC
+
+A category must NEVER receive 100/100 when important checks are unknown or not executed.
+
+For every category:
+- Separate PASS, FAIL and UNKNOWN.
+- UNKNOWN checks must not receive positive points.
+- The maximum achievable category score must reflect measurement coverage.
+- A category with 7 successful checks and 3 unknown checks must not automatically receive 100/100.
+- Make the scoring mathematically consistent and transparent.
+
+For example:
+If 7 of 10 checks are executed and all 7 pass, the category should not automatically receive 100.
+The report should show both:
+- quality score
+- measurement coverage
+
+Do not invent data.
+
+2. FIX THE TOTAL SCORE
+
+The total score must be mathematically derived from the category scores and their defined weights.
+
+Use these weights:
+- Conversie: 20%
+- SEO: 20%
+- Mobiel: 15%
+- Techniek & snelheid: 15%
+- Content: 10%
+- Vertrouwen: 10%
+- Lokale vindbaarheid: 10%
+
+If a category is completely unmeasured, it must not receive positive points.
+
+However, clearly distinguish:
+- actual website quality
+- measurement coverage
+
+Do not make the overall score artificially low simply because a category cannot currently be measured.
+
+3. MAKE THE REPORT TRUSTWORTHY
+
+Every finding must contain:
+- Wat we vonden
+- Waarom dit belangrijk is
+- Wat je concreet kunt verbeteren
+- Impact: Laag / Middel / Hoog
+- Moeilijkheid: Makkelijk / Gemiddeld / Moeilijk
+- Vertrouwen: Hoog / Middel / Laag
+- Gebaseerd op: exact detected signal
+
+Never claim something was checked when it wasn't.
+
+4. REMOVE OR CORRECT MISLEADING AI LANGUAGE
+
+Only call something "AI-analyse" if an actual AI model is being used.
+
+If no AI model is currently connected, label it something like:
+"Analyse van de gevonden websitegegevens"
+
+Do not pretend that deterministic scoring is AI.
+
+5. IMPORTANT: PREPARE THE ARCHITECTURE FOR A REAL AI LAYER
+
+Keep all detected website data structured so that we can later send it to an AI model.
+
+The AI should eventually receive structured data such as:
+- title
+- meta description
+- H1/H2 headings
+- visible text
+- CTA information
+- links
+- images
+- alt text
+- contact information
+- address
+- technical signals
+- SEO signals
+- response time
+- page size
+- robots.txt
+- sitemap
+- structured data
+
+Do not add an AI API yet.
+
+6. DO NOT CHANGE THE VISUAL DESIGN
+
+Keep the current SiteCheck AI visual identity, typography, spacing, cards and Dutch language.
+
+The current design is good.
+
+The goal of this task is to make the scoring engine and analysis trustworthy and technically ready for the next step.

@@ -92,11 +92,10 @@ function CategoryScores({ analysis }: { analysis: ScanAnalysis }) {
                   <p>{result ? result.note : 'Niet beschikbaar in deze analyse.'}</p>
                   {result && (
                     <div className="category-coverage">
+                      <span>Kwaliteit gemeten: <strong>{result.qualityScore ?? '—'}{result.qualityScore !== null ? '/100' : ''}</strong></span>
                       <span>Uitgevoerd: <strong>{result.executedCount} van {result.checks.length}</strong></span>
                       <span>Meetdekking: <strong>{result.coveragePercent}%</strong></span>
-                      {result.checked && score === 100 && result.unknownCount > 0 && (
-                        <span>Op de meetbare onderdelen sterk</span>
-                      )}
+                      <span>Gewicht totaal: <strong>{result.weightPercent}%</strong></span>
                       {importantUnknownCount > 0 && (
                         <span>{importantUnknownCount} belangrijke {importantUnknownCount === 1 ? 'check kon' : 'checks konden'} we niet betrouwbaar beoordelen.</span>
                       )}
@@ -163,7 +162,7 @@ type RecommendationDisplay = {
 function deterministicRecommendation(issue: ScanIssue): RecommendationDisplay {
   return {
     ...issue,
-    confidence: null,
+    confidence: issue.confidence,
     proposal: null,
   };
 }
@@ -187,7 +186,7 @@ function aiRecommendation(recommendation: AiRecommendation, index: number): Reco
 function IssueCard({ issue, index }: { issue: RecommendationDisplay; index: number }) {
   const impactLabel = issue.impact === 'high' ? 'Hoog' : issue.impact === 'medium' ? 'Middel' : 'Laag';
   const difficultyLabel = issue.difficulty === 'easy' ? 'Makkelijk' : issue.difficulty === 'medium' ? 'Gemiddeld' : 'Moeilijk';
-  const confidenceLabel = issue.confidence === 'high' ? 'Hoog' : issue.confidence === 'medium' ? 'Gemiddeld' : issue.confidence === 'low' ? 'Laag' : null;
+  const confidenceLabel = issue.confidence === 'high' ? 'Hoog' : issue.confidence === 'medium' ? 'Middel' : issue.confidence === 'low' ? 'Laag' : null;
   return (
     <article className={`issue-card issue-${issue.severity}`} data-testid={`issue-card-${issue.id}`}>
       <div className="issue-card-top">
@@ -213,7 +212,7 @@ function IssueCard({ issue, index }: { issue: RecommendationDisplay; index: numb
           <p>{issue.proposal}</p>
         </div>
       )}
-      <div className="issue-meta" aria-label={`Impact ${impactLabel}, moeilijkheid ${difficultyLabel}`}>
+      <div className="issue-meta" aria-label={`Impact ${impactLabel}, moeilijkheid ${difficultyLabel}${confidenceLabel ? `, vertrouwen ${confidenceLabel}` : ''}`}>
         <span>Impact <strong>{impactLabel}</strong></span>
         <span>Moeilijkheid <strong>{difficultyLabel}</strong></span>
         {confidenceLabel && <span>Vertrouwen <strong>{confidenceLabel}</strong></span>}
@@ -282,8 +281,9 @@ function ResultHeader({ scan, analysis }: { scan: { url: string; createdAt: stri
               <ScoreRing score={analysis.overallScore} />
               <div>
                 <strong className="score-verdict">{analysis.overallScore >= 70 ? 'Een stevige basis' : analysis.overallScore >= 40 ? 'Ruimte om te groeien' : 'Tijd voor aandacht'}</strong>
-                <p>De totaalscore combineert kwaliteit en meetdekking. Niet-gemeten onderdelen leveren geen punten op.</p>
+                <p>De totaalscore weegt Conversie en SEO elk voor 20%, Mobiel en Techniek elk voor 15%, en de overige onderdelen elk voor 10%.</p>
                 <div className="overall-coverage">
+                  <strong>Gemeten kwaliteit: {analysis.overallQualityScore ?? '—'}{analysis.overallQualityScore !== null ? '/100' : ''}</strong>
                   <strong>Totale meetdekking: {analysis.overallCoveragePercent}%</strong>
                   {!allCategoriesMeasured && (
                     <span>
