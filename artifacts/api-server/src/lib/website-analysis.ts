@@ -240,11 +240,18 @@ async function fetchResource(
     await assertPublicUrl(currentUrl);
 
     let response: Response;
+
     try {
       response = await fetch(currentUrl, {
         headers: {
-          accept: options.requireHtml ? "text/html,application/xhtml+xml" : "text/plain,text/xml,application/xml",
-          "user-agent": "SiteCheckAI/1.0 (+website-analysis)",
+          accept: options.requireHtml
+            ? "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8"
+            : "text/plain,text/xml,application/xml",
+          "accept-language": "nl-NL,nl;q=0.9,en-US;q=0.8,en;q=0.7",
+          "cache-control": "no-cache",
+          pragma: "no-cache",
+          "user-agent":
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
         },
         redirect: "manual",
         signal: AbortSignal.timeout(options.timeoutMs),
