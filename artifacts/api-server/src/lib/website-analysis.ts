@@ -267,6 +267,15 @@ async function fetchResource(
       return null;
     }
 
+    console.log("=== SITECHECK FETCH RESPONSE ===");
+    console.log({
+      url: currentUrl.href,
+      status: response.status,
+      location: response.headers.get("location"),
+      contentType: response.headers.get("content-type"),
+    });
+    console.log("=== END SITECHECK FETCH RESPONSE ===");
+
     if (response.status >= 300 && response.status < 400) {
       const location = response.headers.get("location");
       if (!location || redirectCount === MAX_REDIRECTS) return null;
@@ -274,7 +283,17 @@ async function fetchResource(
       continue;
     }
 
-    if (!response.ok) return null;
+    if (!response.ok) {
+  console.error("=== SITECHECK FETCH NON-OK ===");
+      console.error({
+        url: currentUrl.href,
+        status: response.status,
+        statusText: response.statusText,
+      });
+      console.error("=== END SITECHECK FETCH NON-OK ===");
+
+      return null;
+    }
     if (
       options.requireHtml &&
       !(
