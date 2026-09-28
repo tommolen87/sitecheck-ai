@@ -1680,6 +1680,32 @@ async function createAnalysis(snapshot: WebsiteSnapshot): Promise<WebsiteAnalysi
       (link) => link.status === null || link.status >= 400,
     ),
   };
+  
+  console.log("=== SITECHECK PRODUCTION DEBUG ===");
+console.log({
+  url: snapshot.url.href,
+  httpStatus: snapshot.status,
+  htmlSizeKb: Number((Buffer.byteLength(html, "utf8") / 1024).toFixed(1)),
+  visibleTextLength: visibleText.length,
+  linkCount: links.internalLinks.length + links.externalLinks.length,
+  internalLinks: links.internalLinks.length,
+  externalLinks: links.externalLinks.length,
+  imageCount: imageTags.length,
+  imagesWithAlt,
+  ctaCount: callsToAction.length,
+  contactSignals: contactSignals.length,
+  socialProofSignals: signalLists.socialProofSignals.length,
+  localSignals: signalLists.localSignals.length,
+  companySignals: signalLists.companySignals.length,
+  hasViewport,
+  hasLanguage,
+  hasRobotsTxt: Boolean(robotsResource),
+  hasSitemap: Boolean(sitemapResource),
+  valuePropositionSignal: detectedFacts.valuePropositionSignal,
+  targetAudienceSignal: detectedFacts.targetAudienceSignal,
+});
+console.log("=== END SITECHECK PRODUCTION DEBUG ===");
+  
   const categoryScores = getCategoryScores(detectedFacts);
   const overallCoveragePercent = Math.round(
     categoryScores.reduce(
