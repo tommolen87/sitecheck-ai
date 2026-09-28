@@ -313,6 +313,10 @@ router.post("/scans/:scanId/checkout", async (req, res): Promise<void> => {
     return;
   }
 
+  const frontendUrl = (
+    process.env.FRONTEND_URL ?? "http://localhost:5173"
+  ).replace(/\/$/, "");
+
   try {
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
