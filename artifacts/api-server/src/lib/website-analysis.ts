@@ -60,6 +60,9 @@ export type ScanAnalysisResult = {
     linkCount: number;
     internalLinkCount: number;
     externalLinkCount: number;
+    externalLinks: string[];
+    brokenExternalLinks: Array<{ url: string; status: number | null }>;
+    internalLinks: string[];
     imageCount: number;
     imagesWithAlt: number;
     imageAltTexts: string[];
@@ -95,6 +98,10 @@ export type ScanAnalysisResult = {
     valuePropositionSignal: boolean | null;
     targetAudienceSignal: boolean | null;
     duplicateTextDetected: boolean | null;
+    brokenInternalLinks: Array<{
+    url: string;
+    status: number | null;
+    }>;
   };
   notChecked: string[];
   issues: Array<{
@@ -374,11 +381,15 @@ function extractLinks(html: string, baseUrl: URL): {
   linkCount: number;
   internalLinkCount: number;
   externalLinkCount: number;
+  internalLinks: string[];
+  externalLinks: string[];
   mapsLink: boolean;
 } {
   const tags = html.match(/<a\b[^>]*>/gi) ?? [];
   let internalLinkCount = 0;
   let externalLinkCount = 0;
+  const internalLinks: string[] = [];
+  const externalLinks: string[] = [];
   let mapsLink = false;
 
   for (const tag of tags) {
@@ -388,17 +399,30 @@ function extractLinks(html: string, baseUrl: URL): {
     if (/^(#|mailto:|tel:|javascript:)/i.test(href)) continue;
     try {
       const target = new URL(href, baseUrl);
-      if (target.origin === baseUrl.origin) internalLinkCount += 1;
-      else externalLinkCount += 1;
+      if (target.origin === baseUrl.origin) {
+        internalLinkCount += 1;
+
+        if (!internalLinks.includes(target.href) && internalLinks.length < 20) {
+          internalLinks.push(target.href);
+        }
+      } else {
+          externalLinkCount += 1;
+
+          if (!externalLinks.includes(target.href) && externalLinks.length < 10) {
+            externalLinks.push(target.href);
+          }
+        }
     } catch {
       // An invalid href is not counted as a link destination.
     }
   }
 
   return {
-    linkCount: tags.filter((tag) => Boolean(getAttribute(tag, "href"))).length,
+    linkCount: tags.length,
     internalLinkCount,
     externalLinkCount,
+    internalLinks,
+    externalLinks,
     mapsLink,
   };
 }
@@ -635,10 +659,16 @@ function getCategoryScores(facts: ScanAnalysisResult["detectedFacts"]): ScanAnal
       ? facts.pageTitle.toLowerCase().split(/\W+/).some((word) => word.length > 3 && facts.headings[0].toLowerCase().includes(word))
       : null;
 
+  const genericCta = facts.primaryCta
+    ? /^(lees meer|meer informatie|informatie|klik hier|lees verder|bekijk|ontdek meer|meer weten|learn more|read more|click here|find out more)$/i.test(
+        facts.primaryCta.trim(),
+      )
+    : false;
+
   return [
     scoreCategory("conversie", "Conversie", [
-      { key: "cta-found", label: "CTA gevonden", status: facts.ctaCount > 0 ? "pass" : "fail", value: String(facts.ctaCount), evidence: facts.ctaCount > 0 ? `${facts.ctaCount} herkenbare CTA${facts.ctaCount === 1 ? "" : "’s"} gevonden op de gecontroleerde homepage.` : "Geen herkenbare CTA gevonden op de gecontroleerde homepage.", weight: 1 },
-      { key: "primary-cta-clear", label: "Primaire CTA lijkt duidelijk", status: !facts.primaryCta ? "fail" : facts.primaryCtaClearlyMarked && primaryCtaIsSpecific ? "pass" : "unknown", value: facts.primaryCta, evidence: !facts.primaryCta ? "Geen primaire CTA gevonden op de gecontroleerde homepage." : facts.primaryCtaClearlyMarked && primaryCtaIsSpecific ? `De CTA “${facts.primaryCta}” is in de HTML als knop/CTA gemarkeerd en noemt een concrete actie.` : `De CTA-kandidaat “${facts.primaryCta}” is gevonden, maar visuele prioriteit en duidelijkheid zijn niet betrouwbaar automatisch te beoordelen.`, weight: 2 },
+      { key: "cta-found", label: "CTA gevonden", status: facts.ctaCount > 0 ? "pass" : "fail", value: String(facts.ctaCount), evidence: facts.ctaCount > 0 ? `${facts.ctaCount} herkenbare CTA${facts.ctaCount === 1 ? "" : "’s"} gevonden op de gecontroleerde homepage.` : "Geen herkenbare CTA gevonden op de gecontroleerde homepage.", weight: 1 },   
+      { key: "primary-cta-clear", label: "Primaire CTA lijkt duidelijk", status: !facts.primaryCta || genericCta ? "fail" : facts.primaryCtaClearlyMarked && primaryCtaIsSpecific ? "pass" : "unknown", value: facts.primaryCta, evidence: !facts.primaryCta ? "Geen primaire CTA gevonden op de gecontroleerde homepage." : genericCta ? `De CTA “${facts.primaryCta}” is vrij algemeen geformuleerd.` : facts.primaryCtaClearlyMarked && primaryCtaIsSpecific ? `De CTA “${facts.primaryCta}” is in de HTML als knop/CTA gemarkeerd en noemt een concrete actie.` : `De CTA-kandidaat “${facts.primaryCta}” is gevonden, maar visuele prioriteit en duidelijkheid zijn niet betrouwbaar automatisch te beoordelen.`, weight: 2 },
       { key: "cta-action-oriented", label: "CTA lijkt actiegericht", status: !facts.primaryCta ? "fail" : /^(start|bekijk|lees|ontdek|plan|boek|vraag|neem|contact|bel|download|meld|schrijf|koop|learn|get|book|buy|request|discover|schedule)\b/i.test(facts.primaryCta) ? "pass" : "unknown", value: facts.primaryCta, evidence: !facts.primaryCta ? "Geen CTA-tekst beschikbaar." : /^(start|bekijk|lees|ontdek|plan|boek|vraag|neem|contact|bel|download|meld|schrijf|koop|learn|get|book|buy|request|discover|schedule)\b/i.test(facts.primaryCta) ? `De CTA begint met een actiewoord: “${facts.primaryCta}”.` : `De actiekracht van “${facts.primaryCta}” is niet betrouwbaar automatisch te beoordelen.`, weight: 1 },
       { key: "multiple-ctas", label: "Meerdere CTA’s", status: facts.ctaCount >= 2 ? "pass" : "fail", value: String(facts.ctaCount), evidence: facts.ctaCount >= 2 ? `${facts.ctaCount} herkenbare CTA’s gevonden.` : `${facts.ctaCount} herkenbare CTA${facts.ctaCount === 1 ? "" : "’s"} gevonden; meerdere CTA’s zijn niet aangetroffen op de gecontroleerde homepage.`, weight: 1 },
       { key: "contact-option", label: "Contactmogelijkheid", status: facts.contactSignals.length > 0 ? "pass" : "fail", value: facts.contactSignals.join(", ") || null, evidence: facts.contactSignals.length > 0 ? facts.contactSignals.join(", ") : "Niet gevonden op de gecontroleerde homepage.", weight: 2 },
@@ -708,6 +738,7 @@ function issue(
 ): ScanAnalysisResult["issues"][number] {
   const relatedChecks: Record<string, string[]> = {
     "missing-primary-cta": ["CTA gevonden", "Primaire CTA lijkt duidelijk"],
+    "generic-primary-cta": ["Primaire CTA lijkt duidelijk"],
     "weak-page-title": ["Paginatitel aanwezig", "Lengte paginatitel"],
     "weak-meta-description": ["Meta description aanwezig", "Lengte meta description"],
     "h1-structure": ["H1 aanwezig", "Aantal H1-koppen"],
@@ -715,9 +746,13 @@ function issue(
     "missing-https": ["HTTPS"],
     "slow-response": ["Eerste responstijd"],
     "missing-crawl-files": ["robots.txt", "sitemap.xml"],
+    "missing-canonical": ["Canonical-link"],
+    "weak-open-graph": ["Open Graph"],
     "missing-contact-signal": ["Contactmogelijkheid", "Contactinformatie"],
     "missing-privacy-signal": ["Privacy/cookie-informatie"],
     "duplicate-text": ["Geen herhaalde tekstblokken"],
+    "broken-internal-links": ["Interne links"],
+    "broken-external-links": ["Externe links"],
   };
   return { ...value, confidence: "high", relatedChecks: relatedChecks[value.id] ?? [] };
 }
@@ -725,147 +760,825 @@ function issue(
 function getIssues(facts: ScanAnalysisResult["detectedFacts"]): ScanAnalysisResult["issues"] {
   const issues: ScanAnalysisResult["issues"] = [];
 
+  const genericCta = facts.primaryCta
+    ? /^(lees meer|meer informatie|informatie|klik hier|lees verder|bekijk|ontdek meer|meer weten|learn more|read more|click here|find out more)$/i.test(
+        facts.primaryCta.trim(),
+      )
+    : false;
+
+  // CONVERSIE
+
   if (!facts.primaryCta) {
-    issues.push(issue({
-      id: "missing-primary-cta",
-      title: "Geen duidelijke primaire CTA gevonden",
-      severity: "high",
-      impact: "high",
-      difficulty: "easy",
-      fact: "We vonden geen herkenbare call-to-action in links, knoppen of invoervelden op de homepage.",
-      whyItMatters: "Bezoekers zien daardoor minder duidelijk wat de logische volgende stap is.",
-      recommendation: "Kies één hoofdactie, zoals contact opnemen, een offerte aanvragen of een afspraak plannen, en maak die zichtbaar.",
-    }));
+    issues.push(
+      issue({
+        id: "missing-primary-cta",
+        title: "Geen duidelijke primaire CTA gevonden",
+        severity: "high",
+        impact: "high",
+        difficulty: "easy",
+        fact: "We vonden geen herkenbare call-to-action in links, knoppen of invoervelden op de homepage.",
+        whyItMatters:
+          "Bezoekers zien daardoor minder duidelijk wat de logische volgende stap is.",
+        recommendation:
+          "Maak één bestaande, relevante vervolgstap op de pagina duidelijk zichtbaar als primaire CTA. Als er geen bestaande vervolgstap kan worden vastgesteld, geef dan alleen een generiek voorbeeld dat duidelijk als voorbeeld is gemarkeerd.",
+      }),
+    );
   }
-  if (!facts.pageTitle || facts.pageTitleLength < 10 || facts.pageTitleLength > 60) {
-    issues.push(issue({
-      id: "weak-page-title",
-      title: facts.pageTitle ? "Paginatitel kan sterker" : "Geen goede paginatitel gevonden",
-      severity: "high",
-      impact: "high",
-      difficulty: "easy",
-      fact: facts.pageTitle ? `De titel bevat ${facts.pageTitleLength} tekens; een bruikbare titel ligt meestal rond 10–60 tekens.` : "We vonden geen HTML-title op de homepage.",
-      whyItMatters: "De paginatitel helpt zoekmachines en bezoekers begrijpen waar de pagina over gaat.",
-      recommendation: "Schrijf een unieke titel met het aanbod en eventueel de plaats of doelgroep, binnen ongeveer 10–60 tekens.",
-    }));
+
+  if (genericCta) {
+    issues.push(
+      issue({
+        id: "generic-primary-cta",
+        title: "De primaire CTA kan concreter",
+        severity: "medium",
+        impact: "medium",
+        difficulty: "easy",
+        fact: `De primaire CTA is “${facts.primaryCta}” en is vrij algemeen geformuleerd.`,
+        whyItMatters:
+          "Een concretere CTA maakt duidelijker wat een bezoeker kan verwachten en welke volgende stap je wilt stimuleren.",
+        recommendation: `Vervang “${facts.primaryCta}” door een actiegerichte CTA die duidelijk maakt wat de bezoeker na de klik krijgt of kan doen.`,
+      }),
+    );
   }
-  if (!facts.metaDescription || facts.metaDescriptionLength < 70 || facts.metaDescriptionLength > 160) {
-    issues.push(issue({
-      id: "weak-meta-description",
-      title: facts.metaDescription ? "Meta description kan sterker" : "Geen meta description gevonden",
-      severity: "high",
-      impact: "high",
-      difficulty: "easy",
-      fact: facts.metaDescription ? `De meta description bevat ${facts.metaDescriptionLength} tekens; de gebruikte richtlijn ligt rond 70–160 tekens.` : "We vonden geen meta description in de HTML van de homepage.",
-      whyItMatters: "Een goede omschrijving geeft zoekers context en kan de doorklik naar je website ondersteunen.",
-      recommendation: "Schrijf een concrete omschrijving van het aanbod en de reden om door te klikken, ongeveer 70–160 tekens lang.",
-    }));
+
+  // SEO
+
+  if (
+    !facts.pageTitle ||
+    facts.pageTitleLength < 10 ||
+    facts.pageTitleLength > 60
+  ) {
+    issues.push(
+      issue({
+        id: "weak-page-title",
+        title: facts.pageTitle
+          ? "Paginatitel kan sterker"
+          : "Geen goede paginatitel gevonden",
+        severity: "high",
+        impact: "high",
+        difficulty: "easy",
+        fact: facts.pageTitle
+          ? `De titel bevat ${facts.pageTitleLength} tekens; een bruikbare titel ligt meestal rond 10–60 tekens.`
+          : "We vonden geen HTML-title op de homepage.",
+        whyItMatters:
+          "De paginatitel helpt zoekmachines en bezoekers begrijpen waar de pagina over gaat.",
+        recommendation:
+          "Schrijf een unieke titel met het aanbod en eventueel de plaats of doelgroep, binnen ongeveer 10–60 tekens.",
+      }),
+    );
   }
+
+  if (
+    !facts.metaDescription ||
+    facts.metaDescriptionLength < 70 ||
+    facts.metaDescriptionLength > 160
+  ) {
+    issues.push(
+      issue({
+        id: "weak-meta-description",
+        title: facts.metaDescription
+          ? "Meta description kan sterker"
+          : "Geen meta description gevonden",
+        severity: "high",
+        impact: "high",
+        difficulty: "easy",
+        fact: facts.metaDescription
+          ? `De meta description bevat ${facts.metaDescriptionLength} tekens; de gebruikte richtlijn ligt rond 70–160 tekens.`
+          : "We vonden geen meta description in de HTML van de homepage.",
+        whyItMatters:
+          "Een goede omschrijving geeft zoekers context en kan de doorklik naar je website ondersteunen.",
+        recommendation:
+          "Schrijf een concrete omschrijving van het aanbod en de reden om door te klikken, ongeveer 70–160 tekens lang.",
+      }),
+    );
+  }
+
+  if (!facts.canonical) {
+    issues.push(
+      issue({
+        id: "missing-canonical",
+        title: "Geen canonical-link gevonden",
+        severity: "medium",
+        impact: "medium",
+        difficulty: "easy",
+        fact: "We vonden geen canonical-link in de HTML van de homepage.",
+        whyItMatters:
+          "Een canonical-link helpt zoekmachines bepalen welke URL als de voorkeursversie van een pagina moet worden gezien.",
+        recommendation:
+          "Voeg een canonical-link toe naar de definitieve URL van de homepage.",
+      }),
+    );
+  }
+
+  if (facts.openGraphSignals.length < 2) {
+    issues.push(
+      issue({
+        id: "weak-open-graph",
+        title: "Open Graph-informatie ontbreekt of is onvolledig",
+        severity: "low",
+        impact: "medium",
+        difficulty: "easy",
+        fact:
+          facts.openGraphSignals.length === 0
+            ? "We vonden geen Open Graph-metagegevens op de homepage."
+            : `We vonden ${facts.openGraphSignals.length} Open Graph-signalen op de homepage.`,
+        whyItMatters:
+          "Open Graph-informatie bepaalt mede hoe een pagina wordt weergegeven wanneer iemand de URL deelt via sociale platforms.",
+        recommendation:
+          "Voeg minimaal een duidelijke og:title en og:description toe en gebruik bij voorkeur ook een passende og:image.",
+      }),
+    );
+  }
+
+    if (!facts.openGraphSignals.some((signal) => signal === "og:title")) {
+    issues.push(
+      issue({
+        id: "missing-og-title",
+        title: "Open Graph-titel ontbreekt",
+        severity: "low",
+        impact: "medium",
+        difficulty: "easy",
+        fact: "Er is geen og:title-signaal gevonden.",
+        whyItMatters:
+          "De Open Graph-titel bepaalt mede welke titel wordt gebruikt wanneer een pagina via sociale platforms wordt gedeeld.",
+        recommendation:
+          "Voeg een passende og:title toe die aansluit bij de belangrijkste titel van de pagina.",
+      }),
+    );
+  }
+
+  if (
+    !facts.openGraphSignals.some((signal) => signal === "og:description")
+  ) {
+    issues.push(
+      issue({
+        id: "missing-og-description",
+        title: "Open Graph-beschrijving ontbreekt",
+        severity: "low",
+        impact: "low",
+        difficulty: "easy",
+        fact: "Er is geen og:description-signaal gevonden.",
+        whyItMatters:
+          "Een goede Open Graph-beschrijving geeft extra context wanneer de URL via sociale platforms wordt gedeeld.",
+        recommendation:
+          "Voeg een korte og:description toe die de pagina en het belangrijkste aanbod samenvat.",
+      }),
+    );
+  }
+
+  if (!facts.openGraphSignals.some((signal) => signal === "og:image")) {
+    issues.push(
+      issue({
+        id: "missing-og-image",
+        title: "Open Graph-afbeelding ontbreekt",
+        severity: "low",
+        impact: "medium",
+        difficulty: "easy",
+        fact: "Er is geen og:image-signaal gevonden.",
+        whyItMatters:
+          "Een passende deelafbeelding kan de presentatie van een pagina op sociale platforms verbeteren.",
+        recommendation:
+          "Voeg een passende og:image toe die geschikt is voor het delen van de pagina.",
+      }),
+    );
+  }
+
   if (facts.h1Count !== 1) {
-    issues.push(issue({
-      id: "h1-structure",
-      title: facts.h1Count === 0 ? "Geen H1-kop gevonden" : "Meerdere H1-koppen gevonden",
-      severity: facts.h1Count === 0 ? "high" : "medium",
-      impact: facts.h1Count === 0 ? "high" : "medium",
-      difficulty: "easy",
-      fact: `We vonden ${facts.h1Count} H1-kop${facts.h1Count === 1 ? "" : "pen"} op de homepage.`,
-      whyItMatters: "Een duidelijke hoofdstructuur helpt bezoekers en zoekmachines de hoofdboodschap herkennen.",
-      recommendation: "Gebruik één H1 voor de hoofdboodschap en gebruik H2/H3-koppen voor de onderdelen daaronder.",
-    }));
+    issues.push(
+      issue({
+        id: "h1-structure",
+        title:
+          facts.h1Count === 0
+            ? "Geen H1-kop gevonden"
+            : "Meerdere H1-koppen gevonden",
+        severity: facts.h1Count === 0 ? "high" : "medium",
+        impact: facts.h1Count === 0 ? "high" : "medium",
+        difficulty: "easy",
+        fact: `We vonden ${facts.h1Count} H1-kop${
+          facts.h1Count === 1 ? "" : "pen"
+        } op de homepage.`,
+        whyItMatters:
+          "Een duidelijke hoofdstructuur helpt bezoekers en zoekmachines de hoofdboodschap herkennen.",
+        recommendation:
+          "Gebruik één H1 voor de hoofdboodschap en gebruik H2/H3-koppen voor de onderdelen daaronder.",
+      }),
+    );
   }
-  if (facts.imageCount > 0 && facts.imagesWithAlt < facts.imageCount) {
-    issues.push(issue({
-      id: "missing-image-alt",
-      title: "Niet alle afbeeldingen hebben alt-tekst",
-      severity: "medium",
-      impact: "medium",
-      difficulty: "easy",
-      fact: `Van de ${facts.imageCount} afbeeldingen hebben ${facts.imagesWithAlt} een alt-tekst.`,
-      whyItMatters: "Alt-tekst helpt bezoekers die afbeeldingen niet kunnen zien en geeft zoekmachines extra context.",
-      recommendation: "Geef betekenisvolle afbeeldingen een korte beschrijving en gebruik alt=\"\" voor decoratieve afbeeldingen.",
-    }));
+
+  // AFBEELDINGEN
+
+  if (
+    facts.imageCount > 0 &&
+    facts.imagesWithAlt < facts.imageCount
+  ) {
+    issues.push(
+      issue({
+        id: "missing-image-alt",
+        title: "Niet alle afbeeldingen hebben alt-tekst",
+        severity: "medium",
+        impact: "medium",
+        difficulty: "easy",
+        fact: `Van de ${facts.imageCount} afbeeldingen hebben ${facts.imagesWithAlt} een alt-tekst.`,
+        whyItMatters:
+          "Alt-tekst helpt bezoekers die afbeeldingen niet kunnen zien en geeft zoekmachines extra context.",
+        recommendation:
+          'Geef betekenisvolle afbeeldingen een korte beschrijving en gebruik alt="" voor decoratieve afbeeldingen.',
+      }),
+    );
   }
+
+  // TECHNIEK
+
   if (!facts.https) {
-    issues.push(issue({
-      id: "missing-https",
-      title: "De homepage gebruikt geen HTTPS",
-      severity: "high",
-      impact: "high",
-      difficulty: "medium",
-      fact: "De homepage is opgehaald via HTTP zonder HTTPS.",
-      whyItMatters: "HTTPS beschermt verbindingen en is een basisverwachting voor vertrouwen en moderne browsers.",
-      recommendation: "Activeer een geldig TLS-certificaat en stuur HTTP automatisch door naar HTTPS.",
-    }));
+    issues.push(
+      issue({
+        id: "missing-https",
+        title: "De homepage gebruikt geen HTTPS",
+        severity: "high",
+        impact: "high",
+        difficulty: "medium",
+        fact: "De homepage is opgehaald via HTTP zonder HTTPS.",
+        whyItMatters:
+          "HTTPS beschermt verbindingen en is een basisverwachting voor vertrouwen en moderne browsers.",
+        recommendation:
+          "Activeer een geldig TLS-certificaat en stuur HTTP automatisch door naar HTTPS.",
+      }),
+    );
   }
+
+    if (facts.httpStatus < 200 || facts.httpStatus >= 400) {
+    issues.push(
+      issue({
+        id: "unsuccessful-http-status",
+        title: "De homepage geeft geen succesvolle HTTP-status",
+        severity: "high",
+        impact: "high",
+        difficulty: "medium",
+        fact: `De homepage gaf HTTP-status ${facts.httpStatus}.`,
+        whyItMatters:
+          "Een foutieve HTTP-status kan ervoor zorgen dat bezoekers of zoekmachines de pagina niet normaal kunnen gebruiken.",
+        recommendation:
+          "Controleer de serverconfiguratie en zorg dat een geldige pagina een passende succesvolle HTTP-status teruggeeft.",
+      }),
+    );
+  }
+  
   if (facts.responseTimeMs >= 1000) {
-    issues.push(issue({
-      id: "slow-response",
-      title: "De eerste HTML-respons is relatief traag",
-      severity: facts.responseTimeMs >= 2500 ? "medium" : "low",
-      impact: facts.responseTimeMs >= 2500 ? "medium" : "low",
-      difficulty: "hard",
-      fact: `De eerste HTML-respons duurde ${facts.responseTimeMs} ms.`,
-      whyItMatters: "Een trage serverrespons verlengt de tijd voordat bezoekers inhoud kunnen zien.",
-      recommendation: "Onderzoek serverresponstijd, caching en zware serverlogica. Dit is een basismeting, geen volledige snelheidstest.",
-    }));
+    issues.push(
+      issue({
+        id: "slow-response",
+        title: "De eerste HTML-respons is relatief traag",
+        severity: facts.responseTimeMs >= 2500 ? "medium" : "low",
+        impact: facts.responseTimeMs >= 2500 ? "medium" : "low",
+        difficulty: "hard",
+        fact: `De eerste HTML-respons duurde ${facts.responseTimeMs} ms.`,
+        whyItMatters:
+          "Een trage serverrespons verlengt de tijd voordat bezoekers inhoud kunnen zien.",
+        recommendation:
+          "Onderzoek serverresponstijd, caching en zware serverlogica. Dit is een basismeting, geen volledige snelheidstest.",
+      }),
+    );
   }
+
+  if (!facts.hasViewport) {
+    issues.push(
+      issue({
+        id: "missing-viewport",
+        title: "Mobiele viewport-instelling ontbreekt",
+        severity: "medium",
+        impact: "medium",
+        difficulty: "easy",
+        fact: "We vonden geen viewport-meta-instelling in de homepage.",
+        whyItMatters:
+          "Zonder een juiste viewport-instelling kan een pagina op mobiele apparaten minder voorspelbaar worden weergegeven.",
+        recommendation:
+          'Voeg een correcte viewport-meta toe, bijvoorbeeld name="viewport" met content="width=device-width, initial-scale=1".',
+      }),
+    );
+  }
+
+  if (facts.compressed === false) {
+    issues.push(
+      issue({
+        id: "missing-compression",
+        title: "Compressie van de HTML-respons is niet aangetroffen",
+        severity: "low",
+        impact: "medium",
+        difficulty: "medium",
+        fact: "Bij de gecontroleerde HTML-respons is geen compressieheader aangetroffen.",
+        whyItMatters:
+          "Compressie kan de hoeveelheid data die naar bezoekers wordt verstuurd verkleinen.",
+        recommendation:
+          "Controleer of server- of CDN-compressie zoals Brotli of gzip actief kan worden gebruikt voor HTML-responses.",
+      }),
+    );
+  }
+
+    if (facts.pageSizeKb > 500) {
+    issues.push(
+      issue({
+        id: "large-html-response",
+        title: "De HTML-pagina is relatief groot",
+        severity: "low",
+        impact: "medium",
+        difficulty: "medium",
+        fact: `De opgehaalde HTML-respons is ongeveer ${facts.pageSizeKb} KB groot.`,
+        whyItMatters:
+          "Een grote HTML-respons kan extra overdracht en verwerking veroorzaken voordat de pagina volledig kan worden opgebouwd.",
+        recommendation:
+          "Controleer of overbodige HTML, ingebedde content en onnodige markup kunnen worden verminderd.",
+      }),
+    );
+  }
+
+  if (
+    facts.robotsDirectives.some((directive) =>
+      /\bnoindex\b/i.test(directive),
+    )
+  ) {
+    issues.push(
+      issue({
+        id: "robots-noindex",
+        title: "De pagina bevat een noindex-instructie",
+        severity: "high",
+        impact: "high",
+        difficulty: "easy",
+        fact: "In de robots-instructies is een noindex-signaal gevonden.",
+        whyItMatters:
+          "Een noindex-instructie kan voorkomen dat deze pagina door zoekmachines in de zoekresultaten wordt opgenomen.",
+        recommendation:
+          "Controleer of noindex bewust is ingesteld. Als de pagina organisch vindbaar moet zijn, verwijder dan de noindex-instructie.",
+      }),
+    );
+  }
+
+  // CRAWL / INDEXERING
+
   if (!facts.hasRobotsTxt || !facts.hasSitemap) {
     const missing = [
       !facts.hasRobotsTxt ? "robots.txt" : null,
       !facts.hasSitemap ? "sitemap.xml" : null,
     ].filter((value): value is string => Boolean(value));
-    issues.push(issue({
-      id: "missing-crawl-files",
-      title: "Niet alle crawlbestanden zijn gevonden",
-      severity: "low",
-      impact: "low",
-      difficulty: "medium",
-      fact: `${missing.join(" en ")} ${missing.length === 1 ? "is" : "zijn"} niet gevonden op de gecontroleerde standaardlocaties of via robots.txt.`,
-      whyItMatters: "Deze bestanden kunnen zoekmachines helpen bij het vinden en begrijpen van openbare pagina’s, maar de scan heeft geen zoekmachinegedrag gemeten.",
-      recommendation: "Controleer of robots.txt en een actuele XML-sitemap bereikbaar zijn en verwijs vanuit robots.txt naar de sitemap.",
-    }));
-  }
-  if (facts.contactSignals.length === 0) {
-    issues.push(issue({
-      id: "missing-contact-signal",
-      title: "Geen contactsignaal gevonden",
-      severity: "medium",
-      impact: "medium",
-      difficulty: "easy",
-      fact: "We vonden geen duidelijk e-mailadres, telefoonnummer of adres-signaal in de homepage.",
-      whyItMatters: "Een bezoeker met koopintentie moet zonder zoeken kunnen zien hoe contact mogelijk is.",
-      recommendation: "Maak minstens één laagdrempelige contactmogelijkheid zichtbaar op een herkenbare plek.",
-    }));
-  }
-  if (facts.legalSignals.length === 0) {
-    issues.push(issue({
-      id: "missing-privacy-signal",
-      title: "Geen privacy- of cookiesignaal gevonden",
-      severity: "low",
-      impact: "medium",
-      difficulty: "medium",
-      fact: "In de homepage vonden we geen privacy-, cookie- of AVG-gerelateerd signaal.",
-      whyItMatters: "Duidelijke privacy-informatie kan bijdragen aan vertrouwen en aan het uitleggen van gegevensgebruik.",
-      recommendation: "Maak een passende privacy- en cookie-informatie vindbaar. De scan beoordeelt niet of de juridische inhoud volledig is.",
-    }));
-  }
-  if (facts.duplicateTextDetected) {
-    issues.push(issue({
-      id: "duplicate-text",
-      title: "Herhaalde tekst gevonden",
-      severity: "low",
-      impact: "low",
-      difficulty: "medium",
-      fact: "De scan vond exact herhaalde langere zinnen in de zichtbare homepage-tekst.",
-      whyItMatters: "Herhaling kan de boodschap minder helder maken en ruimte innemen die voor relevante informatie beschikbaar is.",
-      recommendation: "Controleer de herhaalde blokken en houd één duidelijke versie over. Dit is een tekstsignaal, geen volledige duplicate-contentanalyse.",
-    }));
+
+    issues.push(
+      issue({
+        id: "missing-crawl-files",
+        title: "Niet alle crawlbestanden zijn gevonden",
+        severity: "low",
+        impact: "low",
+        difficulty: "medium",
+        fact: `${missing.join(" en ")} ${
+          missing.length === 1 ? "is" : "zijn"
+        } niet gevonden op de gecontroleerde standaardlocaties of via robots.txt.`,
+        whyItMatters:
+          "Deze bestanden kunnen zoekmachines helpen bij het vinden en begrijpen van openbare pagina’s, maar de scan heeft geen zoekmachinegedrag gemeten.",
+        recommendation:
+          "Controleer of robots.txt en een actuele XML-sitemap bereikbaar zijn en verwijs vanuit robots.txt naar de sitemap.",
+      }),
+    );
   }
 
-  const weight = { high: 3, medium: 2, low: 1 };
+  // CONTENT
+
+  if (facts.valuePropositionSignal === null) {
+    issues.push(
+      issue({
+        id: "unclear-value-proposition",
+        title: "De waardepropositie is niet duidelijk vastgesteld",
+        severity: "medium",
+        impact: "medium",
+        difficulty: "medium",
+        fact: "Op basis van de eerste zichtbare tekst kon de scan geen duidelijke waardepropositie vaststellen.",
+        whyItMatters:
+          "Bezoekers moeten snel kunnen begrijpen wat een bedrijf biedt en waarom dat relevant voor hen is.",
+        recommendation:
+          "Maak bovenaan de pagina expliciet wat je aanbiedt, voor wie en welk probleem of welke behoefte je helpt oplossen.",
+      }),
+    );
+  }
+
+  if (facts.targetAudienceSignal === null) {
+    issues.push(
+      issue({
+        id: "unclear-target-audience",
+        title: "De doelgroep is niet duidelijk vastgesteld",
+        severity: "low",
+        impact: "medium",
+        difficulty: "medium",
+        fact: "De scan kon in de eerste zichtbare tekst geen duidelijke doelgroep herkennen.",
+        whyItMatters:
+          "Een herkenbare doelgroep helpt bezoekers snel bepalen of de website voor hen relevant is.",
+        recommendation:
+          "Benoem duidelijk voor wie het aanbod bedoeld is, als dat uit de website-inhoud kan worden afgeleid.",
+      }),
+    );
+  }
+
+  if (facts.internalLinkCount === 0) {
+    issues.push(
+      issue({
+        id: "no-internal-links",
+        title: "Geen interne links gevonden",
+        severity: "medium",
+        impact: "medium",
+        difficulty: "easy",
+        fact: "Op de gecontroleerde homepage zijn geen interne links naar andere pagina's gevonden.",
+        whyItMatters:
+          "Interne links helpen bezoekers navigeren en kunnen zoekmachines helpen de structuur van een website begrijpen.",
+        recommendation:
+          "Controleer of belangrijke vervolgpagina's vanaf de homepage logisch bereikbaar zijn via interne links.",
+      }),
+    );
+  }
+
+  if (facts.headingCount < 3 && facts.visibleTextLength > 500) {
+    issues.push(
+      issue({
+        id: "weak-content-structure",
+        title: "De contentstructuur kan duidelijker",
+        severity: "low",
+        impact: "medium",
+        difficulty: "easy",
+        fact: `De homepage bevat ${facts.visibleTextLength} zichtbare tekens maar slechts ${facts.headingCount} tekstuele koppen.`,
+        whyItMatters:
+          "Duidelijke tussenkoppen maken langere pagina's makkelijker scanbaar voor bezoekers.",
+        recommendation:
+          "Verdeel langere content in duidelijke secties met relevante H2- en H3-koppen.",
+      }),
+    );
+  }
+
+    // EXTRA CONTENT-CONTROLES
+
+  if (facts.visibleTextLength < 500) {
+    issues.push(
+      issue({
+        id: "thin-content",
+        title: "Weinig zichtbare content gevonden",
+        severity: "low",
+        impact: "medium",
+        difficulty: "medium",
+        fact: `De homepage bevat ongeveer ${facts.visibleTextLength} zichtbare tekens.`,
+        whyItMatters:
+          "Een zeer korte homepage kan bezoekers en zoekmachines weinig context geven over het aanbod, de doelgroep en de expertise van het bedrijf.",
+        recommendation:
+          "Controleer of de belangrijkste diensten, voordelen, doelgroep en relevante bedrijfsinformatie voldoende duidelijk op de pagina worden uitgelegd.",
+      }),
+    );
+  }
+
+  if (facts.ctaCount > 4) {
+    issues.push(
+      issue({
+        id: "many-ctas",
+        title: "Veel verschillende CTA's gevonden",
+        severity: "low",
+        impact: "medium",
+        difficulty: "medium",
+        fact: `We vonden ${facts.ctaCount} herkenbare CTA's op de gecontroleerde homepage.`,
+        whyItMatters:
+          "Veel verschillende acties kunnen de keuze voor bezoekers minder duidelijk maken, vooral wanneer meerdere acties dezelfde prominente positie krijgen.",
+        recommendation:
+          "Bepaal één belangrijkste vervolgstap en geef secundaire acties een duidelijk lagere prioriteit.",
+      }),
+    );
+  }
+
+    if (facts.ctaCount >= 5 && facts.visibleTextLength < 1500) {
+    issues.push(
+      issue({
+        id: "cta-density",
+        title: "Veel CTA's ten opzichte van de hoeveelheid content",
+        severity: "low",
+        impact: "medium",
+        difficulty: "medium",
+        fact: `We vonden ${facts.ctaCount} CTA's bij ongeveer ${facts.visibleTextLength} zichtbare tekens.`,
+        whyItMatters:
+          "Veel acties op een relatief compacte pagina kunnen de belangrijkste vervolgstap minder duidelijk maken.",
+        recommendation:
+          "Bepaal de belangrijkste actie voor deze pagina en geef secundaire CTA's een duidelijk lagere prioriteit.",
+      }),
+    );
+  }
+
+  // VERTROUWEN
+
+  if (facts.contactSignals.length === 0) {
+    issues.push(
+      issue({
+        id: "missing-contact-signal",
+        title: "Geen contactsignaal gevonden",
+        severity: "medium",
+        impact: "medium",
+        difficulty: "easy",
+        fact: "We vonden geen duidelijk e-mailadres, telefoonnummer of adres-signaal in de homepage.",
+        whyItMatters:
+          "Een bezoeker met koopintentie moet zonder zoeken kunnen zien hoe contact mogelijk is.",
+        recommendation:
+          "Maak minstens één laagdrempelige contactmogelijkheid zichtbaar op een herkenbare plek.",
+      }),
+    );
+  }
+
+  if (facts.legalSignals.length === 0) {
+    issues.push(
+      issue({
+        id: "missing-privacy-signal",
+        title: "Geen privacy- of cookiesignaal gevonden",
+        severity: "low",
+        impact: "medium",
+        difficulty: "medium",
+        fact: "In de homepage vonden we geen privacy-, cookie- of AVG-gerelateerd signaal.",
+        whyItMatters:
+          "Duidelijke privacy-informatie kan bijdragen aan vertrouwen en aan het uitleggen van gegevensgebruik.",
+        recommendation:
+          "Maak een passende privacy- en cookie-informatie vindbaar. De scan beoordeelt niet of de juridische inhoud volledig is.",
+      }),
+    );
+  }
+
+  if (facts.companySignals.length === 0) {
+    issues.push(
+      issue({
+        id: "missing-company-signal",
+        title: "Weinig bedrijfsinformatie gevonden",
+        severity: "low",
+        impact: "medium",
+        difficulty: "easy",
+        fact: "Op de gecontroleerde homepage vonden we geen duidelijk bedrijfs- of registratiesignaal.",
+        whyItMatters:
+          "Duidelijke bedrijfsinformatie kan bezoekers helpen beoordelen met welke organisatie ze te maken hebben.",
+        recommendation:
+          "Maak relevante bedrijfsinformatie eenvoudig vindbaar, bijvoorbeeld via een duidelijke verwijzing naar een Over ons- of bedrijfsinformatiepagina.",
+      }),
+    );
+  }
+
+  if (facts.socialProofSignals.length === 0) {
+    issues.push(
+      issue({
+        id: "missing-social-proof",
+        title: "Geen duidelijk klant- of reviewsignaal gevonden",
+        severity: "low",
+        impact: "medium",
+        difficulty: "easy",
+        fact: "Op de gecontroleerde homepage vonden we geen duidelijk review-, testimonial- of klantreferentiesignaal.",
+        whyItMatters:
+          "Ervaringen van klanten kunnen bezoekers helpen om vertrouwen in een aanbod op te bouwen.",
+        recommendation:
+          "Als er relevante klantervaringen of beoordelingen beschikbaar zijn, maak dan een passende selectie zichtbaar op de website.",
+      }),
+    );
+  }
+
+    // LOKALE VINDBAARHEID
+
+  if (!facts.placeSignal) {
+    issues.push(
+      issue({
+        id: "missing-local-place-signal",
+        title: "Geen duidelijk plaats-signaal gevonden",
+        severity: "low",
+        impact: "medium",
+        difficulty: "easy",
+        fact: "Op de gecontroleerde homepage vonden we geen duidelijk plaats- of postcodesignaal.",
+        whyItMatters:
+          "Een duidelijke plaats helpt bezoekers en zoekmachines begrijpen voor welk lokaal werkgebied de website relevant is.",
+        recommendation:
+          "Vermeld de relevante plaats duidelijk op de website, bijvoorbeeld op de homepage, contactpagina of vestigingspagina.",
+      }),
+    );
+  }
+
+  if (!facts.regionSignal) {
+    issues.push(
+      issue({
+        id: "missing-local-region-signal",
+        title: "Geen duidelijk regiosignaal gevonden",
+        severity: "low",
+        impact: "medium",
+        difficulty: "easy",
+        fact: "Op de gecontroleerde homepage vonden we geen duidelijk regionaal signaal.",
+        whyItMatters:
+          "Een regiovermelding kan helpen om de geografische relevantie van het bedrijf duidelijker te maken.",
+        recommendation:
+          "Als je lokaal of regionaal werkt, benoem dan de belangrijkste regio of het werkgebied duidelijk op de website.",
+      }),
+    );
+  }
+
+  if (!facts.mapsLink) {
+    issues.push(
+      issue({
+        id: "missing-maps-link",
+        title: "Geen kaart- of locatiesignaal gevonden",
+        severity: "low",
+        impact: "medium",
+        difficulty: "easy",
+        fact: "We vonden geen link naar Google Maps, een bedrijfsvermelding of een vergelijkbaar kaartplatform.",
+        whyItMatters:
+          "Een directe locatieverwijzing kan bezoekers helpen een fysieke vestiging of bedrijfsadres snel te vinden.",
+        recommendation:
+          "Als het bedrijf een fysieke locatie heeft, voeg dan een passende kaart- of routeverwijzing toe.",
+      }),
+    );
+  }
+
+  if (!facts.localBusinessStructuredData) {
+    issues.push(
+      issue({
+        id: "missing-localbusiness-schema",
+        title: "Geen LocalBusiness-gegevens gevonden",
+        severity: "low",
+        impact: "medium",
+        difficulty: "medium",
+        fact: "We vonden geen LocalBusiness structured data op de gecontroleerde homepage.",
+        whyItMatters:
+          "Gestructureerde bedrijfsgegevens kunnen zoekmachines extra context geven over het bedrijf en de locatie.",
+        recommendation:
+          "Controleer of passende LocalBusiness structured data kan worden toegevoegd met de relevante bedrijfs- en locatiegegevens.",
+      }),
+    );
+  }
+
+  // CONTENT / TECHNIEK
+
+  if (!facts.hasLanguage) {
+    issues.push(
+      issue({
+        id: "missing-language",
+        title: "Taal van de pagina is niet aangegeven",
+        severity: "low",
+        impact: "low",
+        difficulty: "easy",
+        fact: "We vonden geen lang-attribuut op het HTML-element.",
+        whyItMatters:
+          "Een aangegeven paginataal helpt browsers, toegankelijkheidstechnologie en zoekmachines de inhoud beter interpreteren.",
+        recommendation:
+          "Voeg op het HTML-element een passende lang-waarde toe, bijvoorbeeld lang=\"nl\" voor een Nederlandstalige pagina.",
+      }),
+    );
+  }
+
+  if (facts.duplicateTextDetected) {
+    issues.push(
+      issue({
+        id: "duplicate-text",
+        title: "Herhaalde tekst gevonden",
+        severity: "low",
+        impact: "low",
+        difficulty: "medium",
+        fact: "De scan vond exact herhaalde langere zinnen in de zichtbare homepage-tekst.",
+        whyItMatters:
+          "Herhaling kan de boodschap minder helder maken en ruimte innemen die voor relevante informatie beschikbaar is.",
+        recommendation:
+          "Controleer de herhaalde blokken en houd één duidelijke versie over. Dit is een tekstsignaal, geen volledige duplicate-contentanalyse.",
+      }),
+    );
+  }
+
+  if (facts.brokenInternalLinks.length > 0) {
+    issues.push(
+      issue({
+        id: "broken-internal-links",
+        title: "Gebroken interne links gevonden",
+        severity: "medium",
+        impact: "medium",
+        difficulty: "medium",
+        fact: `We vonden ${facts.brokenInternalLinks.length} interne link${
+          facts.brokenInternalLinks.length === 1 ? "" : "s"
+        } die niet bereikbaar lijkt.`,
+        whyItMatters:
+          "Een gebroken interne link kan bezoekers naar een foutpagina sturen en maakt het voor zoekmachines lastiger om je website goed te volgen.",
+        recommendation:
+          "Controleer de gevonden interne links en herstel of verwijder links die niet meer naar een geldige pagina verwijzen.",
+      }),
+    );
+  }
+
+  if (facts.brokenExternalLinks.length > 0) {
+    issues.push(
+      issue({
+        id: "broken-external-links",
+        title: "Externe links lijken niet bereikbaar",
+        severity: "low",
+        impact: "medium",
+        difficulty: "easy",
+        fact: `We vonden ${facts.brokenExternalLinks.length} externe link${
+          facts.brokenExternalLinks.length === 1 ? "" : "s"
+        } die niet bereikbaar lijken.`,
+        whyItMatters:
+          "Een externe link die niet meer werkt kan bezoekers naar een foutpagina sturen en de betrouwbaarheid van de website verminderen.",
+        recommendation:
+          "Controleer de gevonden externe links en vervang of verwijder links die niet meer werken.",
+      }),
+    );
+  }
+
+    // Prioriteer verbeterpunten voor het betaalde rapport.
+  // We tonen maximaal 10 punten, maar alleen punten die daadwerkelijk
+  // door de scan zijn vastgesteld.
+  const severityWeight = {
+    high: 3,
+    medium: 2,
+    low: 1,
+  };
+
+  const impactWeight = {
+    high: 3,
+    medium: 2,
+    low: 1,
+  };
+
+  const difficultyWeight = {
+    easy: 3,
+    medium: 2,
+    hard: 1,
+  };
+
+  const priorityScore = (item: ScanAnalysisResult["issues"][number]) => {
+    const severity = severityWeight[item.severity];
+    const impact = impactWeight[item.impact];
+    const difficulty = difficultyWeight[item.difficulty];
+
+    // Impact en ernst wegen zwaarder dan uitvoeringsgemak.
+    // Bij gelijke inhoudelijke prioriteit krijgen relatief eenvoudige
+    // verbeteringen een kleine voorkeur.
+    return severity * 5 + impact * 4 + difficulty;
+  };
+
   return issues
-    .sort((left, right) => weight[right.severity] - weight[left.severity])
-    .slice(0, 5);
+    .sort((left, right) => {
+      const scoreDifference =
+        priorityScore(right) - priorityScore(left);
+
+      if (scoreDifference !== 0) {
+        return scoreDifference;
+      }
+
+      // Bij gelijke score blijft high > medium > low leidend.
+      return (
+        severityWeight[right.severity] -
+        severityWeight[left.severity]
+      );
+    })
+    .slice(0, 10);
+}
+
+async function checkInternalLinks(
+  links: string[],
+): Promise<Array<{ url: string; status: number | null }>> {
+  const results: Array<{ url: string; status: number | null }> = [];
+
+  for (const url of links) {
+    try {
+      const result = await fetchResource(url, {
+        maximumBytes: 50_000,
+        timeoutMs: 5_000,
+        requireHtml: false,
+      });
+
+      results.push({
+        url,
+        status: result?.response.status ?? null,
+      });
+    } catch {
+      results.push({
+        url,
+        status: null,
+      });
+    }
+  }
+
+  return results;
+}
+
+async function checkExternalLinks(
+  links: string[],
+): Promise<Array<{ url: string; status: number | null }>> {
+  const results: Array<{ url: string; status: number | null }> = [];
+
+  for (const url of links) {
+    try {
+      const result = await fetchResource(url, {
+        maximumBytes: 50_000,
+        timeoutMs: 5_000,
+        requireHtml: false,
+      });
+
+      results.push({
+        url,
+        status: result?.response.status ?? null,
+      });
+    } catch {
+      results.push({
+        url,
+        status: null,
+      });
+    }
+  }
+
+  return results;
 }
 
 async function createAnalysis(snapshot: WebsiteSnapshot): Promise<WebsiteAnalysisWithContext> {
@@ -876,6 +1589,8 @@ async function createAnalysis(snapshot: WebsiteSnapshot): Promise<WebsiteAnalysi
   const { headings, headingLevels, h1Count } = extractHeadings(html);
   const visibleText = getVisibleText(html);
   const links = extractLinks(html, url);
+  const checkedInternalLinks = await checkInternalLinks(links.internalLinks);
+  const checkedExternalLinks = await checkExternalLinks(links.externalLinks);
   const imageTags = html.match(/<img\b[^>]*>/gi) ?? [];
   const imagesWithAlt = imageTags.filter((tag) => getAttribute(tag, "alt") !== null).length;
   const imageAltTexts = imageTags
@@ -904,7 +1619,12 @@ async function createAnalysis(snapshot: WebsiteSnapshot): Promise<WebsiteAnalysi
     sitemapUrl ? new URL(sitemapUrl) : new URL("/sitemap.xml", url),
     url,
   );
-  const compressed = snapshot.contentEncoding === null ? null : snapshot.contentEncoding !== "identity";
+
+  const compressed =
+    snapshot.contentEncoding === null
+      ? null
+      : snapshot.contentEncoding !== "identity";
+
   const detectedFacts: ScanAnalysisResult["detectedFacts"] = {
     pageTitle,
     pageTitleLength: pageTitle?.length ?? 0,
@@ -953,6 +1673,12 @@ async function createAnalysis(snapshot: WebsiteSnapshot): Promise<WebsiteAnalysi
     valuePropositionSignal: detectValueProposition(visibleText),
     targetAudienceSignal: detectTargetAudience(visibleText),
     duplicateTextDetected: detectDuplicateText(visibleText),
+    brokenInternalLinks: checkedInternalLinks.filter(
+      (link) => link.status === null || link.status >= 400,
+    ),
+    brokenExternalLinks: checkedExternalLinks.filter(
+      (link) => link.status === null || link.status >= 400,
+    ),
   };
   const categoryScores = getCategoryScores(detectedFacts);
   const overallCoveragePercent = Math.round(

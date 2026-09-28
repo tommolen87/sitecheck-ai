@@ -25,4 +25,5 @@ export * from './scanIssueConfidence';
 export * from './scanIssueDifficulty';
 export * from './scanIssueImpact';
 export * from './scanIssueSeverity';
+export * from './scanPaymentStatus';
 export * from './scanStatus';

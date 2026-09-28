@@ -26,7 +26,15 @@ app.use(
   }),
 );
 app.use(cors());
+
+// Stripe webhook moet de originele, onbewerkte body ontvangen
+app.use(
+  "/api/stripe/webhook",
+  express.raw({ type: "application/json" }),
+);
+
 app.use(express.json());
+
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/api", router);

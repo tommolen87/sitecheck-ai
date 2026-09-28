@@ -122,6 +122,9 @@ components:
         status:
           type: string
           enum: [analyzing, completed, failed]
+        paymentStatus:
+          type: string
+          enum: [unpaid, paid]
         createdAt:
           type: string
           format: date-time
@@ -136,6 +139,7 @@ components:
         - url
         - status
         - createdAt
+        - paymentStatus
         - analysis
         - error
     ScanAnalysis:
@@ -158,7 +162,7 @@ components:
         aiRecommendations:
           oneOf:
             - type: array
-              maxItems: 5
+              maxItems: 20
               items:
                 $ref: "#/components/schemas/AiRecommendation"
             - type: "null"

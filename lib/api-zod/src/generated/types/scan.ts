@@ -6,6 +6,7 @@
  * OpenAPI spec version: 0.1.0
  */
 import type { ScanAnalysis } from './scanAnalysis';
+import type { ScanPaymentStatus } from './scanPaymentStatus';
 import type { ScanStatus } from './scanStatus';
 
 export interface Scan {
@@ -13,6 +14,7 @@ export interface Scan {
   id: number;
   url: string;
   status: ScanStatus;
+  paymentStatus: ScanPaymentStatus;
   createdAt: Date;
   analysis: ScanAnalysis | null;
   /** @nullable */

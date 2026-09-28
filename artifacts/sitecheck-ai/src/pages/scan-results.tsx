@@ -1,5 +1,5 @@
 import { ArrowLeft, Check, CheckCircle2, CircleAlert, CircleHelp, Clock3, ExternalLink, FileWarning, Gauge, LockKeyhole, RefreshCw, ShieldCheck, XCircle } from 'lucide-react';
-import { Link, useParams } from 'wouter';
+import { Link, useLocation, useParams } from 'wouter';
 import { getGetScanQueryKey, useGetScan, type AiRecommendation, type ScanAnalysis, type ScanIssue } from '@workspace/api-client-react';
 
 const categoryOrder = [
@@ -208,7 +208,7 @@ function IssueCard({ issue, index }: { issue: RecommendationDisplay; index: numb
       </div>
       {issue.proposal && (
         <div className="issue-detail proposal">
-          <div className="issue-detail-label"><FileWarning /> Voorstel</div>
+          <div className="issue-detail-label"><FileWarning /> Concreet voorstel</div>
           <p>{issue.proposal}</p>
         </div>
       )}
@@ -301,15 +301,115 @@ function ResultHeader({ scan, analysis }: { scan: { url: string; createdAt: stri
   );
 }
 
-function ResultsContent({ analysis }: { analysis: ScanAnalysis }) {
-  const aiRecommendations = analysis.aiRecommendations ?? null;
-  const hasAiAnalysis = aiRecommendations !== null;
-  const issues = aiRecommendations !== null
-    ? aiRecommendations.slice(0, 5).map(aiRecommendation)
-    : analysis.issues.slice(0, 5).map(deterministicRecommendation);
+function Strengths({ analysis }: { analysis: ScanAnalysis }) {
+  const strengths = analysis.categoryScores
+    .flatMap((category) =>
+      category.checks
+        .filter((check) => check.status === 'passed')
+        .map((check) => ({
+          ...check,
+          category: category.label,
+        })),
+    )
+    .sort((a, b) => b.weight - a.weight)
+    .slice(0, 6);
+
+  if (strengths.length === 0) return null;
+
   return (
-    <>
-      <CategoryScores analysis={analysis} />
+    <section
+      className="results-section strengths-section"
+      aria-labelledby="strengths-title"
+    >
+      <div className="results-section-heading">
+        <div>
+          <div className="section-kicker">Sterke punten</div>
+          <h2 className="results-title" id="strengths-title">
+            Wat gaat er al goed?
+          </h2>
+        </div>
+
+        <p className="results-section-note">
+          Deze onderdelen van je website kwamen goed uit de scan.
+        </p>
+      </div>
+
+      <div className="strengths-grid">
+        {strengths.map((strength) => (
+          <article
+            className="strength-card"
+            key={`${strength.category}-${strength.key}`}
+          >
+            <div className="strength-icon">
+              <CheckCircle2 />
+            </div>
+
+            <div>
+              <span className="strength-category">
+                {strength.category}
+              </span>
+
+              <h3>{strength.label}</h3>
+
+              <p>{strength.evidence}</p>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function ResultsContent({
+  analysis,
+  scanId,
+  isPaid,
+}: {
+  analysis: ScanAnalysis;
+  scanId: number;
+  isPaid: boolean;
+}) {
+  const [, setLocation] = useLocation();
+  const aiRecommendations = analysis.aiRecommendations ?? null;
+  console.log("AI COUNT", aiRecommendations?.length, aiRecommendations);
+  console.log("PAID DEBUG", { isPaid, paymentStatus: analysis });
+  const hasAiAnalysis = aiRecommendations !== null;
+  const issueLimit = isPaid ? 20 : 3;
+
+  const issues = aiRecommendations !== null
+    ? aiRecommendations.slice(0, issueLimit).map(aiRecommendation)
+    : analysis.issues.slice(0, issueLimit).map(deterministicRecommendation); 
+  return (
+  <div className="page-frame results-content-frame">
+    <CategoryScores analysis={analysis} />
+
+      {isPaid && <Strengths analysis={analysis} />}
+
+      {isPaid && (
+        <section className="results-section report-download-section">
+          <div className="report-download-card">
+            <div>
+              <div className="section-kicker">Volledig rapport</div>
+              <h2 className="results-title">
+                Download je volledige rapport
+              </h2>
+              <p className="results-section-note">
+                Alle scores, sterke punten, verbeterpunten en het actieplan
+                gebundeld in één PDF.
+              </p>
+            </div>
+
+            <a
+              href={`/api/scans/${scanId}/report.pdf`}
+              className="upgrade-button"
+              download
+            >
+              PDF downloaden
+            </a>
+          </div>
+        </section>
+      )}
+      
       <section className="results-section issues-section" aria-labelledby="issues-title">
         <div className="results-section-heading">
           <div>
@@ -322,11 +422,100 @@ function ResultsContent({ analysis }: { analysis: ScanAnalysis }) {
               : 'De aanbevelingen hieronder volgen direct uit de bevindingen van deze scan.'}
           </p>
         </div>
-        {issues.length > 0 ? (
-          <div className="issues-grid">{issues.map((issue, index) => <IssueCard issue={issue} index={index} key={issue.id} />)}</div>
-        ) : (
-          <div className="results-empty" data-testid="empty-issues">Deze scan rapporteerde geen aandachtspunten.</div>
-        )}
+      {issues.length > 0 ? (
+        <div className="issues-grid">
+          {issues.map((issue, index) => (
+            <IssueCard issue={issue} index={index} key={issue.id} />
+          ))}
+        </div>
+      ) : (
+        <div className="results-empty" data-testid="empty-issues">
+          Deze scan rapporteerde geen aandachtspunten.
+        </div>
+      )}
+
+      {isPaid && issues.length > 0 && (
+        <section className="action-plan" aria-labelledby="action-plan-title">
+          <div className="results-section-heading">
+            <div>
+              <div className="section-kicker">Praktisch actieplan</div>
+              <h2 className="results-title" id="action-plan-title">
+                Dit zou ik als eerste aanpakken.
+              </h2>
+            </div>
+            <p className="results-section-note">
+              We hebben de belangrijkste bevindingen van deze scan op volgorde gezet,
+              zodat je direct weet waar je kunt beginnen.
+            </p>
+          </div>
+
+          <div className="action-plan-list">
+            {issues.map((issue, index) => (
+              <div className="action-plan-item" key={`action-${issue.id}`}>
+                <div className="action-plan-number">
+                  {String(index + 1).padStart(2, '0')}
+                </div>
+
+                <div className="action-plan-content">
+                  <h3>{issue.title}</h3>
+                  <p>{issue.proposal || issue.recommendation}</p>
+
+                  <div className="action-plan-meta">
+                    <span>
+                      Impact <strong>
+                        {issue.impact === 'high'
+                          ? 'Hoog'
+                          : issue.impact === 'medium'
+                            ? 'Middel'
+                            : 'Laag'}
+                      </strong>
+                    </span>
+
+                    <span>
+                      Moeilijkheid <strong>
+                        {issue.difficulty === 'easy'
+                          ? 'Makkelijk'
+                          : issue.difficulty === 'medium'
+                            ? 'Gemiddeld'
+                            : 'Moeilijk'}
+                      </strong>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      <hr />
+      {isPaid === false && (
+        <div className="upgrade-card">
+          <div>
+            <div className="section-kicker">Volledig rapport</div>
+            <h3>We laten je niet achter met alleen een score.</h3>
+            <p>
+              Ontdek alle gevonden verbeterpunten op je website, inclusief concrete
+              AI-voorstellen, impact, moeilijkheid en een praktisch actieplan op volgorde.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            className="upgrade-button"
+            style={{
+              maxWidth: '100%',
+              minWidth: 0,
+              flexShrink: 1,
+              whiteSpace: 'normal',
+              textAlign: 'center',
+            }}
+            onClick={() => setLocation(`/scans/${scanId}/upgrade`)}
+          >
+            Bekijk alle verbeterpunten — €29
+          </button>
+        </div>
+      )}
       </section>
       <DetectedFacts analysis={analysis} />
       <section className="results-section not-checked-section" aria-labelledby="not-checked-title">
@@ -341,7 +530,7 @@ function ResultsContent({ analysis }: { analysis: ScanAnalysis }) {
           )}
         </div>
       </section>
-    </>
+    </div>
   );
 }
 
@@ -398,6 +587,7 @@ export default function ScanResults() {
   if (!scanQuery.data) return <ScanProblem title="Geen resultaat gevonden." message="Voor dit scanadres is geen resultaat beschikbaar." />;
 
   const scan = scanQuery.data;
+  const isPaid = scan.paymentStatus === 'paid';
   if (scan.status === 'analyzing') return <LoadingResults />;
   if (scan.status === 'failed') return <ScanProblem title="Deze scan kon niet worden afgerond." message={scan.error || 'De scan heeft geen analyse kunnen opleveren.'} url={scan.url} />;
   if (!scan.analysis) return <ScanProblem title="Er is nog geen analyse beschikbaar." message="De scan is afgerond, maar de API heeft geen analyse meegestuurd. Probeer deze pagina later opnieuw." url={scan.url} />;
@@ -406,7 +596,11 @@ export default function ScanResults() {
     <main className="site-shell results-shell">
       <nav className="nav-wrap results-nav"><div className="page-frame flex items-center justify-between"><Link href="/" className="brand-mark" data-testid="link-home-results"><span className="brand-symbol" aria-hidden="true"><LockKeyhole /></span><span className="brand-name">SiteCheck <span>AI</span></span></Link><span className="nav-note">Een rustige check voor ambitieuze ondernemers</span></div></nav>
       <ResultHeader scan={scan} analysis={scan.analysis} />
-      <div className="page-frame results-body"><ResultsContent analysis={scan.analysis} /></div>
+      <ResultsContent
+        analysis={scan.analysis}
+        scanId={scanId}
+        isPaid={isPaid}
+      />
       <footer className="footer"><div className="page-frame footer-inner"><span>© {new Date().getFullYear()} SiteCheck AI</span><Link href="/" className="footer-link" data-testid="link-footer-new-scan">Nieuwe scan starten</Link></div></footer>
     </main>
   );

@@ -38,7 +38,7 @@ export const createScanResponseAnalysisOneOverallQualityScoreOneMax = 100;
 export const createScanResponseAnalysisOneOverallCoveragePercentMin = 0;
 export const createScanResponseAnalysisOneOverallCoveragePercentMax = 100;
 
-export const createScanResponseAnalysisOneAiRecommendationsOneMax = 5;
+export const createScanResponseAnalysisOneAiRecommendationsOneMax = 20;
 
 export const createScanResponseAnalysisOneCategoryScoresItemScoreOneMin = 0;
 export const createScanResponseAnalysisOneCategoryScoresItemScoreOneMax = 100;
@@ -97,6 +97,7 @@ export const CreateScanResponse = zod.object({
   "id": zod.number().int().min(1),
   "url": zod.string().url(),
   "status": zod.enum(['analyzing', 'completed', 'failed']),
+  "paymentStatus": zod.enum(['unpaid', 'paid']),
   "createdAt": zod.coerce.date(),
   "analysis": zod.union([zod.object({
   "overallScore": zod.number().int().min(createScanResponseAnalysisOneOverallScoreMin).max(createScanResponseAnalysisOneOverallScoreMax),
@@ -215,7 +216,7 @@ export const listScansResponseAnalysisOneOverallQualityScoreOneMax = 100;
 export const listScansResponseAnalysisOneOverallCoveragePercentMin = 0;
 export const listScansResponseAnalysisOneOverallCoveragePercentMax = 100;
 
-export const listScansResponseAnalysisOneAiRecommendationsOneMax = 5;
+export const listScansResponseAnalysisOneAiRecommendationsOneMax = 20;
 
 export const listScansResponseAnalysisOneCategoryScoresItemScoreOneMin = 0;
 export const listScansResponseAnalysisOneCategoryScoresItemScoreOneMax = 100;
@@ -274,6 +275,7 @@ export const ListScansResponseItem = zod.object({
   "id": zod.number().int().min(1),
   "url": zod.string().url(),
   "status": zod.enum(['analyzing', 'completed', 'failed']),
+  "paymentStatus": zod.enum(['unpaid', 'paid']),
   "createdAt": zod.coerce.date(),
   "analysis": zod.union([zod.object({
   "overallScore": zod.number().int().min(listScansResponseAnalysisOneOverallScoreMin).max(listScansResponseAnalysisOneOverallScoreMax),
@@ -400,7 +402,7 @@ export const getScanResponseAnalysisOneOverallQualityScoreOneMax = 100;
 export const getScanResponseAnalysisOneOverallCoveragePercentMin = 0;
 export const getScanResponseAnalysisOneOverallCoveragePercentMax = 100;
 
-export const getScanResponseAnalysisOneAiRecommendationsOneMax = 5;
+export const getScanResponseAnalysisOneAiRecommendationsOneMax = 20;
 
 export const getScanResponseAnalysisOneCategoryScoresItemScoreOneMin = 0;
 export const getScanResponseAnalysisOneCategoryScoresItemScoreOneMax = 100;
@@ -459,6 +461,7 @@ export const GetScanResponse = zod.object({
   "id": zod.number().int().min(1),
   "url": zod.string().url(),
   "status": zod.enum(['analyzing', 'completed', 'failed']),
+  "paymentStatus": zod.enum(['unpaid', 'paid']),
   "createdAt": zod.coerce.date(),
   "analysis": zod.union([zod.object({
   "overallScore": zod.number().int().min(getScanResponseAnalysisOneOverallScoreMin).max(getScanResponseAnalysisOneOverallScoreMax),

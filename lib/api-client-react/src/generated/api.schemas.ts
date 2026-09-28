@@ -26,6 +26,14 @@ export const ScanStatus = {
   failed: 'failed',
 } as const;
 
+export type ScanPaymentStatus = typeof ScanPaymentStatus[keyof typeof ScanPaymentStatus];
+
+
+export const ScanPaymentStatus = {
+  unpaid: 'unpaid',
+  paid: 'paid',
+} as const;
+
 export type AiRecommendationImpact = typeof AiRecommendationImpact[keyof typeof AiRecommendationImpact];
 
 
@@ -281,6 +289,7 @@ export interface Scan {
   id: number;
   url: string;
   status: ScanStatus;
+  paymentStatus: ScanPaymentStatus;
   createdAt: string;
   analysis: ScanAnalysis | null;
   /** @nullable */

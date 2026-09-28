@@ -10,6 +10,11 @@ export const scansTable = pgTable("scans", {
     .defaultNow(),
   analysis: jsonb("analysis"),
   error: text("error"),
+  paymentStatus: text("payment_status").notNull().default("unpaid"),
+
+  stripeCheckoutSessionId: text("stripe_checkout_session_id"),
+
+  paidAt: timestamp("paid_at", { withTimezone: true }),
 });
 
 export const insertScanSchema = createInsertSchema(scansTable).omit({

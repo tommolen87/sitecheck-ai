@@ -5,6 +5,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import NotFound from '@/pages/not-found';
 import ScanResults from '@/pages/scan-results';
+import Upgrade from '@/pages/upgrade';
 import {
   getGetScanQueryKey,
   getListScansQueryKey,
@@ -292,8 +293,9 @@ function Router() {
     <RoutedErrorBoundary>
       <Switch>
          <Route path="/" component={Home} />
-         <Route path="/scans/:scanId" component={ScanResults} />
-        <Route component={NotFound} />
+        <Route path="/scans/:scanId" component={ScanResults} />
+        <Route path="/scans/:scanId/upgrade" component={Upgrade} />
+        <Route component={NotFound} />  
       </Switch>
     </RoutedErrorBoundary>
   );
