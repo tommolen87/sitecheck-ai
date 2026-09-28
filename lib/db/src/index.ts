@@ -5,24 +5,14 @@ import * as schema from "./schema";
 
 const { Pool } = pg;
 
-if (
-  !process.env.PGUSER ||
-  !process.env.PGPASSWORD ||
-  !process.env.PGHOST ||
-  !process.env.PGPORT ||
-  !process.env.PGDATABASE
-) {
-  throw new Error(
-    "PostgreSQL environment variables are incomplete. Expected PGUSER, PGPASSWORD, PGHOST, PGPORT and PGDATABASE.",
-  );
+const databaseUrl = process.env.DATABASE_URL;
+
+if (!databaseUrl) {
+  throw new Error("DATABASE_URL is not configured.");
 }
 
 export const pool = new Pool({
-  user: process.env.PGUSER,
-  password: process.env.PGPASSWORD,
-  host: process.env.PGHOST,
-  port: Number(process.env.PGPORT),
-  database: process.env.PGDATABASE,
+  connectionString: databaseUrl,
 });
 
 export const db = drizzle(pool, { schema });
