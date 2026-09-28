@@ -256,7 +256,14 @@ async function fetchResource(
         redirect: "manual",
         signal: AbortSignal.timeout(options.timeoutMs),
       });
-    } catch {
+    } catch (error) {
+      console.error("=== SITECHECK FETCH ERROR ===");
+      console.error({
+        url: currentUrl.href,
+        error: error instanceof Error ? error.message : String(error),
+      });
+      console.error("=== END SITECHECK FETCH ERROR ===");
+
       return null;
     }
 
