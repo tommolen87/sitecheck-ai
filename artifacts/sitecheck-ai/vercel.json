@@ -3,6 +3,10 @@
     {
       "source": "/api/:path*",
       "destination": "https://sitecheck-ai-xvaf.onrender.com/api/:path*"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ]
 }
