@@ -604,6 +604,9 @@ export default function ScanResults() {
       <footer className="footer">
         <div className="page-frame footer-inner">
           <span>© {new Date().getFullYear()} SJOOM AI Services – SiteCheck AI</span>
+          <a href="mailto:info@sjoomai.nl" className="footer-link">
+            info@sjoomai.nl
+          </a>
           <Link
             href="/"
             className="footer-link"
