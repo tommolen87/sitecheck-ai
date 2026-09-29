@@ -601,7 +601,18 @@ export default function ScanResults() {
         scanId={scanId}
         isPaid={isPaid}
       />
-      <footer className="footer"><div className="page-frame footer-inner"><span>© {new Date().getFullYear()} SiteCheck AI</span><Link href="/" className="footer-link" data-testid="link-footer-new-scan">Nieuwe scan starten</Link></div></footer>
-    </main>
+      <footer className="footer">
+        <div className="page-frame footer-inner">
+          <span>© {new Date().getFullYear()} SJOOM AI Services – SiteCheck AI</span>
+          <Link
+            href="/"
+            className="footer-link"
+            data-testid="link-footer-new-scan"
+          >
+            Nieuwe scan starten
+          </Link>
+        </div>
+      </footer>
+   </main>
   );
 }
