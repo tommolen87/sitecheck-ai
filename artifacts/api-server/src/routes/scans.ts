@@ -555,7 +555,8 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
       return String(value);
     };
 
-    const scoreColor = (score: number) => {
+    const scoreColor = (score: number | null | undefined) => {
+      if (typeof score !== "number") return COLORS.gray500;
       if (score >= 80) return COLORS.green;
       if (score >= 60) return COLORS.orange;
       return COLORS.red;
@@ -567,7 +568,8 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
       return COLORS.redLight;
     };
 
-    const scoreLabel = (score: number) => {
+    const scoreLabel = (score: number | null | undefined) => {
+      if (typeof score !== "number") return "Niet gemeten";
       if (score >= 90) return "Uitstekend";
       if (score >= 80) return "Goed";
       if (score >= 60) return "Redelijk";
@@ -1275,7 +1277,10 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
         categoryStartY +
         row * (categoryCardHeight + categoryGap);
 
-      const score = Number(category?.score ?? 0);
+      const score =
+        typeof category?.score === "number"
+          ? category.score
+          : null;
 
       roundedCard(
         x,
@@ -1305,7 +1310,7 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
         .fontSize(16)
         .fillColor(scoreColor(score))
         .text(
-          `${Math.round(score)}`,
+          typeof score === "number" ? `${Math.round(score)}` : "—",
           x + categoryCardWidth - 55,
           y + 11,
           {
