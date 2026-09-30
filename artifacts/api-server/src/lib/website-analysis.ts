@@ -659,10 +659,13 @@ function scoreCategory(
   const executedCount = knownChecks.length;
   const coveragePercent = checks.length > 0 ? Math.round((executedCount / checks.length) * 100) : 0;
   const score = qualityScore === null ? null : Math.round(qualityScore * (coveragePercent / 100));
+  const scoreBasedChecks = knownChecks.filter((check) => typeof check.score === "number");
   const note =
     knownChecks.length === 0
       ? "Niet gecontroleerd: voor deze categorie zijn geen meetbare signalen beschikbaar."
-      : `${passedCount} van ${knownChecks.length} uitgevoerde checks geslaagd${unknownCount > 0 ? `; ${unknownCount} onbekend en niet meegerekend` : ""}.`;
+      : scoreBasedChecks.length > 0
+        ? `${scoreBasedChecks.length} scoremeting${scoreBasedChecks.length === 1 ? "" : "en"} uitgevoerd.`
+        : `${passedCount} van ${knownChecks.length} uitgevoerde checks geslaagd${unknownCount > 0 ? `; ${unknownCount} onbekend en niet meegerekend` : ""}.`;
 
   return {
     key,
