@@ -746,7 +746,12 @@ function getCategoryScores(facts: ScanAnalysisResult["detectedFacts"]): ScanAnal
       {
         key: "mobile-performance",
         label: "Mobiele performance",
-        status: facts.mobilePerformanceScore === null ? "unknown" : "pass",
+        status:
+          facts.mobilePerformanceScore === null
+            ? "unknown"
+            : facts.mobilePerformanceScore >= 90
+              ? "pass"
+              : "fail",
         value: facts.mobilePerformanceScore === null ? null : String(facts.mobilePerformanceScore),
         evidence:
           facts.mobilePerformanceScore === null
