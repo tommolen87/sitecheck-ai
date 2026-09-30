@@ -332,6 +332,8 @@ router.get("/scans/:scanId", async (req, res): Promise<void> => {
     return;
   }
 
+  res.setHeader("Cache-Control", "no-store");
+  res.setHeader("Referrer-Policy", "no-referrer");
   res.json(GetScanResponse.parse(normalizeScanAnalysis(scan)));
 });
 
@@ -394,6 +396,7 @@ router.post("/scans/:scanId/checkout", async (req, res): Promise<void> => {
       })
       .where(eq(scansTable.id, scanId));
 
+    res.setHeader("Cache-Control", "no-store");
     res.json({ url: session.url });
   } catch (error) {
     req.log.error(
