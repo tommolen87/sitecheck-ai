@@ -75,7 +75,7 @@ function validateSelection(value: unknown): RawSelection | null {
   if (
     !isRecord(value) ||
     Object.keys(value).some(
-      (key) => key !== "issueId" && key !== "confidence" && key !== "proposal",
+      (key) => key !== "issueId" && key !== "title" && key !== "whatFound" && key !== "whyImportant" && key !== "whatToImprove" && key !== "confidence" && key !== "proposal",
     )
   ) {
     return null;
