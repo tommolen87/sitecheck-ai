@@ -1528,33 +1528,33 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
         "Niet aangegeven",
       );
 
-      const fact = safe(
+      const fact = plainLanguage(safe(
         recommendation?.fact ??
           recommendation?.finding ??
           recommendation?.what,
         "",
-      );
+      ));
 
-      const why = safe(
+      const why = plainLanguage(safe(
         recommendation?.why ??
           recommendation?.importance ??
           recommendation?.reason,
         "",
-      );
+      ));
 
-      const recommendationText = safe(
+      const recommendationText = plainLanguage(safe(
         recommendation?.recommendation ??
           recommendation?.advice ??
           recommendation?.solution,
         "",
-      );
+      ));
 
-      const proposal = safe(
+      const proposal = plainLanguage(safe(
         recommendation?.concreteProposal ??
           recommendation?.proposal ??
           recommendation?.action,
         "",
-      );
+      ));
 
       const blocks = [
         ["Wat we zagen", fact],
