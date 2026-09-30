@@ -804,6 +804,13 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
       "Bereikbaar": "Available",
       "Niet gevonden": "Not found",
       "Niet vastgesteld": "Not determined",
+      "Niet aangegeven": "Not specified",
+      "Hoog": "High",
+      "Gemiddeld": "Medium",
+      "Laag": "Low",
+      "Makkelijk": "Easy",
+      "Gemiddeld moeilijk": "Medium",
+      "Moeilijk": "Difficult",
     };
 
     const t = (value: string): string => locale === "en" ? (pdfTranslations[value] ?? value) : value;
@@ -1659,7 +1666,7 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
     newPage();
 
     sectionTitle(
-      "1. Executive summary",
+      t("1. Executive summary"),
       t("De belangrijkste uitkomsten van de website-analyse in één overzicht."),
     );
 
@@ -1839,7 +1846,7 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
     // -------------------------------------------------------------------------
 
     sectionTitle(
-      "Begrippen eenvoudig uitgelegd",
+      t("Begrippen eenvoudig uitgelegd"),
       t("Geen technische voorkennis nodig. Hieronder staan de belangrijkste termen uit dit rapport in gewone taal."),
     );
 
@@ -1898,8 +1905,8 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
     // -------------------------------------------------------------------------
 
     sectionTitle(
-      "2. Wat gaat er al goed?",
-      "Sterke punten die tijdens de scan zijn aangetroffen.",
+      t("2. Wat gaat er al goed?"),
+      t("Sterke punten die tijdens de scan zijn aangetroffen."),
     );
 
     if (strengths.length === 0) {
@@ -2011,7 +2018,7 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
     // -------------------------------------------------------------------------
 
     sectionTitle(
-      "3. Belangrijkste verbeterpunten",
+      t("3. Belangrijkste verbeterpunten"),
       `${t("De")} ${localizedRecommendations.length} ${t("belangrijkste verbeterpunten uit het betaalde rapport.")}`,
     );
 
@@ -2029,15 +2036,15 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
         `Verbeterpunt ${index + 1}`,
       ));
 
-      const impact = safe(
+      const impact = t(safe(
         recommendation?.impact,
         "Niet aangegeven",
-      );
+      ));
 
-      const difficulty = safe(
+      const difficulty = t(safe(
         recommendation?.difficulty,
         "Niet aangegeven",
-      );
+      ));
 
       const fact = plainLanguage(safe(
         recommendation?.whatFound ??
@@ -2258,8 +2265,8 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
     ensureSpace(180);
 
     sectionTitle(
-      "4. Actieplan",
-      "Een compacte samenvatting van de verbeterpunten en de bijbehorende aanpak.",
+      t("4. Actieplan"),
+      t("Een compacte samenvatting van de verbeterpunten en de bijbehorende aanpak."),
     );
 
     const actionHeaderY = doc.y;
@@ -2399,8 +2406,8 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
     ensureSpace(190);
 
     sectionTitle(
-      "5. Technische metingen",
-      "De belangrijkste technische meetwaarden uit de scan, inclusief uitleg in gewone taal.",
+      t("5. Technische metingen"),
+      t("De belangrijkste technische meetwaarden uit de scan, inclusief uitleg in gewone taal."),
     );
 
     const technicalEntries = Object.entries(facts)
@@ -2571,8 +2578,8 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
       ensureSpace(160);
 
       sectionTitle(
-        "6. Wat konden we niet controleren?",
-        "Niet iedere eigenschap van een website kan betrouwbaar automatisch worden vastgesteld.",
+        t("6. Wat konden we niet controleren?"),
+        t("Niet iedere eigenschap van een website kan betrouwbaar automatisch worden vastgesteld."),
       );
 
       notChecked.forEach(
