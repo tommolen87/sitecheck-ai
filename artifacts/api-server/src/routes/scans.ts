@@ -1917,7 +1917,7 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
         .fontSize(9)
         .fillColor(COLORS.gray600)
         .text(
-          "Er zijn geen afzonderlijke sterke punten beschikbaar in de scanresultaten.",
+        t("Er zijn geen afzonderlijke sterke punten beschikbaar in de scanresultaten."),
           PAGE.left + 16,
           doc.y + 21,
           {
@@ -2231,7 +2231,7 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
         .fontSize(9)
         .fillColor(COLORS.gray600)
         .text(
-          "Er zijn geen AI-verbeterpunten beschikbaar voor deze scan.",
+        t("Er zijn geen AI-verbeterpunten beschikbaar voor deze scan."),
           PAGE.left + 16,
           doc.y + 25,
           {
@@ -2285,7 +2285,7 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
       .fontSize(7.5)
       .fillColor(COLORS.white)
       .text(
-        "IMPACT",
+        t("Impact"),
         PAGE.left + contentWidth - 155,
         actionHeaderY + 10,
         {
@@ -2298,7 +2298,7 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
       .fontSize(7.5)
       .fillColor(COLORS.white)
       .text(
-        "MOEITE",
+        t("MOEITE"),
         PAGE.left + contentWidth - 82,
         actionHeaderY + 10,
         {
@@ -2431,7 +2431,7 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
         .fontSize(9)
         .fillColor(COLORS.gray600)
         .text(
-          "Er zijn geen afzonderlijke technische meetwaarden beschikbaar.",
+        t("Er zijn geen afzonderlijke technische meetwaarden beschikbaar."),
           PAGE.left + 16,
           doc.y + 22,
         );
@@ -2668,7 +2668,7 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
       .fontSize(12)
       .fillColor(COLORS.white)
       .text(
-        "Samengevat",
+        t("Samengevat"),
         PAGE.left + 20,
         doc.y + 18,
       );
