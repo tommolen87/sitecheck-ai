@@ -611,6 +611,7 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
       "Totaalscore": "Overall score",
       "De totaalscore combineert de uitkomsten van de verschillende onderdelen van de website.": "The overall score combines the results of the different areas of the website.",
       "kwaliteit": "quality",
+      "De": "The",
       "van de uitgevoerde controles": "of the completed checks",
       "Categorie": "Category",
       "Begrippen eenvoudig uitgelegd": "Key terms explained simply",
@@ -2277,7 +2278,7 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
       .font("Helvetica-Bold")
       .fontSize(7.5)
       .fillColor(COLORS.white)
-      .text("ACTIE", PAGE.left + 14, actionHeaderY + 10);
+      .text(t("ACTIE"), PAGE.left + 14, actionHeaderY + 10);
 
     doc
       .font("Helvetica-Bold")
@@ -2677,7 +2678,7 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
       .fontSize(8.5)
       .fillColor("#CBD5E1")
       .text(
-        "Gebruik de verbeterpunten in dit rapport als praktische checklist. Begin met de punten met de grootste impact en werk daarna de technische en inhoudelijke verbeteringen verder uit.",
+        t("Gebruik de verbeterpunten in dit rapport als praktische checklist. Begin met de punten met de grootste impact en werk daarna de technische en inhoudelijke verbeteringen verder uit."),
         PAGE.left + 20,
         doc.y + 43,
         {
