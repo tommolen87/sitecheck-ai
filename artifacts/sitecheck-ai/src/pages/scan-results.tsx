@@ -83,12 +83,14 @@ function getErrorMessage(error: unknown) {
 
 function ScoreRing({ score }: { score: number }) {
   return (
-    <div className="score-ring" style={{ background: `conic-gradient(hsl(var(--primary)) ${score}%, hsl(var(--border)) 0)` }} data-testid="score-overall">
-      <div className="score-ring-inner">
-        <strong>{score}</strong>
-        <span>van 100</span>
+    <Localized>
+      <div className="score-ring" style={{ background: `conic-gradient(hsl(var(--primary)) ${score}%, hsl(var(--border)) 0)` }} data-testid="score-overall">
+        <div className="score-ring-inner">
+          <strong>{score}</strong>
+          <span>van 100</span>
+        </div>
       </div>
-    </div>
+    </Localized>
   );
 }
 
@@ -209,9 +211,8 @@ function CategoryScores({ analysis }: { analysis: ScanAnalysis }) {
           );
         })}
       </div>
-    </section>
+    </section></Localized>
   );
-    </Localized>
 }
 
 type RecommendationDisplay = {
