@@ -280,6 +280,40 @@ function DetectedFacts({ analysis }: { analysis: ScanAnalysis }) {
   );
 }
 
+const glossaryTerms = [
+  { term: 'Vindbaarheid in Google', explanation: 'Hoe goed zoekmachines kunnen begrijpen en vinden waar je pagina over gaat.' },
+  { term: 'Actieknop', explanation: 'Een knop of link die een bezoeker uitnodigt om iets te doen, zoals contact opnemen, een offerte aanvragen of een product bekijken.' },
+  { term: 'Hoofdtitel', explanation: 'De belangrijkste titel van een pagina. Deze helpt bezoekers en zoekmachines begrijpen waar de pagina over gaat.' },
+  { term: 'Korte omschrijving voor Google', explanation: 'Een korte beschrijving van een pagina die zoekmachines kunnen gebruiken in zoekresultaten.' },
+  { term: 'Voorkeursadres van de pagina', explanation: 'Het adres dat aan zoekmachines aangeeft welke versie van een pagina de hoofdversie is.' },
+  { term: 'Voorvertoning bij delen', explanation: 'Informatie die bepaalt hoe een pagina eruitziet wanneer iemand de link deelt via sociale media of berichtenapps.' },
+  { term: 'Instructies voor zoekmachines', explanation: 'Instellingen waarmee een website zoekmachines aanwijzingen kan geven over welke onderdelen ze mogen bezoeken.' },
+  { term: 'Pagina-overzicht voor zoekmachines', explanation: 'Een overzicht van belangrijke pagina’s waarmee zoekmachines nieuwe of gewijzigde pagina’s kunnen ontdekken.' },
+  { term: 'Alt-tekst', explanation: 'Een korte beschrijving van een afbeelding. Die helpt mensen die de afbeelding niet kunnen zien en kan ook zoekmachines extra context geven.' },
+  { term: 'Google-meting voor snelheid en prestaties', explanation: 'Een automatische meting van Google die onder andere kijkt naar de prestaties van een pagina op een mobiel apparaat.' },
+];
+function Glossary() {
+  return (
+    <section className="results-section" aria-labelledby="glossary-title">
+      <div className="results-section-heading">
+        <div>
+          <div className="section-kicker">Geen technische voorkennis nodig</div>
+          <h2 className="results-title" id="glossary-title">Begrippen eenvoudig uitgelegd</h2>
+        </div>
+        <p className="results-section-note">Kom je een term tegen die je niet kent? Hier leggen we de belangrijkste begrippen uit.</p>
+      </div>
+      <div className="facts-grid">
+        {glossaryTerms.map((item) => (
+          <div className="fact-item" key={item.term}>
+            <span>{item.term}</span>
+            <strong>{item.explanation}</strong>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 function ResultHeader({ scan, analysis }: { scan: { url: string; createdAt: string }; analysis: ScanAnalysis }) {
   const checkedCategoryCount = analysis.categoryScores.filter((category) => category.checked).length;
   const allCategoriesMeasured = checkedCategoryCount === analysis.categoryScores.length;
