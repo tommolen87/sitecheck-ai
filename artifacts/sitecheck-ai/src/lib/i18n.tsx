@@ -282,6 +282,11 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     setLocaleState(next);
     if (typeof window !== "undefined") {
       window.localStorage.setItem("sitecheck-language", next);
+      const path = window.location.pathname;
+      if (path === "/" || path === "/nl" || path === "/en" || path === "/nl/" || path === "/en/") {
+        window.history.pushState({}, "", next === "nl" ? "/nl" : "/en");
+        window.dispatchEvent(new PopStateEvent("popstate"));
+      }
     }
   };
 
