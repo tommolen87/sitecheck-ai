@@ -216,6 +216,7 @@ function isWebsiteUrl(value: string): boolean {
 async function processScan(
   scanId: number,
   url: string,
+  locale: "nl" | "en",
   log: { info: (...args: any[]) => void; warn: (...args: any[]) => void },
 ): Promise<void> {
   try {
@@ -226,6 +227,7 @@ async function processScan(
       aiRecommendations = await generateAiRecommendations(
         { ...measuredAnalysis, aiRecommendations: null },
         aiContext,
+        locale,
       );
     } catch (error) {
       log.warn?.(
@@ -264,6 +266,9 @@ router.post("/scans", async (req, res): Promise<void> => {
     return;
   }
 
+  const localeHeader = String(req.headers["x-sitecheck-language"] ?? "").toLowerCase();
+  const locale: "nl" | "en" = localeHeader === "en" ? "en" : "nl";
+
   const [scan] = await db
     .insert(scansTable)
     .values({ url: parsed.data.url, status: "analyzing" })
@@ -273,7 +278,7 @@ router.post("/scans", async (req, res): Promise<void> => {
 
   res.status(201).json(CreateScanResponse.parse(scan));
 
-  void processScan(scan.id, parsed.data.url, req.log);
+  void processScan(scan.id, parsed.data.url, locale, req.log);
 });
 
 router.get("/scans", async (_req, res): Promise<void> => {
