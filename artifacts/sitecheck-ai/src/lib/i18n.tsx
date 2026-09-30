@@ -315,8 +315,9 @@ function localizeNode(node: ReactNode, locale: Locale): ReactNode {
   if (typeof node === "string") return translateText(node, locale);
   if (Array.isArray(node)) return node.map((child) => localizeNode(child, locale));
   if (!isValidElement(node)) return node;
-  if (node.props.children === undefined) return node;
-  return cloneElement(node, { children: localizeNode(node.props.children, locale) });
+  const props = node.props as { children?: ReactNode };
+  if (props.children === undefined) return node;
+  return cloneElement(node, { children: localizeNode(props.children, locale) });
 }
 
 export function Localized({ children }: { children: ReactNode }) {
