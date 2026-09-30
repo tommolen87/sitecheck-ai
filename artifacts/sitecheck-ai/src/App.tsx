@@ -38,6 +38,7 @@ function Home() {
   const [fieldError, setFieldError] = useState('');
   const [activeScanId, setActiveScanId] = useState<number | null>(null);
   const [submitError, setSubmitError] = useState('');
+  const [paidScanPending, setPaidScanPending] = useState(false);
   const createScan = useCreateScan();
   const [, setLocation] = useLocation();
   const queryClient = useQueryClient();
@@ -85,28 +86,73 @@ function Home() {
     }
   };
 
-  const submitScan = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const validateAndGetUrl = () => {
     const normalizedUrl = url.trim();
     setSubmitError('');
     if (!normalizedUrl) {
       setFieldError('Vul het adres van je website in.');
-      return;
+      return null;
     }
     if (!validateUrl(normalizedUrl)) {
       setFieldError('Gebruik een volledig webadres, bijvoorbeeld https://jouwbedrijf.nl');
-      return;
+      return null;
     }
     setFieldError('');
+    return normalizedUrl;
+  };
+
+  const submitScan = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const normalizedUrl = validateAndGetUrl();
+    if (!normalizedUrl) return;
+
     createScan.mutate(
       { data: { url: normalizedUrl } },
       {
         onSuccess: (scan) => {
           setActiveScanId(scan.id);
           void queryClient.invalidateQueries({ queryKey: getListScansQueryKey() });
-           setLocation(`/scans/${scan.id}`);
+          setLocation(`/scans/${scan.id}`);
         },
         onError: (error) => setSubmitError(getErrorMessage(error)),
+      },
+    );
+  };
+
+  const startPaidScan = () => {
+    const normalizedUrl = validateAndGetUrl();
+    if (!normalizedUrl) return;
+
+    setPaidScanPending(true);
+    createScan.mutate(
+      { data: { url: normalizedUrl } },
+      {
+        onSuccess: async (scan) => {
+          try {
+            const response = await fetch(`/api/scans/${scan.id}/checkout`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+            });
+            const data = await response.json();
+
+            if (!response.ok || !data.url) {
+              throw new Error(data.error || 'Betaling kon niet worden gestart.');
+            }
+
+            window.location.href = data.url;
+          } catch (error) {
+            setPaidScanPending(false);
+            setSubmitError(
+              error instanceof Error
+                ? error.message
+                : 'Betaling kon niet worden gestart.',
+            );
+          }
+        },
+        onError: (error) => {
+          setPaidScanPending(false);
+          setSubmitError(getErrorMessage(error));
+        },
       },
     );
   };
@@ -167,14 +213,34 @@ function Home() {
                 />
               </div>
               {fieldError && <p className="field-error" id="url-error" data-testid="error-invalid-url">{fieldError}</p>}
-              <button className="scan-button" type="submit" disabled={createScan.isPending} data-testid="button-start-scan">
-                {createScan.isPending ? (
-                  <>SiteCheck AI analyseert... <Timer className="animate-pulse" /></>
-                ) : (
-                  <>Start gratis scan <ArrowRight /></>
-                )}
-              </button>
-              <p className="fine-print"><strong>Praktisch en begrijpelijk.</strong> We geven je nog geen score op basis van een vluchtige indruk. Eerst kijken we zorgvuldig, daarna volgt het advies.</p>
+              <div className="scan-actions">
+                <button
+                  className="scan-button"
+                  type="submit"
+                  disabled={createScan.isPending || paidScanPending}
+                  data-testid="button-start-scan"
+                >
+                  {createScan.isPending && !paidScanPending ? (
+                    <>SiteCheck AI analyseert... <Timer className="animate-pulse" /></>
+                  ) : (
+                    <>Start gratis scan <ArrowRight /></>
+                  )}
+                </button>
+                <button
+                  className="paid-scan-button"
+                  type="button"
+                  onClick={startPaidScan}
+                  disabled={createScan.isPending || paidScanPending}
+                  data-testid="button-start-paid-scan"
+                >
+                  {paidScanPending ? (
+                    <>Volledig rapport voorbereiden... <Timer className="animate-pulse" /></>
+                  ) : (
+                    <>Volledig rapport — €29 <ArrowRight /></>
+                  )}
+                </button>
+              </div>
+              <p className="fine-print"><strong>Gratis scan:</strong> krijg inzicht in je website. <strong>Volledig rapport:</strong> krijg alle verbeterpunten en concrete AI-voorstellen voor €29, eenmalig.</p>
             </form>
             {submitError && (
               <div className="api-error" role="alert" data-testid="error-scan-request">
