@@ -155,6 +155,7 @@ type WeightedCheck = {
   value?: string | null;
   evidence: string;
   weight: number;
+  score?: number | null;
 };
 
 function isPrivateAddress(address: string): boolean {
@@ -641,7 +642,16 @@ function scoreCategory(
 ): ScanAnalysisResult["categoryScores"][number] {
   const knownChecks = checks.filter((check) => check.status !== "unknown");
   const totalWeight = knownChecks.reduce((sum, check) => sum + check.weight, 0);
-  const passedWeight = knownChecks.reduce((sum, check) => sum + (check.status === "pass" ? check.weight : 0), 0);
+  const passedWeight = knownChecks.reduce(
+    (sum, check) =>
+      sum +
+      (typeof check.score === "number"
+        ? check.weight * Math.max(0, Math.min(100, check.score)) / 100
+        : check.status === "pass"
+          ? check.weight
+          : 0),
+    0,
+  );
   const qualityScore = totalWeight > 0 ? Math.round((passedWeight / totalWeight) * 100) : null;
   const passedCount = knownChecks.filter((check) => check.status === "pass").length;
   const failedCount = knownChecks.filter((check) => check.status === "fail").length;
@@ -734,32 +744,18 @@ function getCategoryScores(facts: ScanAnalysisResult["detectedFacts"]): ScanAnal
     ]),
     scoreCategory("mobiel", "Mobiel", [
       {
-        key: "mobile-browser",
-        label: "Mobiele browsercheck",
-        status: facts.mobilePageSpeedAvailable ? "pass" : "unknown",
-        value: facts.mobilePageSpeedAvailable ? "PageSpeed Insights" : null,
-        evidence: facts.mobilePageSpeedAvailable
-          ? "De homepage is met Google PageSpeed Insights in mobiele strategie geanalyseerd."
-          : "Niet gecontroleerd: de mobiele PageSpeed-meting is niet beschikbaar.",
-        weight: 1,
-      },
-      {
         key: "mobile-performance",
         label: "Mobiele performance",
-        status:
-          facts.mobilePerformanceScore === null
-            ? "unknown"
-            : facts.mobilePerformanceScore >= 90
-              ? "pass"
-              : "fail",
+        status: facts.mobilePerformanceScore === null ? "unknown" : "pass",
         value: facts.mobilePerformanceScore === null ? null : String(facts.mobilePerformanceScore),
         evidence:
           facts.mobilePerformanceScore === null
             ? "Niet gecontroleerd: er is geen mobiele performance-score beschikbaar."
             : "Google PageSpeed Insights gaf een mobiele performance-score van " +
               facts.mobilePerformanceScore +
-              "/100.",
-        weight: 2,
+              "/100 in de mobiele strategie.",
+        weight: 1,
+        score: facts.mobilePerformanceScore,
       },
     ]),
     scoreCategory("techniek", "Techniek & snelheid", [
@@ -1838,7 +1834,7 @@ async function createAnalysis(snapshot: WebsiteSnapshot): Promise<WebsiteAnalysi
       notChecked: [
         ...(mobilePageSpeed
           ? []
-          : ["Mobiele browser- en performancecheck kon niet worden uitgevoerd."]),
+          : ["De mobiele PageSpeed Insights-performancecheck kon niet worden uitgevoerd."]),
         "Alleen de homepage en de vaste robots.txt/sitemap-locaties zijn opgehaald; interne pagina's zijn niet gecrawld.",
         "De inhoud en kwaliteit van externe backlinks zijn niet gecontroleerd.",
         "De volledigheid van juridische teksten, reviews en bedrijfsgegevens is niet juridisch of handmatig beoordeeld.",
