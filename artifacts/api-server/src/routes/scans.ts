@@ -559,6 +559,26 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
       return String(value);
     };
 
+    const plainLanguage = (value: string): string => {
+      return value
+        .replace(/\bCTA('s|’s|s)?\b/gi, (_match, suffix = "") =>
+          suffix ? "actieknoppen" : "actieknop",
+        )
+        .replace(/\bH1-koppen?\b/gi, "hoofdtitels")
+        .replace(/\bH1-kop\b/gi, "hoofdtitel")
+        .replace(/\bH1\b/gi, "hoofdtitel")
+        .replace(/\bSEO\b/gi, "vindbaarheid in Google")
+        .replace(/meta description/gi, "korte omschrijving voor Google")
+        .replace(/Open Graph/gi, "voorvertoning bij delen")
+        .replace(/LocalBusiness structured data/gi, "gestructureerde bedrijfsinformatie voor zoekmachines")
+        .replace(/structured data/gi, "gestructureerde informatie voor zoekmachines")
+        .replace(/Core Web Vitals/gi, "belangrijke metingen voor snelheid en gebruiksgemak")
+        .replace(/PageSpeed Insights/gi, "Google-meting voor snelheid en prestaties")
+        .replace(/robots\.txt/gi, "instructies voor zoekmachines (robots.txt)")
+        .replace(/sitemap\.xml/gi, "pagina-overzicht voor zoekmachines (sitemap)")
+        .replace(/\bCanonical-link\b/gi, "voorkeursadres van de pagina");
+    };
+
     const scoreColor = (score: number | null | undefined) => {
       if (typeof score !== "number") return COLORS.gray500;
       if (score >= 80) return COLORS.green;
@@ -1301,7 +1321,7 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
         .fontSize(9.5)
         .fillColor(COLORS.gray900)
         .text(
-          safe(category?.label, "Categorie"),
+          plainLanguage(safe(category?.label, "Categorie")),
           x + 14,
           y + 13,
           {
@@ -1442,7 +1462,7 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
                   issue?.name ??
                   issue?.key,
                 "Sterk punt",
-              ),
+              )),
             x + 14,
             y + 13,
             {
@@ -1455,7 +1475,7 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
           .fontSize(8)
           .fillColor(COLORS.gray600)
           .text(
-            safe(
+            plainLanguage(safe(
               issue?.evidence ??
                 issue?.description ??
                 issue?.explanation ??
@@ -1491,12 +1511,12 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
       const cardWidth = contentWidth;
       const innerWidth = cardWidth - 32;
 
-      const title = safe(
+      const title = plainLanguage(safe(
         recommendation?.title ??
           recommendation?.issue ??
           recommendation?.name,
         `Verbeterpunt ${index + 1}`,
-      );
+      ));
 
       const impact = safe(
         recommendation?.impact,
