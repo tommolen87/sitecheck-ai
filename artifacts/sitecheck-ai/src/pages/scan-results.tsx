@@ -733,7 +733,7 @@ export default function ScanResults() {
 
   return (
     <Localized><main className="site-shell results-shell">
-      <nav className="nav-wrap results-nav"><div className="page-frame flex items-center justify-between"><Link href="/" className="brand-mark" data-testid="link-home-results"><span className="brand-symbol" aria-hidden="true"><LockKeyhole /></span><span className="brand-name">SiteCheck <span>AI</span></span></Link><div className="nav-actions"><span className="nav-note">Een rustige check voor ambitieuze ondernemers</span><LanguageSwitcher /></div></div></nav>
+      <nav className="nav-wrap results-nav"><div className="page-frame flex items-center justify-between"><Link href="/" className="brand-mark" data-testid="link-home-results"><span className="brand-symbol" aria-hidden="true"><LockKeyhole /></span><span className="brand-name">SiteCheck <span>AI</span></span></Link><div className="nav-actions"><span className="nav-note">Een rustige check voor ambitieuze ondernemers</span></div></div></nav>
       <ResultHeader scan={scan} analysis={scan.analysis} />
       <ResultsContent
         analysis={scan.analysis}
