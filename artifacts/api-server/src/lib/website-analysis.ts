@@ -98,6 +98,8 @@ export type ScanAnalysisResult = {
     valuePropositionSignal: boolean | null;
     targetAudienceSignal: boolean | null;
     duplicateTextDetected: boolean | null;
+    mobilePerformanceScore: number | null;
+    mobilePageSpeedAvailable: boolean;
     brokenInternalLinks: Array<{
     url: string;
     status: number | null;
@@ -140,6 +142,11 @@ type AuxiliaryResource = {
   text: string;
   url: URL;
 } | null;
+
+type MobilePageSpeedResult = {
+  performanceScore: number | null;
+  mobileBrowserAvailable: boolean;
+};
 
 type WeightedCheck = {
   key: string;
@@ -726,8 +733,34 @@ function getCategoryScores(facts: ScanAnalysisResult["detectedFacts"]): ScanAnal
       { key: "sitemap-file", label: "sitemap.xml", status: facts.hasSitemap ? "pass" : "fail", value: facts.sitemapUrl, evidence: facts.hasSitemap ? "Een sitemap kon veilig worden opgehaald." : "Niet gevonden op de gecontroleerde host.", weight: 1 },
     ]),
     scoreCategory("mobiel", "Mobiel", [
-      { key: "mobile-browser", label: "Mobiele browsercheck", status: "unknown", evidence: "Niet gecontroleerd: er is geen echte mobiele browser- of PageSpeed-check uitgevoerd.", weight: 1 },
-      { key: "core-web-vitals", label: "Core Web Vitals", status: "unknown", evidence: "Niet gecontroleerd: Core Web Vitals zijn niet gemeten.", weight: 1 },
+      {
+        key: "mobile-browser",
+        label: "Mobiele browsercheck",
+        status: facts.mobilePageSpeedAvailable ? "pass" : "unknown",
+        value: facts.mobilePageSpeedAvailable ? "PageSpeed Insights" : null,
+        evidence: facts.mobilePageSpeedAvailable
+          ? "De homepage is met Google PageSpeed Insights in mobiele strategie geanalyseerd."
+          : "Niet gecontroleerd: de mobiele PageSpeed-meting is niet beschikbaar.",
+        weight: 1,
+      },
+      {
+        key: "mobile-performance",
+        label: "Mobiele performance",
+        status:
+          facts.mobilePerformanceScore === null
+            ? "unknown"
+            : facts.mobilePerformanceScore >= 90
+              ? "pass"
+              : "fail",
+        value: facts.mobilePerformanceScore === null ? null : String(facts.mobilePerformanceScore),
+        evidence:
+          facts.mobilePerformanceScore === null
+            ? "Niet gecontroleerd: er is geen mobiele performance-score beschikbaar."
+            : "Google PageSpeed Insights gaf een mobiele performance-score van " +
+              facts.mobilePerformanceScore +
+              "/100.",
+        weight: 2,
+      },
     ]),
     scoreCategory("techniek", "Techniek & snelheid", [
       { key: "https", label: "HTTPS", status: facts.https ? "pass" : "fail", value: facts.https ? "HTTPS" : "HTTP", evidence: facts.https ? "Homepage gebruikt HTTPS." : "Homepage gebruikt HTTP zonder HTTPS.", weight: 3 },
@@ -1612,8 +1645,61 @@ async function checkExternalLinks(
   return results;
 }
 
+async function runMobilePageSpeed(url: URL): Promise<MobilePageSpeedResult | null> {
+  const apiKey = process.env.PAGESPEED_API_KEY;
+  if (!apiKey) return null;
+
+  const endpoint = new URL("https://www.googleapis.com/pagespeedonline/v5/runPagespeed");
+  endpoint.searchParams.set("url", url.href);
+  endpoint.searchParams.set("strategy", "mobile");
+  endpoint.searchParams.set("category", "performance");
+  endpoint.searchParams.set("key", apiKey);
+
+  try {
+    const response = await fetch(endpoint, {
+      headers: { accept: "application/json" },
+      signal: AbortSignal.timeout(20_000),
+    });
+
+    if (!response.ok) {
+      console.warn("PageSpeed mobile check failed", {
+        status: response.status,
+        url: url.href,
+      });
+      return null;
+    }
+
+    const data: unknown = await response.json();
+    if (typeof data !== "object" || data === null) return null;
+
+    const lighthouseResult = (data as Record<string, unknown>).lighthouseResult;
+    if (typeof lighthouseResult !== "object" || lighthouseResult === null) return null;
+
+    const categories = (lighthouseResult as Record<string, unknown>).categories;
+    if (typeof categories !== "object" || categories === null) return null;
+
+    const performance = (categories as Record<string, unknown>).performance;
+    if (typeof performance !== "object" || performance === null) return null;
+
+    const score = (performance as Record<string, unknown>).score;
+    if (typeof score !== "number" || !Number.isFinite(score)) return null;
+
+    return {
+      performanceScore: Math.round(score * 100),
+      mobileBrowserAvailable: true,
+    };
+  } catch (error) {
+    console.warn("PageSpeed mobile check unavailable", {
+      url: url.href,
+      error: error instanceof Error ? error.message : String(error),
+    });
+    return null;
+  }
+}
+
 async function createAnalysis(snapshot: WebsiteSnapshot): Promise<WebsiteAnalysisWithContext> {
   const { html, url, responseTimeMs } = snapshot;
+  const mobilePageSpeed = await runMobilePageSpeed(url);
   const titleMatch = html.match(/<title\b[^>]*>([\s\S]*?)<\/title>/i);
   const pageTitle = titleMatch ? cleanText(titleMatch[1]) || null : null;
   const metaDescription = extractMetaDescription(html);
@@ -1704,6 +1790,8 @@ async function createAnalysis(snapshot: WebsiteSnapshot): Promise<WebsiteAnalysi
     valuePropositionSignal: detectValueProposition(visibleText),
     targetAudienceSignal: detectTargetAudience(visibleText),
     duplicateTextDetected: detectDuplicateText(visibleText),
+    mobilePerformanceScore: mobilePageSpeed?.performanceScore ?? null,
+    mobilePageSpeedAvailable: mobilePageSpeed?.mobileBrowserAvailable ?? false,
     brokenInternalLinks: checkedInternalLinks.filter(
       (link) => link.status === null || link.status >= 400,
     ),
@@ -1748,8 +1836,9 @@ async function createAnalysis(snapshot: WebsiteSnapshot): Promise<WebsiteAnalysi
       categoryScores,
       detectedFacts,
       notChecked: [
-        "Mobiele weergave is niet met een echte mobiele browser getest.",
-        "Core Web Vitals en interactiesnelheid zijn niet gemeten.",
+        ...(mobilePageSpeed
+          ? []
+          : ["Mobiele browser- en performancecheck kon niet worden uitgevoerd."]),
         "Alleen de homepage en de vaste robots.txt/sitemap-locaties zijn opgehaald; interne pagina's zijn niet gecrawld.",
         "De inhoud en kwaliteit van externe backlinks zijn niet gecontroleerd.",
         "De volledigheid van juridische teksten, reviews en bedrijfsgegevens is niet juridisch of handmatig beoordeeld.",
