@@ -94,7 +94,11 @@ function normalizeScanAnalysis<T extends { analysis: unknown }>(scan: T): T {
                   : "unknown";
             const weight = typeof checkRecord.weight === "number" ? checkRecord.weight : 1;
             if (status !== "unknown") totals.total += weight;
-            if (status === "passed") totals.passed += weight;
+            if (typeof checkRecord.score === "number") {
+              totals.passed += weight * Math.max(0, Math.min(100, checkRecord.score)) / 100;
+            } else if (status === "passed") {
+              totals.passed += weight;
+            }
             return totals;
           },
           { passed: 0, total: 0 },
