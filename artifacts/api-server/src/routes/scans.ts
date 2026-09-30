@@ -439,9 +439,7 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
       return;
     }
 
-    const testMode = process.env.SITECHECK_TEST_MODE === "true";
-
-    if (scan.paymentStatus !== "paid" && !testMode) {
+    if (scan.paymentStatus !== "paid") {
       res.status(403).json({
         error: "Het volledige rapport is alleen beschikbaar na betaling.",
       });
@@ -509,15 +507,6 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
           (b.weight ?? 0) - (a.weight ?? 0),
       )
       .slice(0, 6);
-
-      console.log(
-        "PDF STRENGTHS:",
-        strengths.map((s: any) => ({
-          key: s.key,
-          label: s.label,
-          weight: s.weight,
-        })),
-      );
 
     const facts =
       analysis.detectedFacts &&
