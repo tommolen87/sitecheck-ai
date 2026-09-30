@@ -34,14 +34,43 @@ import {
 } from 'wouter';
 
 const queryClient = new QueryClient();
+const seoPages: Record<string, { nl: { title: string; description: string; heading: string; intro: string; points: string[]; questions: string[] }; en: { title: string; description: string; heading: string; intro: string; points: string[]; questions: string[] } }> = {
+  'website-scan': {
+    nl: { title: 'Website scan: controleer je website | SiteCheck AI', description: 'Doe een website scan en ontdek praktische verbeterpunten voor SEO, techniek, mobiel, content en conversie.', heading: 'Website scan voor een helder beeld van je website', intro: 'Een website scan geeft je snel inzicht in wat er op je website goed gaat en waar kansen liggen. SiteCheck AI kijkt naar concrete signalen en vertaalt die naar begrijpelijke verbeterpunten.', points: ['SEO en vindbaarheid', 'Techniek, snelheid en mobiele ervaring', 'Content, vertrouwen en conversie'], questions: ['Wat controleert een website scan?', 'Krijg ik alleen een score?', 'Kan ik de scan gratis starten?'] },
+    en: { title: 'Website Scan & Checker | SiteCheck AI', description: 'Run a website scan and find practical SEO, technical, mobile, content and conversion improvements.', heading: 'Website scan for a clear view of your website', intro: 'A website scan gives you a practical overview of what works and where your website can improve. SiteCheck AI checks measurable signals and turns them into clear next steps.', points: ['SEO and search visibility', 'Technical, speed and mobile experience', 'Content, trust and conversion'], questions: ['What does a website scan check?', 'Do I only get a score?', 'Can I start the scan for free?'] },
+  },
+  'seo-check': {
+    nl: { title: 'SEO check website | SiteCheck AI', description: 'Controleer de belangrijkste SEO-signalen van je website en ontdek concrete verbeterpunten voor Google.', heading: 'SEO check voor je website', intro: 'Een goede SEO-basis begint met weten wat zoekmachines en bezoekers daadwerkelijk op je pagina aantreffen. SiteCheck AI controleert onder andere titels, omschrijvingen, koppen, links en andere zichtbare SEO-signalen.', points: ['Paginatitels en metabeschrijvingen', 'Koppen en inhoudelijke structuur', 'Interne en externe links'], questions: ['Is dit een volledige SEO-audit?', 'Kijkt SiteCheck AI naar mijn hele website?', 'Wat kan ik na de SEO check verbeteren?'] },
+    en: { title: 'SEO Website Check | SiteCheck AI', description: 'Check the key SEO signals on your website and find practical improvements for search visibility.', heading: 'SEO check for your website', intro: 'A strong SEO foundation starts with understanding what search engines and visitors can actually find on a page. SiteCheck AI checks titles, descriptions, headings, links and other visible SEO signals.', points: ['Page titles and meta descriptions', 'Headings and content structure', 'Internal and external links'], questions: ['Is this a complete SEO audit?', 'Does SiteCheck AI crawl my entire website?', 'What can I improve after the SEO check?'] },
+  },
+  'website-analyse': {
+    nl: { title: 'Website analyse | SiteCheck AI', description: 'Laat je website analyseren op SEO, techniek, content, mobiel en conversie en krijg praktische verbeteradviezen.', heading: 'Website analyse zonder technisch rapport', intro: 'Een website analyse moet je helpen beslissen wat je als eerste aanpakt. Daarom combineert SiteCheck AI meetbare websitegegevens met duidelijke uitleg en concrete aanbevelingen.', points: ['Wat bezoekers als eerste zien', 'Technische signalen en prestaties', 'Conversie, vertrouwen en contactmogelijkheden'], questions: ['Welke onderdelen worden geanalyseerd?', 'Zijn de adviezen begrijpelijk voor ondernemers?', 'Kan ik een volledig rapport kopen?'] },
+    en: { title: 'Website Analysis | SiteCheck AI', description: 'Analyze your website for SEO, technical, content, mobile and conversion issues with practical advice.', heading: 'Website analysis without a technical report', intro: 'A website analysis should help you decide what to improve first. SiteCheck AI combines measurable website data with clear explanations and practical recommendations.', points: ['What visitors see first', 'Technical signals and performance', 'Conversion, trust and contact paths'], questions: ['What areas are analyzed?', 'Are the recommendations written for business owners?', 'Can I purchase a full report?'] },
+  },
+  'website-audit': {
+    nl: { title: 'Website audit | SiteCheck AI', description: 'Website audit voor ondernemers: ontdek SEO-, techniek-, content-, mobiel- en conversiepunten.', heading: 'Website audit voor ondernemers', intro: 'Met een website audit krijg je een gestructureerde blik op de belangrijkste onderdelen van je website. SiteCheck AI maakt technische signalen begrijpelijk en koppelt ze aan praktische verbeterstappen.', points: ['SEO en technische basis', 'Mobiele gebruikservaring', 'Conversie en vertrouwen'], questions: ['Wat is het verschil tussen een scan en audit?', 'Welke gegevens worden gemeten?', 'Kan ik het volledige rapport downloaden?'] },
+    en: { title: 'Website Audit | SiteCheck AI', description: 'Website audit for businesses covering SEO, technical, content, mobile and conversion signals.', heading: 'Website audit for businesses', intro: 'A website audit gives you a structured view of the most important parts of your website. SiteCheck AI makes technical signals easier to understand and connects them to practical next steps.', points: ['SEO and technical foundations', 'Mobile user experience', 'Conversion and trust'], questions: ['What is the difference between a scan and an audit?', 'What data is measured?', 'Can I download the full report?'] },
+  },
+  'website-analyzer': {
+    nl: { title: 'Website analyzer | SiteCheck AI', description: 'Gebruik een website analyzer om je website te controleren op SEO, techniek, mobiel en conversie.', heading: 'Website analyzer voor praktische verbeterpunten', intro: 'Een website analyzer helpt je om snel patronen en aandachtspunten te vinden. SiteCheck AI controleert je website op verschillende invalshoeken en legt de uitkomsten uit zonder onnodig jargon.', points: ['Vindbaarheid en SEO-signalen', 'Techniek en snelheid', 'Content, vertrouwen en conversie'], questions: ['Welke signalen kan de analyzer zien?', 'Is technische kennis nodig?', 'Hoe start ik een analyse?'] },
+    en: { title: 'Website Analyzer | SiteCheck AI', description: 'Use a website analyzer to check SEO, technical, mobile and conversion signals and find practical improvements.', heading: 'Website analyzer for practical improvements', intro: 'A website analyzer helps you quickly find patterns and areas that need attention. SiteCheck AI checks multiple aspects of your website and explains the results without unnecessary jargon.', points: ['Search visibility and SEO signals', 'Technical performance and speed', 'Content, trust and conversion'], questions: ['What can the analyzer detect?', 'Do I need technical knowledge?', 'How do I start an analysis?'] },
+  },
+  'seo-audit': {
+    nl: { title: 'SEO audit website | SiteCheck AI', description: 'SEO audit voor je website met concrete aandachtspunten voor titels, content, links en technische SEO-signalen.', heading: 'SEO audit met concrete verbeterpunten', intro: 'Een SEO audit helpt je begrijpen welke signalen op je pagina bijdragen aan vindbaarheid en welke onderdelen aandacht verdienen. SiteCheck AI zet de meetbare bevindingen overzichtelijk voor je op een rij.', points: ['Titels, omschrijvingen en koppen', 'Links en crawlbare signalen', 'Technische basis voor zoekmachines'], questions: ['Wat controleert een SEO audit?', 'Krijg ik concrete aanbevelingen?', 'Kan ik de audit als PDF ontvangen?'] },
+    en: { title: 'SEO Website Audit | SiteCheck AI', description: 'SEO website audit with practical findings for titles, content, links and technical SEO signals.', heading: 'SEO audit with practical improvement points', intro: 'An SEO audit helps you understand which signals support search visibility and which areas need attention. SiteCheck AI organizes measurable findings into clear next steps.', points: ['Titles, descriptions and headings', 'Links and crawlable signals', 'Technical foundations for search engines'], questions: ['What does an SEO audit check?', 'Do I get practical recommendations?', 'Can I receive the audit as a PDF?'] },
+  },
+};
+
 function SeoHead() {
   const { locale } = useLanguage();
-  const title = locale === 'nl'
+  const slug = window.location.pathname.split('/').filter(Boolean)[1] || '';
+  const page = seoPages[slug]?.[locale];
+  const title = page?.title ?? (locale === 'nl'
     ? 'Website laten controleren? | SiteCheck AI'
-    : 'Website Audit & Website Checker | SiteCheck AI';
-  const description = locale === 'nl'
+    : 'Website Audit & Website Checker | SiteCheck AI');
+  const description = page?.description ?? (locale === 'nl'
     ? 'Laat je website controleren met SiteCheck AI. Ontdek SEO-, content-, techniek-, mobiel- en conversieproblemen en krijg praktische verbeteradviezen.'
-    : 'Check your website with SiteCheck AI. Find SEO, content, technical, mobile and conversion issues with practical improvement advice.';
+    : 'Check your website with SiteCheck AI. Find SEO, content, technical, mobile and conversion issues with practical improvement advice.');
   const pathname = window.location.pathname;
   const basePath = pathname === '/' || pathname === '/nl' || pathname === '/nl/' || pathname === '/en' || pathname === '/en/'
     ? (locale === 'nl' ? '/nl' : '/en')
@@ -425,6 +454,68 @@ function Home() {
   );
 }
 
+
+function SeoLandingPage() {
+  const { locale } = useLanguage();
+  const [location] = useLocation();
+  const slug = location.split('/').filter(Boolean)[1] || '';
+  const page = seoPages[slug]?.[locale] ?? seoPages['website-scan'][locale];
+
+  return (
+    <Localized>
+      <main className="site-shell min-h-[100dvh]">
+        <nav className="nav-wrap">
+          <div className="page-frame flex items-center justify-between">
+            <a className="brand-mark" href={locale === 'nl' ? '/nl' : '/en'}>
+              <span className="brand-name">SiteCheck <span>AI</span></span>
+            </a>
+            <LanguageSwitcher />
+          </div>
+        </nav>
+        <section className="hero">
+          <div className="page-frame">
+            <div className="reveal" style={{ maxWidth: '820px' }}>
+              <div className="eyebrow">SiteCheck AI</div>
+              <h1>{page.heading}</h1>
+              <p className="hero-lede">{page.intro}</p>
+              <div className="scan-actions">
+                <a className="scan-button" href={locale === 'nl' ? '/nl' : '/en'}>Start gratis scan <ArrowRight /></a>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section className="section">
+          <div className="page-frame">
+            <div className="check-grid">
+              {page.points.map((point) => (
+                <article className="check-card" key={point}>
+                  <div className="check-icon"><ClipboardCheck /></div>
+                  <h2>{point}</h2>
+                  <p>{locale === 'nl' ? 'SiteCheck AI controleert dit onderdeel op concrete signalen en maakt duidelijk wat je ermee kunt doen.' : 'SiteCheck AI checks this area for concrete signals and explains what you can do with the result.'}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+        <section className="section">
+          <div className="page-frame" style={{ maxWidth: '900px' }}>
+            <div className="section-kicker">{locale === 'nl' ? 'Veelgestelde vragen' : 'Frequently asked questions'}</div>
+            {page.questions.map((question) => (
+              <article key={question} style={{ padding: '22px 0', borderBottom: '1px solid rgba(0,0,0,.08)' }}>
+                <h2 style={{ marginBottom: '8px' }}>{question}</h2>
+                <p>{locale === 'nl' ? 'De scan is bedoeld om meetbare website-signalen begrijpelijk te maken. Je krijgt geen oordeel over wat niet betrouwbaar gemeten kan worden.' : 'The scan is designed to make measurable website signals easier to understand. It does not claim findings that cannot be measured reliably.'}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+        <footer className="footer">
+          <div className="page-frame footer-inner"><span>© {new Date().getFullYear()} SiteCheck AI</span></div>
+        </footer>
+      </main>
+    </Localized>
+  );
+}
+
 function Router() {
   const { locale } = useLanguage();
   return (
@@ -434,6 +525,8 @@ function Router() {
       <Switch>
         <Route path="/nl" component={Home} />
         <Route path="/en" component={Home} />
+        <Route path="/nl/:slug" component={SeoLandingPage} />
+        <Route path="/en/:slug" component={SeoLandingPage} />
         <Route path="/" component={Home} />
         <Route path="/scans/:scanId" component={ScanResults} />
         <Route path="/scans/:scanId/upgrade" component={Upgrade} />
