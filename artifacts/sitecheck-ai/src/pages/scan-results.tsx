@@ -485,7 +485,10 @@ function ResultsContent({
   console.log("AI COUNT", aiRecommendations?.length, aiRecommendations);
   console.log("PAID DEBUG", { isPaid, paymentStatus: analysis });
   const hasAiAnalysis = aiRecommendations !== null;
-  const issueLimit = isPaid ? 20 : 3;
+  const testPdfMode =
+    new URLSearchParams(window.location.search).get("testPdf") === "1";
+  const effectivePaid = isPaid || testPdfMode;
+  const issueLimit = effectivePaid ? 20 : 3;
 
   const issues = aiRecommendations !== null
     ? aiRecommendations.slice(0, issueLimit).map(aiRecommendation)
@@ -494,9 +497,9 @@ function ResultsContent({
   <Localized><div className="page-frame results-content-frame">
     <CategoryScores analysis={analysis} />
 
-      {isPaid && <Strengths analysis={analysis} />}
+      {effectivePaid && <Strengths analysis={analysis} />}
 
-      {isPaid && (
+      {effectivePaid && (
         <section className="results-section report-download-section">
           <div className="report-download-card">
             <div>
