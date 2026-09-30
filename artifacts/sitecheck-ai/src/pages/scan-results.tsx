@@ -112,7 +112,7 @@ function CategoryScores({ analysis }: { analysis: ScanAnalysis }) {
   const importantConversionChecks = new Set(['primary-cta-clear', 'value-proposition', 'target-audience']);
 
   return (
-    <section className="results-section" aria-labelledby="category-scores-title">
+    <Localized><section className="results-section" aria-labelledby="category-scores-title">
       <div className="results-section-heading">
         <div>
           <div className="section-kicker">De zeven invalshoeken</div>
@@ -211,6 +211,7 @@ function CategoryScores({ analysis }: { analysis: ScanAnalysis }) {
       </div>
     </section>
   );
+    </Localized>
 }
 
 type RecommendationDisplay = {
@@ -256,7 +257,7 @@ function IssueCard({ issue, index }: { issue: RecommendationDisplay; index: numb
   const difficultyLabel = issue.difficulty === 'easy' ? 'Makkelijk' : issue.difficulty === 'medium' ? 'Gemiddeld' : 'Moeilijk';
   const confidenceLabel = issue.confidence === 'high' ? 'Hoog' : issue.confidence === 'medium' ? 'Middel' : issue.confidence === 'low' ? 'Laag' : null;
   return (
-    <article className={`issue-card issue-${issue.severity}`} data-testid={`issue-card-${issue.id}`}>
+    <Localized><article className={`issue-card issue-${issue.severity}`} data-testid={`issue-card-${issue.id}`}>
       <div className="issue-card-top">
         <span className="issue-number">{String(index + 1).padStart(2, '0')}</span>
         <span className="severity-label">Impact: {impactLabel}</span>
@@ -290,12 +291,13 @@ function IssueCard({ issue, index }: { issue: RecommendationDisplay; index: numb
       )}
     </article>
   );
+    </Localized>
 }
 
 function DetectedFacts({ analysis }: { analysis: ScanAnalysis }) {
   const { detectedFacts } = analysis;
   return (
-    <section className="results-section facts-section" aria-labelledby="facts-title">
+    <Localized><section className="results-section facts-section" aria-labelledby="facts-title">
       <div className="results-section-heading">
         <div>
           <div className="section-kicker">De meting achter de score</div>
@@ -325,6 +327,7 @@ function DetectedFacts({ analysis }: { analysis: ScanAnalysis }) {
       </div>
     </section>
   );
+    </Localized>
 }
 
 const glossaryTerms = [
@@ -341,7 +344,7 @@ const glossaryTerms = [
 ];
 function Glossary() {
   return (
-    <section className="results-section" aria-labelledby="glossary-title">
+    <Localized><section className="results-section" aria-labelledby="glossary-title">
       <div className="results-section-heading">
         <div>
           <div className="section-kicker">Geen technische voorkennis nodig</div>
@@ -359,6 +362,7 @@ function Glossary() {
       </div>
     </section>
   );
+    </Localized>
 }
 
 function ResultHeader({ scan, analysis }: { scan: { url: string; createdAt: string }; analysis: ScanAnalysis }) {
@@ -366,7 +370,7 @@ function ResultHeader({ scan, analysis }: { scan: { url: string; createdAt: stri
   const checkedCategoryCount = analysis.categoryScores.filter((category) => category.checked).length;
   const allCategoriesMeasured = checkedCategoryCount === analysis.categoryScores.length;
   return (
-    <header className="results-hero">
+    <Localized><header className="results-hero">
       <div className="page-frame">
         <Link href="/" className="back-link" data-testid="link-back-home"><ArrowLeft /> Nieuwe scan</Link>
         <div className="results-hero-grid">
@@ -402,6 +406,7 @@ function ResultHeader({ scan, analysis }: { scan: { url: string; createdAt: stri
       </div>
     </header>
   );
+    </Localized>
 }
 
 function Strengths({ analysis }: { analysis: ScanAnalysis }) {
@@ -420,7 +425,7 @@ function Strengths({ analysis }: { analysis: ScanAnalysis }) {
   if (strengths.length === 0) return null;
 
   return (
-    <section
+    <Localized><section
       className="results-section strengths-section"
       aria-labelledby="strengths-title"
     >
@@ -461,6 +466,7 @@ function Strengths({ analysis }: { analysis: ScanAnalysis }) {
       </div>
     </section>
   );
+    </Localized>
 }
 
 function ResultsContent({
@@ -484,7 +490,7 @@ function ResultsContent({
     ? aiRecommendations.slice(0, issueLimit).map(aiRecommendation)
     : analysis.issues.slice(0, issueLimit).map(deterministicRecommendation); 
   return (
-  <div className="page-frame results-content-frame">
+  <Localized><div className="page-frame results-content-frame">
     <CategoryScores analysis={analysis} />
 
       {isPaid && <Strengths analysis={analysis} />}
@@ -659,6 +665,7 @@ function ResultsContent({
       </section>
     </div>
   );
+    </Localized>
 }
 
 function LoadingResults() {
