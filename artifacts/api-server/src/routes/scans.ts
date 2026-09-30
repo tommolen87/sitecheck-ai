@@ -1546,7 +1546,7 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
                 issue?.explanation ??
                 issue?.message,
               "Dit onderdeel scoorde positief tijdens de scan.",
-            ),
+            )),
             x + 14,
             y + 39,
             {
