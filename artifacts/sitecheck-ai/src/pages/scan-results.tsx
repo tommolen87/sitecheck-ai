@@ -109,8 +109,8 @@ function CategoryScores({ analysis }: { analysis: ScanAnalysis }) {
               <div className="category-score-name">
                 <span className="category-score-index">{String(categoryOrder.indexOf(category) + 1).padStart(2, '0')}</span>
                 <div>
-                  <h3>{result?.label || category.label}</h3>
-                  <p>{result ? result.note : 'Niet beschikbaar in deze analyse.'}</p>
+                  <h3>{plainLanguage(result?.label || category.label)}</h3>
+                  <p>{plainLanguage(result ? result.note : 'Niet beschikbaar in deze analyse.')}</p>
                   {result && (
                     <div className="category-coverage">
                       <span>Kwaliteit gemeten: <strong>{result.qualityScore ?? '—'}{result.qualityScore !== null ? '/100' : ''}</strong></span>
