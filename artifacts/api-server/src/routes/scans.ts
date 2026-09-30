@@ -1,14 +1,13 @@
 import "dotenv/config";
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { Router, type IRouter } from "express";
-import { desc, eq } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { db, scansTable } from "@workspace/db";
 import {
   CreateScanBody,
   CreateScanResponse,
   GetScanParams,
   GetScanResponse,
-  ListScansResponse,
 } from "@workspace/api-zod";
 import { analyzeWebsite } from "../lib/website-analysis";
 import { generateAiRecommendations } from "../lib/ai-website-analysis";
@@ -420,7 +419,6 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
       return;
     }
 
-    const accessToken = String(req.headers["x-scan-access-token"] ?? "");
     if (!hasScanAccess(req, scanId)) {
       res.status(404).json({ error: "Rapport niet gevonden." });
       return;
