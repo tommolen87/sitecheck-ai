@@ -476,6 +476,54 @@ function Home() {
 }
 
 
+function faqAnswer(question: string, locale: 'nl' | 'en'): string {
+  if (locale === 'nl') {
+    if (question.includes('echt gratis')) return 'Ja. De eerste scan is gratis en laat meetbare signalen en belangrijke aandachtspunten van je website zien.';
+    if (question.includes('Wat krijg ik na de gratis scan')) return 'Je krijgt een overzicht van de onderdelen die de scan daadwerkelijk kon beoordelen, inclusief de belangrijkste bevindingen.';
+    if (question.includes('volledig rapport kopen')) return 'Ja. Na de gratis scan kun je het volledige rapport voor €29 eenmalig aanschaffen.';
+    if (question.includes('Wat controleert')) return 'De scan controleert meetbare signalen rond SEO, techniek, mobiel, content, vertrouwen en conversie.';
+    if (question.includes('alleen een score')) return 'Nee. Naast scores krijg je uitleg over de gemeten onderdelen en concrete aandachtspunten.';
+    if (question.includes('gratis starten')) return 'Ja. Je hebt alleen het webadres van je website nodig om de gratis scan te starten.';
+    if (question.includes('volledige SEO-audit')) return 'Nee. SiteCheck AI richt zich op meetbare signalen van de opgehaalde pagina en is geen vervanging voor een volledige menselijke SEO-audit.';
+    if (question.includes('hele website')) return 'De scan analyseert de pagina die je opgeeft en doet geen alsof hij pagina’s heeft gecontroleerd die niet daadwerkelijk zijn opgehaald.';
+    if (question.includes('verbeteren')) return 'Je krijgt concrete aandachtspunten op basis van de signalen die tijdens de scan zijn gevonden.';
+    if (question.includes('Welke onderdelen')) return 'De analyse kijkt onder andere naar zichtbare content, SEO-signalen, technische signalen, mobiel, contactmogelijkheden en conversie.';
+    if (question.includes('begrijpelijk')) return 'Ja. De uitkomsten zijn bedoeld om zonder onnodig technisch jargon te begrijpen en toe te passen.';
+    if (question.includes('downloaden')) return 'Ja. Na aankoop kun je het volledige rapport als PDF downloaden.';
+    if (question.includes('Welke gegevens')) return 'De scan gebruikt alleen gegevens die tijdens het ophalen en controleren van de opgegeven pagina daadwerkelijk beschikbaar zijn.';
+    if (question.includes('verschil tussen een scan en audit')) return 'Een scan geeft een meetbaar eerste overzicht; een uitgebreide audit gaat doorgaans dieper en kan ook menselijke beoordeling bevatten.';
+    if (question.includes('Welke signalen')) return 'Onder andere paginatitels, metabeschrijvingen, koppen, links, technische signalen, snelheidssignalen en zichtbare conversiesignalen.';
+    if (question.includes('technische kennis')) return 'Nee. De resultaten zijn juist bedoeld om technische signalen begrijpelijk uit te leggen.';
+    if (question.includes('Hoe start')) return 'Vul het webadres van je website in en start de gratis scan.';
+    if (question.includes('snelheid')) return 'De scan controleert meetbare technische signalen zoals responstijd, paginagrootte en compressie. Het is geen vervanging voor een volledige Lighthouse- of Core Web Vitals-test.';
+    if (question.includes('contactmogelijkheden')) return 'Ja. De scan kijkt naar zichtbare contactsignalen en actieknoppen die op de opgehaalde pagina aanwezig zijn.';
+    if (question.includes('meer actie')) return 'De scan kan aandachtspunten rond duidelijke actieknoppen, contactmogelijkheden en vertrouwen signaleren, maar kan geen conversiestijging garanderen.';
+    return 'De scan is bedoeld om meetbare website-signalen begrijpelijk te maken en ze te vertalen naar praktische verbeterpunten.';
+  }
+
+  if (question.includes('really free')) return 'Yes. The first scan is free and shows measurable signals and important areas to improve on your website.';
+  if (question.includes('What do I get from the free scan')) return 'You get an overview of the areas the scan could actually assess, including the most important findings.';
+  if (question.includes('purchase a full report')) return 'Yes. After the free scan, you can purchase the full report for a one-time €29 payment.';
+  if (question.includes('What does a website scan check')) return 'The scan checks measurable signals around SEO, technical quality, mobile, content, trust and conversion.';
+  if (question.includes('only get a score')) return 'No. You also get context about the measured areas and practical points to address.';
+  if (question.includes('start the scan for free')) return 'Yes. You only need the web address of your website to start the free scan.';
+  if (question.includes('complete SEO audit')) return 'No. SiteCheck AI focuses on measurable signals from the fetched page and is not a replacement for a full human SEO audit.';
+  if (question.includes('entire website')) return 'The scan analyzes the page you provide and does not claim to have checked pages it did not actually fetch.';
+  if (question.includes('What can I improve')) return 'You get practical improvement points based on the signals found during the scan.';
+  if (question.includes('What areas are analyzed')) return 'The analysis covers visible content, SEO signals, technical signals, mobile, contact paths and conversion signals, among other measurable areas.';
+  if (question.includes('written for business owners')) return 'Yes. The results are designed to be understandable and actionable without unnecessary technical jargon.';
+  if (question.includes('download the full report')) return 'Yes. After purchase, you can download the full report as a PDF.';
+  if (question.includes('What data is measured')) return 'The scan uses only data that is actually available while fetching and checking the page you provide.';
+  if (question.includes('difference between a scan and an audit')) return 'A scan provides a measurable first overview; a broader audit usually goes deeper and may also include human review.';
+  if (question.includes('Which signals')) return 'Signals can include page titles, meta descriptions, headings, links, technical signals, speed-related signals and visible conversion signals.';
+  if (question.includes('technical knowledge')) return 'No. The results are designed to explain technical signals in plain language.';
+  if (question.includes('How do I start')) return 'Enter your website address and start the free scan.';
+  if (question.includes('Does SiteCheck AI measure website speed')) return 'The scan checks measurable technical signals such as response time, page size and compression. It is not a replacement for a full Lighthouse or Core Web Vitals test.';
+  if (question.includes('contact paths')) return 'Yes. The scan checks for visible contact signals and calls to action present on the fetched page.';
+  if (question.includes('encourage more action')) return 'The scan can flag issues around calls to action, contact paths and trust, but it cannot guarantee a conversion increase.';
+  return 'The scan is designed to make measurable website signals easier to understand and turn them into practical improvements.';
+}
+
 function SeoLandingPage() {
   const { locale } = useLanguage();
   const [location] = useLocation();
@@ -524,7 +572,7 @@ function SeoLandingPage() {
             {page.questions.map((question) => (
               <article key={question} style={{ padding: '22px 0', borderBottom: '1px solid rgba(0,0,0,.08)' }}>
                 <h2 style={{ marginBottom: '8px' }}>{question}</h2>
-                <p>{locale === 'nl' ? 'De scan is bedoeld om meetbare website-signalen begrijpelijk te maken. Je krijgt geen oordeel over wat niet betrouwbaar gemeten kan worden.' : 'The scan is designed to make measurable website signals easier to understand. It does not claim findings that cannot be measured reliably.'}</p>
+                <p>{faqAnswer(question, locale)}</p>
               </article>
             ))}
           </div>
