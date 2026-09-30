@@ -4,6 +4,7 @@ import { ErrorBoundary } from '@/components/error-boundary';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import NotFound from '@/pages/not-found';
+import { LanguageProvider, LanguageSwitcher, Localized, useLanguage } from '@/lib/i18n';
 import ScanResults from '@/pages/scan-results';
 import Upgrade from '@/pages/upgrade';
 import {
@@ -39,7 +40,8 @@ function Home() {
   const [activeScanId, setActiveScanId] = useState<number | null>(null);
   const [submitError, setSubmitError] = useState('');
   const [paidScanPending, setPaidScanPending] = useState(false);
-  const createScan = useCreateScan();
+  const { locale } = useLanguage();
+  const createScan = useCreateScan({ request: { headers: { 'x-sitecheck-language': locale } } });
   const [, setLocation] = useLocation();
   const queryClient = useQueryClient();
   const recentScans = useListScans({
@@ -143,14 +145,14 @@ function Home() {
   const showQueued = createScan.isPending || isQueued || Boolean(activeScan.data?.status === 'analyzing');
 
   return (
-    <main className="site-shell min-h-[100dvh]">
+    <Localized><main className="site-shell min-h-[100dvh]">
       <nav className="nav-wrap">
         <div className="page-frame flex items-center justify-between">
           <a className="brand-mark" href="/" data-testid="link-home">
             <span className="brand-symbol" aria-hidden="true"><Radar /></span>
             <span className="brand-name">SiteCheck <span>AI</span></span>
           </a>
-          <span className="nav-note">Voor ondernemers met een helder verhaal</span>
+          <div className="nav-actions"><span className="nav-note">Voor ondernemers met een helder verhaal</span><LanguageSwitcher /></div>
         </div>
       </nav>
 
@@ -331,7 +333,7 @@ function Home() {
           <span>Een rustige check voor ambitieuze ondernemers</span>
         </div>
       </footer>
-    </main>
+    </main></Localized>
   );
 }
 
@@ -357,7 +359,8 @@ function RoutedErrorBoundary({ children }: { children: ReactNode }) {
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
+    <LanguageProvider>
+      <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, '')}>
           <Router />
