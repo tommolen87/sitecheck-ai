@@ -213,6 +213,50 @@ function isWebsiteUrl(value: string): boolean {
   }
 }
 
+async function processScan(
+  scanId: number,
+  url: string,
+  log: { info: (...args: any[]) => void; warn: (...args: any[]) => void },
+): Promise<void> {
+  try {
+    const { analysis: measuredAnalysis, aiContext } = await analyzeWebsite(url);
+    let aiRecommendations = null;
+
+    try {
+      aiRecommendations = await generateAiRecommendations(
+        { ...measuredAnalysis, aiRecommendations: null },
+        aiContext,
+      );
+    } catch (error) {
+      log.warn?.(
+        { scanId, error: error instanceof Error ? error.message : "Unknown AI error" },
+        "AI analysis unavailable; using measured recommendations",
+      );
+    }
+
+    const analysis = { ...measuredAnalysis, aiRecommendations };
+
+    await db
+      .update(scansTable)
+      .set({ status: "completed", analysis, error: null })
+      .where(eq(scansTable.id, scanId));
+
+    log.info?.({ scanId }, "Website scan completed");
+  } catch (error) {
+    const message =
+      error instanceof Error
+        ? error.message
+        : "De website kon niet worden geanalyseerd.";
+
+    await db
+      .update(scansTable)
+      .set({ status: "failed", analysis: null, error: message })
+      .where(eq(scansTable.id, scanId));
+
+    log.warn?.({ scanId, error: message }, "Website scan failed");
+  }
+}
+
 router.post("/scans", async (req, res): Promise<void> => {
   const parsed = CreateScanBody.safeParse(req.body);
   if (!parsed.success || !isWebsiteUrl(parsed.data?.url ?? "")) {
@@ -227,42 +271,9 @@ router.post("/scans", async (req, res): Promise<void> => {
 
   req.log.info({ scanId: scan.id }, "Website scan request accepted");
 
-  try {
-    const { analysis: measuredAnalysis, aiContext } = await analyzeWebsite(parsed.data.url);
-    let aiRecommendations = null;
-    try {
-      aiRecommendations = await generateAiRecommendations(
-        { ...measuredAnalysis, aiRecommendations: null },
-        aiContext,
-      );
-    } catch (error) {
-      req.log.warn(
-        { scanId: scan.id, error: error instanceof Error ? error.message : "Unknown AI error" },
-        "AI analysis unavailable; using measured recommendations",
-      );
-    }
-    const analysis = { ...measuredAnalysis, aiRecommendations };
-    const [completedScan] = await db
-      .update(scansTable)
-      .set({ status: "completed", analysis, error: null })
-      .where(eq(scansTable.id, scan.id))
-      .returning();
+  res.status(201).json(CreateScanResponse.parse(scan));
 
-    res.status(201).json(CreateScanResponse.parse(normalizeScanAnalysis(completedScan)));
-  } catch (error) {
-    const message =
-      error instanceof Error
-        ? error.message
-        : "De website kon niet worden geanalyseerd.";
-    const [failedScan] = await db
-      .update(scansTable)
-      .set({ status: "failed", analysis: null, error: message })
-      .where(eq(scansTable.id, scan.id))
-      .returning();
-
-    req.log.warn({ scanId: scan.id, error: message }, "Website scan failed");
-    res.status(201).json(CreateScanResponse.parse(failedScan));
-  }
+  void processScan(scan.id, parsed.data.url, req.log);
 });
 
 router.get("/scans", async (_req, res): Promise<void> => {
