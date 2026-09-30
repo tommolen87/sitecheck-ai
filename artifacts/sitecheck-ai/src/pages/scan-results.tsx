@@ -362,6 +362,7 @@ function Glossary() {
 }
 
 function ResultHeader({ scan, analysis }: { scan: { url: string; createdAt: string }; analysis: ScanAnalysis }) {
+  const { locale } = useLanguage();
   const checkedCategoryCount = analysis.categoryScores.filter((category) => category.checked).length;
   const allCategoriesMeasured = checkedCategoryCount === analysis.categoryScores.length;
   return (
