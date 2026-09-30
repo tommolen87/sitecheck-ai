@@ -76,8 +76,9 @@ function SeoHead() {
     ? (locale === 'nl' ? '/nl' : '/en')
     : pathname;
   const canonical = new URL(basePath, window.location.origin).href;
-  const nlUrl = new URL('/nl', window.location.origin).href;
-  const enUrl = new URL('/en', window.location.origin).href;
+  const seoSlug = seoPages[slug] ? slug : '';
+  const nlUrl = new URL(seoSlug ? `/nl/${seoSlug}` : '/nl', window.location.origin).href;
+  const enUrl = new URL(seoSlug ? `/en/${seoSlug}` : '/en', window.location.origin).href;
 
   useEffect(() => {
     document.title = title;
