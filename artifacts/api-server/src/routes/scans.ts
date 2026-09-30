@@ -1801,7 +1801,7 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
 
       const strengthStartY = doc.y;
 
-      strengths.forEach((issue: any, index: number) => {
+      localizedStrengths.forEach((issue: any, index: number) => {
         const row = Math.floor(index / 2);
         const col = index % 2;
 
@@ -1874,7 +1874,7 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
 
     sectionTitle(
       "3. Belangrijkste verbeterpunten",
-      `De ${recommendations.length} belangrijkste verbeterpunten uit het betaalde rapport.`,
+      `${t("De")} ${localizedRecommendations.length} ${t("belangrijkste verbeterpunten uit het betaalde rapport.")}`,
     );
 
     const addRecommendationCard = (
@@ -1902,29 +1902,32 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
       );
 
       const fact = plainLanguage(safe(
-        recommendation?.fact ??
+        recommendation?.whatFound ??
+          recommendation?.fact ??
           recommendation?.finding ??
           recommendation?.what,
         "",
       ));
 
       const why = plainLanguage(safe(
-        recommendation?.why ??
+        recommendation?.whyImportant ??
+          recommendation?.why ??
           recommendation?.importance ??
           recommendation?.reason,
         "",
       ));
 
       const recommendationText = plainLanguage(safe(
-        recommendation?.recommendation ??
+        recommendation?.whatToImprove ??
+          recommendation?.recommendation ??
           recommendation?.advice ??
           recommendation?.solution,
         "",
       ));
 
       const proposal = plainLanguage(safe(
-        recommendation?.concreteProposal ??
-          recommendation?.proposal ??
+        recommendation?.proposal ??
+          recommendation?.concreteProposal ??
           recommendation?.action,
         "",
       ));
@@ -2075,7 +2078,7 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
       doc.y = y + cardHeight + 12;
     };
 
-    if (recommendations.length === 0) {
+    if (localizedRecommendations.length === 0) {
       roundedCard(
         PAGE.left,
         doc.y,
@@ -2100,7 +2103,7 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
 
       doc.y += 86;
     } else {
-      recommendations.forEach(
+      localizedRecommendations.forEach(
         (recommendation: any, index: number) => {
           addRecommendationCard(
             recommendation,
@@ -2167,7 +2170,7 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
 
     doc.y = actionHeaderY + 40;
 
-    recommendations.forEach(
+    localizedRecommendations.forEach(
       (recommendation: any, index: number) => {
         const rowHeight = 42;
 
@@ -2436,7 +2439,7 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
 
       notChecked.forEach(
         (item: any, index: number) => {
-          const text =
+          const text = localizedNotChecked[index] ?? (
             typeof item === "string"
               ? item
               : safe(
@@ -2444,7 +2447,8 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
                     item?.reason ??
                     item?.title ??
                     item,
-                );
+                )
+          );
 
           doc.font("Helvetica").fontSize(8);
 
