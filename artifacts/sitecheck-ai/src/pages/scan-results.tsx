@@ -37,6 +37,27 @@ const factLabels: Array<{ key: keyof ScanAnalysis['detectedFacts']; label: strin
   { key: 'compressed', label: 'Gegevenscompressie', format: (value) => value === null ? 'Niet vastgesteld' : value ? 'Ja' : 'Nee' },
 ];
 
+function plainLanguage(value: string): string {
+  return value
+    .replace(/\bCTA('s|’s|s)?\b/gi, (_match, suffix = "") => {
+      const normalized = suffix.toLowerCase().includes("s") ? "actieknoppen" : "actieknop";
+      return normalized;
+    })
+    .replace(/\bH1-koppen?\b/gi, "hoofdtitels")
+    .replace(/\bH1-kop\b/gi, "hoofdtitel")
+    .replace(/\bH1\b/gi, "hoofdtitel")
+    .replace(/\bSEO\b/gi, "vindbaarheid in Google")
+    .replace(/meta description/gi, "korte omschrijving voor Google")
+    .replace(/Open Graph/gi, "voorvertoning bij delen")
+    .replace(/LocalBusiness structured data/gi, "gestructureerde bedrijfsinformatie voor zoekmachines")
+    .replace(/structured data/gi, "gestructureerde informatie voor zoekmachines")
+    .replace(/Core Web Vitals/gi, "belangrijke metingen voor snelheid en gebruiksgemak")
+    .replace(/PageSpeed Insights/gi, "Google-meting voor snelheid en prestaties")
+    .replace(/robots\.txt/gi, "instructies voor zoekmachines (robots.txt)")
+    .replace(/sitemap\.xml/gi, "pagina-overzicht voor zoekmachines (sitemap)")
+    .replace(/\bCanonical-link\b/gi, "voorkeursadres van de pagina");
+}
+
 function formatDate(value: string) {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return value;
@@ -124,10 +145,10 @@ function CategoryScores({ analysis }: { analysis: ScanAnalysis }) {
                         </span>
                         <div>
                           <div className="check-title-row">
-                            <strong>{check.label}</strong>
+                            <strong>{plainLanguage(check.label)}</strong>
                             <span>Weging {check.weight === 3 ? 'hoog' : check.weight === 2 ? 'middel' : 'laag'}</span>
                           </div>
-                          <p>{check.evidence}</p>
+                          <p>{plainLanguage(check.evidence)}</p>
                         </div>
                         <span className="check-status-label">
                           {check.status === 'passed' ? 'Geslaagd' : check.status === 'failed' ? 'Niet geslaagd' : 'Onbekend'}
@@ -193,23 +214,23 @@ function IssueCard({ issue, index }: { issue: RecommendationDisplay; index: numb
         <span className="issue-number">{String(index + 1).padStart(2, '0')}</span>
         <span className="severity-label">Impact: {impactLabel}</span>
       </div>
-      <h3>{issue.title}</h3>
+      <h3>{plainLanguage(issue.title)}</h3>
       <div className="issue-detail">
         <div className="issue-detail-label"><CircleAlert /> Waar we het vonden</div>
-        <p>{issue.fact}</p>
+        <p>{plainLanguage(issue.fact)}</p>
       </div>
       <div className="issue-detail">
         <div className="issue-detail-label"><CircleHelp /> Waarom dit belangrijk is</div>
-        <p>{issue.whyItMatters}</p>
+        <p>{plainLanguage(issue.whyItMatters)}</p>
       </div>
       <div className="issue-detail recommendation">
         <div className="issue-detail-label"><Check /> Wat je concreet kunt verbeteren</div>
-        <p>{issue.recommendation}</p>
+        <p>{plainLanguage(issue.recommendation)}</p>
       </div>
       {issue.proposal && (
         <div className="issue-detail proposal">
           <div className="issue-detail-label"><FileWarning /> Concreet voorstel</div>
-          <p>{issue.proposal}</p>
+          <p>{plainLanguage(issue.proposal)}</p>
         </div>
       )}
       <div className="issue-meta" aria-label={`Impact ${impactLabel}, moeilijkheid ${difficultyLabel}${confidenceLabel ? `, vertrouwen ${confidenceLabel}` : ''}`}>
@@ -218,7 +239,7 @@ function IssueCard({ issue, index }: { issue: RecommendationDisplay; index: numb
         {confidenceLabel && <span>Vertrouwen <strong>{confidenceLabel}</strong></span>}
       </div>
       {issue.relatedChecks.length > 0 && (
-        <p className="issue-related-checks">Gebaseerd op: {issue.relatedChecks.join(' · ')}</p>
+        <p className="issue-related-checks">Gebaseerd op: {issue.relatedChecks.map((label) => plainLanguage(label)).join(' · ')}</p>
       )}
     </article>
   );
