@@ -216,7 +216,7 @@ function isWebsiteUrl(value: string): boolean {
 async function processScan(
   scanId: number,
   url: string,
-  log: typeof console,
+  log: { info: (...args: any[]) => void; warn: (...args: any[]) => void },
 ): Promise<void> {
   try {
     const { analysis: measuredAnalysis, aiContext } = await analyzeWebsite(url);
@@ -273,7 +273,7 @@ router.post("/scans", async (req, res): Promise<void> => {
 
   res.status(201).json(CreateScanResponse.parse(scan));
 
-  void processScan(scan.id, scan.url, req.log);
+  void processScan(scan.id, parsed.data.url, req.log);
 });
 
 router.get("/scans", async (_req, res): Promise<void> => {
