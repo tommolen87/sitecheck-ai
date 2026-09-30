@@ -179,6 +179,14 @@
 .scan-button:active { transform: translateY(0); }
 .scan-button:disabled { opacity: .72; cursor: wait; transform: none; box-shadow: none; }
 .scan-button svg { width: 17px; }
+.scan-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 17px; }
+.scan-actions .scan-button { margin-top: 0; }
+.paid-scan-button { width: 100%; display: inline-flex; justify-content: center; align-items: center; gap: 10px; border: 1px solid hsl(var(--primary)); border-radius: 11px; color: hsl(var(--primary)); background: transparent; padding: 15px 18px; font-weight: 700; cursor: pointer; transition: transform .2s ease, background-color .2s ease, box-shadow .2s ease; }
+.paid-scan-button:hover { background: hsl(var(--primary) / .07); transform: translateY(-2px); box-shadow: 0 8px 18px hsl(var(--primary) / .10); }
+.paid-scan-button:active { transform: translateY(0); }
+.paid-scan-button:disabled { opacity: .72; cursor: wait; transform: none; box-shadow: none; }
+.paid-scan-button svg { width: 17px; }
+
 .fine-print { margin-top: 15px; color: hsl(var(--muted-foreground)); font-size: .72rem; line-height: 1.55; }
 .fine-print strong { color: hsl(var(--foreground)); font-weight: 600; }
 
@@ -266,6 +274,7 @@
   .hero h1 { font-size: clamp(3.2rem, 16vw, 4.6rem); }
   .hero-meta { display: grid; gap: 10px; }
   .scan-card { padding: 22px 18px; border-radius: 17px; }
+  .scan-actions { grid-template-columns: 1fr; }
   .signal-inner { display: block; }
   .signal-stats { margin-top: 12px; }
   .section { padding: 75px 0; }
