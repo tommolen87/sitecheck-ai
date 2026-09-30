@@ -127,27 +127,10 @@ function Home() {
     createScan.mutate(
       { data: { url: normalizedUrl } },
       {
-        onSuccess: async (scan) => {
-          try {
-            const response = await fetch(`/api/scans/${scan.id}/checkout`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-            });
-            const data = await response.json();
-
-            if (!response.ok || !data.url) {
-              throw new Error(data.error || 'Betaling kon niet worden gestart.');
-            }
-
-            window.location.href = data.url;
-          } catch (error) {
-            setPaidScanPending(false);
-            setSubmitError(
-              error instanceof Error
-                ? error.message
-                : 'Betaling kon niet worden gestart.',
-            );
-          }
+        onSuccess: (scan) => {
+          void queryClient.invalidateQueries({ queryKey: getListScansQueryKey() });
+          setPaidScanPending(false);
+          setLocation(`/scans/${scan.id}/upgrade`);
         },
         onError: (error) => {
           setPaidScanPending(false);
