@@ -438,7 +438,9 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
       return;
     }
 
-    if (scan.paymentStatus !== "paid") {
+    const testMode = process.env.SITECHECK_TEST_MODE === "true";
+
+    if (scan.paymentStatus !== "paid" && !testMode) {
       res.status(403).json({
         error: "Het volledige rapport is alleen beschikbaar na betaling.",
       });
