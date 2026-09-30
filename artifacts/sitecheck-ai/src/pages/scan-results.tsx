@@ -4,7 +4,7 @@ import { getGetScanQueryKey, useGetScan, type AiRecommendation, type ScanAnalysi
 
 const categoryOrder = [
   { key: 'conversie', label: 'Conversie' },
-  { key: 'seo', label: 'SEO' },
+  { key: 'seo', label: 'Vindbaarheid in Google' },
   { key: 'mobiel', label: 'Mobiel' },
   { key: 'techniek', label: 'Techniek & snelheid' },
   { key: 'content', label: 'Content' },
@@ -281,7 +281,7 @@ function ResultHeader({ scan, analysis }: { scan: { url: string; createdAt: stri
               <ScoreRing score={analysis.overallScore} />
               <div>
                 <strong className="score-verdict">{analysis.overallScore >= 70 ? 'Een stevige basis' : analysis.overallScore >= 40 ? 'Ruimte om te groeien' : 'Tijd voor aandacht'}</strong>
-                <p>De totaalscore weegt Conversie en SEO elk voor 20%, Mobiel en Techniek elk voor 15%, en de overige onderdelen elk voor 10%.</p>
+                <p>De totaalscore weegt Conversie en vindbaarheid in Google elk voor 20%, Mobiel en Techniek elk voor 15%, en de overige onderdelen elk voor 10%.</p>
                 <div className="overall-coverage">
                   <strong>Gemeten kwaliteit: {analysis.overallQualityScore ?? '—'}{analysis.overallQualityScore !== null ? '/100' : ''}</strong>
                   <strong>Totale meetdekking: {analysis.overallCoveragePercent}%</strong>
