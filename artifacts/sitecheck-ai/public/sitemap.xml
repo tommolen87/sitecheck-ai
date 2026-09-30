@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url>
+    <loc>https://www.sitecheckai.nl/nl</loc>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.sitecheckai.nl/nl"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.sitecheckai.nl/en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.sitecheckai.nl/nl"/>
+  </url>
+  <url>
+    <loc>https://www.sitecheckai.nl/en</loc>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.sitecheckai.nl/nl"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.sitecheckai.nl/en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.sitecheckai.nl/nl"/>
+  </url>
+  <url>
+    <loc>https://www.sitecheckai.nl/nl/website-scan</loc>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.sitecheckai.nl/nl/website-scan"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.sitecheckai.nl/en/website-scan"/>
+  </url>
+  <url>
+    <loc>https://www.sitecheckai.nl/en/website-scan</loc>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.sitecheckai.nl/nl/website-scan"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.sitecheckai.nl/en/website-scan"/>
+  </url>
+  <url>
+    <loc>https://www.sitecheckai.nl/nl/seo-check</loc>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.sitecheckai.nl/nl/seo-check"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.sitecheckai.nl/en/seo-check"/>
+  </url>
+  <url>
+    <loc>https://www.sitecheckai.nl/en/seo-check</loc>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.sitecheckai.nl/nl/seo-check"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.sitecheckai.nl/en/seo-check"/>
+  </url>
+  <url>
+    <loc>https://www.sitecheckai.nl/nl/website-analyse</loc>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.sitecheckai.nl/nl/website-analyse"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.sitecheckai.nl/en/website-analyse"/>
+  </url>
+  <url>
+    <loc>https://www.sitecheckai.nl/en/website-analyse</loc>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.sitecheckai.nl/nl/website-analyse"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.sitecheckai.nl/en/website-analyse"/>
+  </url>
+  <url>
+    <loc>https://www.sitecheckai.nl/nl/website-audit</loc>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.sitecheckai.nl/nl/website-audit"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.sitecheckai.nl/en/website-audit"/>
+  </url>
+  <url>
+    <loc>https://www.sitecheckai.nl/en/website-audit</loc>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.sitecheckai.nl/nl/website-audit"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.sitecheckai.nl/en/website-audit"/>
+  </url>
+  <url>
+    <loc>https://www.sitecheckai.nl/nl/website-analyzer</loc>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.sitecheckai.nl/nl/website-analyzer"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.sitecheckai.nl/en/website-analyzer"/>
+  </url>
+  <url>
+    <loc>https://www.sitecheckai.nl/en/website-analyzer</loc>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.sitecheckai.nl/nl/website-analyzer"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.sitecheckai.nl/en/website-analyzer"/>
+  </url>
+  <url>
+    <loc>https://www.sitecheckai.nl/nl/seo-audit</loc>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.sitecheckai.nl/nl/seo-audit"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.sitecheckai.nl/en/seo-audit"/>
+  </url>
+  <url>
+    <loc>https://www.sitecheckai.nl/en/seo-audit</loc>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.sitecheckai.nl/nl/seo-audit"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.sitecheckai.nl/en/seo-audit"/>
+  </url>
+</urlset>
