@@ -424,6 +424,7 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
     const normalizedScan = normalizeScanAnalysis(scan);
     const analysis = normalizedScan.analysis as Record<string, any>;
     const url = scan.url ?? "Onbekende website";
+    const locale = String(req.query.lang ?? "").toLowerCase() === "en" ? "en" : "nl";
 
     const categories = Array.isArray(analysis.categoryScores)
       ? analysis.categoryScores
@@ -496,9 +497,9 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
       margin: 0,
       bufferPages: true,
       info: {
-        Title: `SiteCheck AI – Website rapport`,
+        Title: `SiteCheck AI – ${t("Website rapport")}`,
         Author: "SiteCheck AI",
-        Subject: `Website analyse voor ${url}`,
+        Subject: `${t("Website analyse voor")} ${url}`,
       },
     });
 
@@ -555,13 +556,105 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
     // HELPERS
     // -------------------------------------------------------------------------
 
+    const pdfTranslations: Record<string, string> = {
+      "Website rapport": "Website report",
+      "Website analyse": "Website analysis",
+      "Website analyse voor": "Website analysis for",
+      "Onderdeel": "Area",
+      "Niet beschikbaar": "Not available",
+      "Ja": "Yes",
+      "Nee": "No",
+      "Niet gemeten": "Not measured",
+      "Uitstekend": "Excellent",
+      "Goed": "Good",
+      "Redelijk": "Fair",
+      "Verbetering nodig": "Needs improvement",
+      "Veel verbetering nodig": "Significant improvement needed",
+      "1. Overzicht": "1. Overview",
+      "Een compacte samenvatting van de belangrijkste meetresultaten.": "A concise summary of the key measurements.",
+      "Totale score": "Overall score",
+      "Gemeten kwaliteit": "Measured quality",
+      "Totale meetdekking": "Overall coverage",
+      "Website": "Website",
+      "Scan uitgevoerd": "Scan completed",
+      "De zeven invalshoeken": "The seven areas",
+      "Sterke punten": "Strengths",
+      "Wat gaat er al goed?": "What is already working well?",
+      "Sterke punten die tijdens de scan zijn aangetroffen.": "Strengths found during the scan.",
+      "Er zijn geen afzonderlijke sterke punten beschikbaar in de scanresultaten.": "No individual strengths are available in the scan results.",
+      "2. Wat gaat er al goed?": "2. What is already working well?",
+      "3. Belangrijkste verbeterpunten": "3. Key improvement points",
+      "Belangrijkste verbeterpunten": "Key improvement points",
+      "Belangrijkste verbeterpunten uit het betaalde rapport.": "Key improvement points from the paid report.",
+      "Impact": "Impact",
+      "Moeite": "Effort",
+      "Niet aangegeven": "Not specified",
+      "Aanbeveling": "Recommendation",
+      "Wat we zagen": "What we found",
+      "Waarom dit belangrijk is": "Why this matters",
+      "Concreet voorstel": "Concrete suggestion",
+      "Verbeterpunt": "Improvement point",
+      "4. Actieplan": "4. Action plan",
+      "Een compacte samenvatting van de verbeterpunten en de bijbehorende aanpak.": "A concise summary of the improvement points and the corresponding approach.",
+      "ACTIE": "ACTION",
+      "MOEITE": "EFFORT",
+      "5. Technische metingen": "5. Technical measurements",
+      "De belangrijkste technische meetwaarden uit de scan, inclusief uitleg in gewone taal.": "The key technical measurements from the scan, explained in plain language.",
+      "Er zijn geen afzonderlijke technische meetwaarden beschikbaar.": "No individual technical measurements are available.",
+      "6. Wat konden we niet controleren?": "6. What could we not check?",
+      "Niet iedere eigenschap van een website kan betrouwbaar automatisch worden vastgesteld.": "Not every website property can be reliably determined automatically.",
+      "Samengevat": "Summary",
+      "Gebruik de verbeterpunten in dit rapport als praktische checklist. Begin met de punten met de grootste impact en werk daarna de technische en inhoudelijke verbeteringen verder uit.": "Use the improvement points in this report as a practical checklist. Start with the highest-impact items, then work through the technical and content improvements.",
+      "OK": "OK",
+      "Sterk punt": "Strength",
+      "Niet beschikbaar in de scanresultaten.": "Not available in the scan results.",
+      "AI-verbeterpunten": "AI improvement points",
+      "Er zijn geen AI-verbeterpunten beschikbaar voor deze scan.": "No AI improvement points are available for this scan.",
+      "Pagina": "Page",
+      "Paginatitel": "Page title",
+      "Lengte paginatitel": "Page title length",
+      "Korte omschrijving voor Google": "Short description for Google",
+      "Lengte omschrijving voor Google": "Description length for Google",
+      "Hoofdtitels van de pagina": "Main page headings",
+      "Alle koppen": "All headings",
+      "Zichtbare tekens": "Visible characters",
+      "Interne links": "Internal links",
+      "Externe links": "External links",
+      "Afbeeldingen": "Images",
+      "Afbeeldingen met alt-tekst": "Images with alt text",
+      "Actieknoppen": "Call-to-action buttons",
+      "Belangrijkste actieknop": "Primary action button",
+      "Voorkeursadres van de pagina": "Preferred page address",
+      "Instructies voor zoekmachines": "Search engine instructions",
+      "Pagina-overzicht voor zoekmachines": "Page overview for search engines",
+      "Voorvertoning bij delen": "Sharing preview",
+      "Serverantwoord": "Server response",
+      "Responstijd": "Response time",
+      "Paginagrootte": "Page size",
+      "Gegevenscompressie": "Data compression",
+      "Vindbaarheid in Google": "Visibility in Google",
+      "Conversie": "Conversion",
+      "Mobiel": "Mobile",
+      "Techniek & snelheid": "Technology & speed",
+      "Content": "Content",
+      "Vertrouwen": "Trust",
+      "Lokale vindbaarheid": "Local visibility",
+      "Niet aangetroffen": "Not found",
+      "Aangetroffen": "Found",
+      "Bereikbaar": "Available",
+      "Niet gevonden": "Not found",
+      "Niet vastgesteld": "Not determined",
+    };
+
+    const t = (value: string): string => locale === "en" ? (pdfTranslations[value] ?? value) : value;
+
     const safe = (value: unknown, fallback = "Niet beschikbaar") => {
       if (value === null || value === undefined || value === "") {
-        return fallback;
+        return t(fallback);
       }
 
       if (typeof value === "boolean") {
-        return value ? "Ja" : "Nee";
+        return value ? t("Ja") : t("Nee");
       }
 
       if (typeof value === "object") {
@@ -576,7 +669,7 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
     };
 
     const plainLanguage = (value: string): string => {
-      return value
+      return t(value)
         .replace(/\bCTA('s|’s|s)?\b/gi, (_match, suffix = "") =>
           suffix ? "actieknoppen" : "actieknop",
         )
@@ -615,12 +708,12 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
     };
 
     const scoreLabel = (score: number | null | undefined) => {
-      if (typeof score !== "number") return "Niet gemeten";
-      if (score >= 90) return "Uitstekend";
-      if (score >= 80) return "Goed";
-      if (score >= 60) return "Redelijk";
-      if (score >= 40) return "Verbetering nodig";
-      return "Veel verbetering nodig";
+      if (typeof score !== "number") return t("Niet gemeten");
+      if (score >= 90) return t("Uitstekend");
+      if (score >= 80) return t("Goed");
+      if (score >= 60) return t("Redelijk");
+      if (score >= 40) return t("Verbetering nodig");
+      return t("Veel verbetering nodig");
     };
 
     const addFooter = () => {
@@ -631,7 +724,7 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
         .fontSize(7.5)
         .fillColor(COLORS.gray400)
         .text(
-          "SiteCheck AI • Website analyse",
+          t("SiteCheck AI • Website analyse"),
           PAGE.left,
           y,
           {
@@ -645,7 +738,7 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
         .fontSize(7.5)
         .fillColor(COLORS.gray400)
         .text(
-          `Pagina ${doc.bufferedPageRange().count}`,
+          `${t("Pagina")} ${doc.bufferedPageRange().count}`,
           PAGE.width - PAGE.right - 80,
           y,
           {
