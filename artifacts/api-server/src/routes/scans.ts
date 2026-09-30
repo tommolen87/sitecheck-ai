@@ -533,9 +533,9 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
       margin: 0,
       bufferPages: true,
       info: {
-        Title: `SiteCheck AI – ${t("Website rapport")}`,
+        Title: "SiteCheck AI – Website rapport",
         Author: "SiteCheck AI",
-        Subject: `${t("Website analyse voor")} ${url}`,
+        Subject: `Website analyse voor ${url}`,
       },
     });
 
