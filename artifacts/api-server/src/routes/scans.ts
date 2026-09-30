@@ -1521,7 +1521,7 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
           .fillColor(COLORS.green)
           .text(
             "OK  " +
-              safe(
+              plainLanguage(safe(
                 issue?.label ??
                   issue?.title ??
                   issue?.name ??
