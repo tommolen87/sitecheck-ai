@@ -34,6 +34,61 @@ import {
 } from 'wouter';
 
 const queryClient = new QueryClient();
+function SeoHead() {
+  const { locale } = useLanguage();
+  const title = locale === 'nl'
+    ? 'Website laten controleren? | SiteCheck AI'
+    : 'Website Audit & Website Checker | SiteCheck AI';
+  const description = locale === 'nl'
+    ? 'Laat je website controleren met SiteCheck AI. Ontdek SEO-, content-, techniek-, mobiel- en conversieproblemen en krijg praktische verbeteradviezen.'
+    : 'Check your website with SiteCheck AI. Find SEO, content, technical, mobile and conversion issues with practical improvement advice.';
+  const pathname = window.location.pathname;
+  const basePath = pathname === '/' || pathname === '/nl' || pathname === '/nl/' || pathname === '/en' || pathname === '/en/'
+    ? (locale === 'nl' ? '/nl' : '/en')
+    : pathname;
+  const canonical = new URL(basePath, window.location.origin).href;
+  const nlUrl = new URL('/nl', window.location.origin).href;
+  const enUrl = new URL('/en', window.location.origin).href;
+
+  useEffect(() => {
+    document.title = title;
+    document.documentElement.lang = locale;
+    const upsertMeta = (selector: string, content: string) => {
+      let element = document.head.querySelector<HTMLMetaElement>(selector);
+      if (!element) {
+        element = document.createElement('meta');
+        const match = selector.match(/\[name="([^"]+)"\]/) || selector.match(/\[property="([^"]+)"\]/);
+        if (match) element.setAttribute(selector.includes('property') ? 'property' : 'name', match[1]);
+        document.head.appendChild(element);
+      }
+      element.content = content;
+    };
+    upsertMeta('meta[name="description"]', description);
+    upsertMeta('meta[property="og:title"]', title);
+    upsertMeta('meta[property="og:description"]', description);
+    upsertMeta('meta[property="og:type"]', 'website');
+    upsertMeta('meta[name="twitter:title"]', title);
+    upsertMeta('meta[name="twitter:description"]', description);
+
+    const setLink = (rel: string, href: string, attrs: Record<string, string> = {}) => {
+      let element = document.head.querySelector<HTMLLinkElement>(`link[rel="${rel}"][${Object.keys(attrs).map((key) => `${key}="${attrs[key]}"`).join('][')}]`);
+      if (!element) {
+        element = document.createElement('link');
+        element.rel = rel;
+        Object.entries(attrs).forEach(([key, value]) => element.setAttribute(key, value));
+        document.head.appendChild(element);
+      }
+      element.href = href;
+    };
+    setLink('canonical', canonical);
+    setLink('alternate', nlUrl, { hreflang: 'nl' });
+    setLink('alternate', enUrl, { hreflang: 'en' });
+    setLink('alternate', canonical, { hreflang: 'x-default' });
+  }, [canonical, description, enUrl, locale, nlUrl, title]);
+
+  return null;
+}
+
 
 function Home() {
   const [url, setUrl] = useState('');
@@ -163,7 +218,7 @@ function Home() {
     <Localized><main className="site-shell min-h-[100dvh]">
       <nav className="nav-wrap">
         <div className="page-frame flex items-center justify-between">
-          <a className="brand-mark" href="/" data-testid="link-home">
+          <a className="brand-mark" href={locale === 'nl' ? '/nl' : '/en'} data-testid="link-home">
             <span className="brand-symbol" aria-hidden="true"><Radar /></span>
             <span className="brand-name">SiteCheck <span>AI</span></span>
           </a>
@@ -353,12 +408,15 @@ function Home() {
 }
 
 function Router() {
+  const { locale } = useLanguage();
   return (
     // Keep a shared shell (sidebar, navbar) outside the boundary so it
     // survives a page crash.
     <RoutedErrorBoundary>
       <Switch>
-         <Route path="/" component={Home} />
+        <Route path="/nl" component={Home} />
+        <Route path="/en" component={Home} />
+        <Route path="/" component={Home} />
         <Route path="/scans/:scanId" component={ScanResults} />
         <Route path="/scans/:scanId/upgrade" component={Upgrade} />
         <Route component={NotFound} />  
@@ -375,6 +433,7 @@ function RoutedErrorBoundary({ children }: { children: ReactNode }) {
 function App() {
   return (
     <LanguageProvider>
+      <SeoHead />
       <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, '')}>
