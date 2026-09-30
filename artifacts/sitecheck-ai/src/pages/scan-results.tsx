@@ -1,7 +1,7 @@
 import { ArrowLeft, Check, CheckCircle2, CircleAlert, CircleHelp, Clock3, ExternalLink, FileWarning, Gauge, LockKeyhole, RefreshCw, ShieldCheck, XCircle } from 'lucide-react';
 import { Link, useLocation, useParams } from 'wouter';
 import { getGetScanQueryKey, useGetScan, type AiRecommendation, type ScanAnalysis, type ScanIssue } from '@workspace/api-client-react';
-import { LanguageSwitcher, Localized, useLanguage, useLocalizedText } from '@/lib/i18n';
+import { LanguageSwitcher, Localized, useLanguage } from '@/lib/i18n';
 
 const categoryOrder = [
   { key: 'conversie', label: 'Conversie' },
