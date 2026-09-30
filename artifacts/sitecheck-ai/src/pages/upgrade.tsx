@@ -1,11 +1,12 @@
 import { ArrowLeft, Check } from 'lucide-react';
 import { useLocation, useParams } from 'wouter';
-import { LanguageSwitcher, Localized, useLocalizedText } from '@/lib/i18n';
+import { LanguageSwitcher, Localized, translateText, useLanguage } from '@/lib/i18n';
 
 export default function Upgrade() {
   const [, setLocation] = useLocation();
   const params = useParams();
-  const translate = useLocalizedText;
+  const { locale } = useLanguage();
+  const translate = (value: string) => translateText(value, locale);
 
   return (
     <Localized><main className="site-shell min-h-[100dvh]">
