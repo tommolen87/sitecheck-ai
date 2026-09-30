@@ -258,6 +258,14 @@ export function translateText(value: string, locale: Locale): string {
 
 function detectInitialLocale(): Locale {
   if (typeof window === "undefined") return "nl";
+
+  // Language-specific URLs must always determine the locale.
+  // This prevents localStorage/browser language from making /nl pages render in English
+  // (or /en pages render in Dutch), which is especially important for SEO crawlers.
+  const pathname = window.location.pathname;
+  if (pathname === "/nl" || pathname.startsWith("/nl/")) return "nl";
+  if (pathname === "/en" || pathname.startsWith("/en/")) return "en";
+
   const saved = window.localStorage.getItem("sitecheck-language");
   if (saved === "nl" || saved === "en") return saved;
   const browserLanguage = navigator.language.toLowerCase();
