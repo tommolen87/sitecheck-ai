@@ -1,4 +1,5 @@
 import "dotenv/config";
+import { createHmac, timingSafeEqual } from "node:crypto";
 import { Router, type IRouter } from "express";
 import { desc, eq } from "drizzle-orm";
 import { db, scansTable } from "@workspace/db";
@@ -19,6 +20,24 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY ?? "");
 
 const frontendUrl =
   process.env.FRONTEND_URL ?? "http://localhost:5173";
+
+
+const scanAccessSecret = process.env.SCAN_ACCESS_SECRET ?? process.env.STRIPE_SECRET_KEY;
+
+function createScanAccessToken(scanId: number): string {
+  if (!scanAccessSecret) {
+    throw new Error("SCAN_ACCESS_SECRET is not configured.");
+  }
+  return createHmac("sha256", scanAccessSecret).update(`scan:${scanId}`).digest("hex");
+}
+
+function hasScanAccess(req: { headers: Record<string, unknown> }, scanId: number): boolean {
+  if (!scanAccessSecret) return false;
+  const supplied = String(req.headers["x-scan-access-token"] ?? "");
+  if (!/^[a-f0-9]{64}$/i.test(supplied)) return false;
+  const expected = createScanAccessToken(scanId);
+  return timingSafeEqual(Buffer.from(supplied, "hex"), Buffer.from(expected, "hex"));
+}
 
 const CATEGORY_WEIGHTS: Record<string, number> = {
   conversie: 20,
@@ -274,20 +293,18 @@ router.post("/scans", async (req, res): Promise<void> => {
     .values({ url: parsed.data.url, status: "analyzing" })
     .returning();
 
+  const accessToken = createScanAccessToken(scan.id);
+
   req.log.info({ scanId: scan.id }, "Website scan request accepted");
 
-  res.status(201).json(CreateScanResponse.parse(scan));
+  res.status(201).json({ ...CreateScanResponse.parse(scan), accessToken });
 
   void processScan(scan.id, parsed.data.url, locale, req.log);
 });
 
 router.get("/scans", async (_req, res): Promise<void> => {
-  const scans = await db
-    .select()
-    .from(scansTable)
-    .orderBy(desc(scansTable.id));
-
-  res.json(ListScansResponse.parse(scans));
+  // Scan records are private resources; never expose the global scan list publicly.
+  res.json([]);
 });
 
 router.get("/scans/:scanId", async (req, res): Promise<void> => {
@@ -299,6 +316,11 @@ router.get("/scans/:scanId", async (req, res): Promise<void> => {
   }
 
   const scanId = Number(parsed.data.scanId);
+
+  if (!hasScanAccess(req, scanId)) {
+    res.status(404).json({ error: "Scan niet gevonden." });
+    return;
+  }
 
   const [scan] = await db
     .select()
@@ -319,6 +341,11 @@ router.post("/scans/:scanId/checkout", async (req, res): Promise<void> => {
 
   if (!Number.isInteger(scanId) || scanId <= 0) {
     res.status(400).json({ error: "Ongeldig scan-ID." });
+    return;
+  }
+
+  if (!hasScanAccess(req, scanId)) {
+    res.status(404).json({ error: "Scan niet gevonden." });
     return;
   }
 
@@ -390,6 +417,12 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
 
     if (!Number.isInteger(scanId) || scanId <= 0) {
       res.status(400).json({ error: "Ongeldig scan-ID." });
+      return;
+    }
+
+    const accessToken = String(req.headers["x-scan-access-token"] ?? "");
+    if (!hasScanAccess(req, scanId)) {
+      res.status(404).json({ error: "Rapport niet gevonden." });
       return;
     }
 
@@ -503,6 +536,8 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
       },
     });
 
+    res.setHeader("Cache-Control", "no-store");
+    res.setHeader("Referrer-Policy", "no-referrer");
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader(
       "Content-Disposition",
