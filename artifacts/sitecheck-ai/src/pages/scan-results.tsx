@@ -90,6 +90,21 @@ function ScoreRing({ score }: { score: number }) {
   );
 }
 
+function scoreLabel(score: number | null | undefined): string {
+  if (typeof score !== 'number') return 'Niet gemeten';
+  if (score >= 90) return 'Uitstekend';
+  if (score >= 80) return 'Goed';
+  if (score >= 60) return 'Redelijk';
+  if (score >= 40) return 'Verbetering nodig';
+  return 'Veel verbetering nodig';
+}
+
+function getScoreBasedCheckScore(check: ScanAnalysis['categoryScores'][number]['checks'][number]): number | null {
+  if (check.key !== 'mobile-performance') return null;
+  const score = Number(check.value);
+  return Number.isFinite(score) && score >= 0 && score <= 100 ? score : null;
+}
+
 function CategoryScores({ analysis }: { analysis: ScanAnalysis }) {
   const scoresByKey = new Map(analysis.categoryScores.map((category) => [category.key, category]));
   const importantConversionChecks = new Set(['primary-cta-clear', 'value-proposition', 'target-audience']);
@@ -141,29 +156,53 @@ function CategoryScores({ analysis }: { analysis: ScanAnalysis }) {
                 <details className="category-checks">
                   <summary>
                     <span>Bekijk score-opbouw</span>
-                    <span>{result.passedCount} geslaagd · {result.failedCount} niet geslaagd · {result.unknownCount} onbekend · {result.executedCount} uitgevoerd</span>
+                    <span>
+                      {result.checks.some((check) => getScoreBasedCheckScore(check) !== null)
+                        ? `${result.executedCount} scoremeting${result.executedCount === 1 ? '' : 'en'} uitgevoerd`
+                        : `${result.passedCount} geslaagd · ${result.failedCount} niet geslaagd · ${result.unknownCount} onbekend · ${result.executedCount} uitgevoerd`}
+                    </span>
                   </summary>
                   <div className="category-check-list">
-                    {result.checks.map((check) => (
-                      <div className={`category-check check-${check.status}`} key={check.key}>
-                        <span className="check-status-icon" aria-hidden="true">
-                          {check.status === 'passed' ? <CheckCircle2 /> : check.status === 'failed' ? <XCircle /> : <CircleHelp />}
-                        </span>
-                        <div>
-                          <div className="check-title-row">
-                            <strong>{plainLanguage(check.label)}</strong>
-                            <span>Weging {check.weight === 3 ? 'hoog' : check.weight === 2 ? 'middel' : 'laag'}</span>
+                    {result.checks.map((check) => {
+                      const scoreBasedValue = getScoreBasedCheckScore(check);
+                      const scoreBased = scoreBasedValue !== null;
+                      return (
+                        <div className={`category-check ${scoreBased ? 'check-score' : `check-${check.status}`}`} key={check.key}>
+                          <span className="check-status-icon" aria-hidden="true">
+                            {scoreBased
+                              ? scoreBasedValue >= 80
+                                ? <CheckCircle2 />
+                                : scoreBasedValue >= 60
+                                  ? <CircleAlert />
+                                  : <XCircle />
+                              : check.status === 'passed'
+                                ? <CheckCircle2 />
+                                : check.status === 'failed'
+                                  ? <XCircle />
+                                  : <CircleHelp />}
+                          </span>
+                          <div>
+                            <div className="check-title-row">
+                              <strong>{plainLanguage(check.label)}</strong>
+                              <span>Weging {check.weight === 3 ? 'hoog' : check.weight === 2 ? 'middel' : 'laag'}</span>
+                            </div>
+                            <p>{plainLanguage(check.evidence)}</p>
                           </div>
-                          <p>{plainLanguage(check.evidence)}</p>
+                          <span className="check-status-label">
+                            {scoreBased
+                              ? `${scoreBasedValue}/100 · ${scoreLabel(scoreBasedValue)}`
+                              : check.status === 'passed'
+                                ? 'Geslaagd'
+                                : check.status === 'failed'
+                                  ? 'Niet geslaagd'
+                                  : 'Onbekend'}
+                          </span>
                         </div>
-                        <span className="check-status-label">
-                          {check.status === 'passed' ? 'Geslaagd' : check.status === 'failed' ? 'Niet geslaagd' : 'Onbekend'}
-                        </span>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </details>
-              )}
+              )}}
             </article>
           );
         })}
