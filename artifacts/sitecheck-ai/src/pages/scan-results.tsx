@@ -482,13 +482,9 @@ function ResultsContent({
   const [, setLocation] = useLocation();
   const { locale } = useLanguage();
   const aiRecommendations = analysis.aiRecommendations ?? null;
-  console.log("AI COUNT", aiRecommendations?.length, aiRecommendations);
-  console.log("PAID DEBUG", { isPaid, paymentStatus: analysis });
   const hasAiAnalysis = aiRecommendations !== null;
-  const testPdfMode =
-    new URLSearchParams(window.location.search).get("testPdf") === "1";
-  const effectivePaid = isPaid || testPdfMode;
-  const issueLimit = effectivePaid ? 20 : 3;
+  const effectivePaid = isPaid;
+  const issueLimit = effectivePaid ? 10 : 3;
 
   const issues = aiRecommendations !== null
     ? aiRecommendations.slice(0, issueLimit).map(aiRecommendation)
@@ -711,6 +707,7 @@ export default function ScanResults() {
   const params = useParams<{ scanId?: string }>();
   const scanId = Number(params.scanId);
   const { locale } = useLanguage();
+  const paymentSuccess = new URLSearchParams(window.location.search).get("payment") === "success";
   const validScanId = Number.isInteger(scanId) && scanId > 0;
   const accessToken = validScanId ? getScanAccessToken(scanId) : null;
   const scanQuery = useGetScan(validScanId ? scanId : 0, {
@@ -718,7 +715,12 @@ export default function ScanResults() {
     query: {
       enabled: validScanId,
       queryKey: [...getGetScanQueryKey(validScanId ? scanId : 0), accessToken ?? 'no-access-token'],
-      refetchInterval: (query) => query.state.data?.status === 'analyzing' ? 4_000 : false,
+      refetchInterval: (query) =>
+        query.state.data?.status === 'analyzing'
+          ? 4_000
+          : paymentSuccess && query.state.data?.paymentStatus !== 'paid'
+            ? 2_000
+            : false,
     },
   });
 
