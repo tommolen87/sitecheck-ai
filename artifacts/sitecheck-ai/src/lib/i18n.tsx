@@ -313,7 +313,7 @@ export function LanguageSwitcher() {
 
 function localizeNode(node: ReactNode, locale: Locale): ReactNode {
   if (typeof node === "string") return translateText(node, locale);
-  if (Array.isArray(node)) return node.map((child, index) => <span key={index}>{localizeNode(child, locale)}</span>);
+  if (Array.isArray(node)) return node.map((child) => localizeNode(child, locale));
   if (!isValidElement(node)) return node;
   if (node.props.children === undefined) return node;
   return cloneElement(node, { children: localizeNode(node.props.children, locale) });
