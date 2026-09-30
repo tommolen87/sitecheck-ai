@@ -1,4 +1,5 @@
 import "dotenv/config";
+import OpenAI from "openai";
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { Router, type IRouter } from "express";
 import { eq } from "drizzle-orm";
@@ -527,6 +528,157 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
     const notChecked = Array.isArray(analysis.notChecked)
       ? analysis.notChecked
       : [];
+
+    const translateDynamicTexts = async (payload: {
+      strengths: Array<{ label: string; evidence: string }>;
+      recommendations: Array<{
+        title: string;
+        whatFound: string;
+        whyImportant: string;
+        whatToImprove: string;
+        proposal: string;
+      }>;
+      notChecked: string[];
+    }) => {
+      if (locale !== "en") return payload;
+
+      const apiKey =
+        process.env.AI_INTEGRATIONS_OPENAI_API_KEY ??
+        process.env.OPENAI_API_KEY;
+      if (!apiKey) return payload;
+
+      try {
+        const client = new OpenAI({
+          apiKey,
+          ...(process.env.AI_INTEGRATIONS_OPENAI_BASE_URL
+            ? { baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL }
+            : {}),
+          timeout: 15_000,
+          maxRetries: 1,
+        });
+
+        const response = await client.chat.completions.create({
+          model: "gpt-5.4-mini",
+          max_completion_tokens: 6000,
+          response_format: {
+            type: "json_schema",
+            json_schema: {
+              name: "sitecheck_pdf_translation",
+              strict: true,
+              schema: {
+                type: "object",
+                additionalProperties: false,
+                required: ["strengths", "recommendations", "notChecked"],
+                properties: {
+                  strengths: {
+                    type: "array",
+                    items: {
+                      type: "object",
+                      additionalProperties: false,
+                      required: ["label", "evidence"],
+                      properties: {
+                        label: { type: "string" },
+                        evidence: { type: "string" },
+                      },
+                    },
+                  },
+                  recommendations: {
+                    type: "array",
+                    items: {
+                      type: "object",
+                      additionalProperties: false,
+                      required: ["title", "whatFound", "whyImportant", "whatToImprove", "proposal"],
+                      properties: {
+                        title: { type: "string" },
+                        whatFound: { type: "string" },
+                        whyImportant: { type: "string" },
+                        whatToImprove: { type: "string" },
+                        proposal: { type: "string" },
+                      },
+                    },
+                  },
+                  notChecked: {
+                    type: "array",
+                    items: { type: "string" },
+                  },
+                },
+              },
+            },
+          },
+          messages: [
+            {
+              role: "system",
+              content:
+                "Translate the supplied SiteCheck AI report text into natural, professional English. Preserve URLs, numbers, names, quoted website text and factual meaning exactly. Do not add or remove facts. Return exactly the same array lengths and order.",
+            },
+            { role: "user", content: JSON.stringify(payload) },
+          ],
+        });
+
+        const content = response.choices[0]?.message?.content;
+        if (!content) return payload;
+
+        const parsed = JSON.parse(content);
+        if (
+          !parsed ||
+          !Array.isArray(parsed.strengths) ||
+          !Array.isArray(parsed.recommendations) ||
+          !Array.isArray(parsed.notChecked) ||
+          parsed.strengths.length !== payload.strengths.length ||
+          parsed.recommendations.length !== payload.recommendations.length ||
+          parsed.notChecked.length !== payload.notChecked.length
+        ) {
+          return payload;
+        }
+
+        return parsed;
+      } catch (error) {
+        console.warn(
+          "PDF dynamic translation unavailable; using source text:",
+          error instanceof Error ? error.message : "Unknown error",
+        );
+        return payload;
+      }
+    };
+
+    const localizedDynamic = await translateDynamicTexts({
+      strengths: strengths.map((item: any) => ({
+        label: safe(item?.label ?? item?.key, "Sterk punt"),
+        evidence: safe(
+          item?.evidence ?? item?.description ?? item?.explanation ?? item?.message,
+          "Dit onderdeel scoorde positief tijdens de scan.",
+        ),
+      })),
+      recommendations: recommendations.map((item: any) => ({
+        title: safe(item?.title ?? item?.issue ?? item?.name, "Verbeterpunt"),
+        whatFound: safe(item?.whatFound ?? item?.fact ?? item?.finding ?? item?.what, ""),
+        whyImportant: safe(item?.whyImportant ?? item?.why ?? item?.importance ?? item?.reason, ""),
+        whatToImprove: safe(item?.whatToImprove ?? item?.recommendation ?? item?.advice ?? item?.solution, ""),
+        proposal: safe(item?.proposal ?? item?.concreteProposal ?? item?.action, ""),
+      })),
+      notChecked: notChecked.map((item: any) =>
+        typeof item === "string"
+          ? item
+          : safe(item?.message ?? item?.reason ?? item?.title ?? item),
+      ),
+    });
+
+    const localizedStrengths = strengths.map((item: any, index: number) => ({
+      ...item,
+      label: localizedDynamic.strengths[index]?.label ?? item.label,
+      evidence: localizedDynamic.strengths[index]?.evidence ?? item.evidence,
+    }));
+
+    const localizedRecommendations = recommendations.map((item: any, index: number) => ({
+      ...item,
+      title: localizedDynamic.recommendations[index]?.title ?? item.title,
+      whatFound: localizedDynamic.recommendations[index]?.whatFound ?? item.whatFound ?? item.fact ?? item.finding ?? item.what,
+      whyImportant: localizedDynamic.recommendations[index]?.whyImportant ?? item.whyImportant ?? item.why ?? item.importance ?? item.reason,
+      whatToImprove: localizedDynamic.recommendations[index]?.whatToImprove ?? item.whatToImprove ?? item.recommendation ?? item.advice ?? item.solution,
+      proposal: localizedDynamic.recommendations[index]?.proposal ?? item.proposal ?? item.concreteProposal ?? item.action,
+    }));
+
+    const localizedNotChecked = localizedDynamic.notChecked;
 
     const doc = new PDFDocument({
       size: "A4",
