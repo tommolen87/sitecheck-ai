@@ -1779,7 +1779,7 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
         .font("Helvetica-Bold")
         .fontSize(8.5)
         .fillColor(COLORS.gray900)
-        .text(term, PAGE.left, glossaryY, {
+        .text(t(term), PAGE.left, glossaryY, {
           width: 175,
           lineBreak: false,
         });
@@ -1788,7 +1788,7 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
         .font("Helvetica")
         .fontSize(8)
         .fillColor(COLORS.gray600)
-        .text(explanation, PAGE.left + 185, glossaryY, {
+        .text(t(explanation), PAGE.left + 185, glossaryY, {
           width: glossaryWidth - 185,
           lineGap: 2,
         });
