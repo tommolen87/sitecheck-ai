@@ -1527,7 +1527,8 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
                   issue?.name ??
                   issue?.key,
                 "Sterk punt",
-              )),
+              ),
+            ),
             x + 14,
             y + 13,
             {
