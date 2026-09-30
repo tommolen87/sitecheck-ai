@@ -1361,11 +1361,11 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
       value: unknown,
     ) => {
       if (typeof value === "boolean") {
-        return value ? "Ja" : "Nee";
+        return value ? t("Ja") : t("Nee");
       }
 
       if (value === null || value === undefined || value === "") {
-        return "Niet gevonden";
+        return t("Niet gevonden");
       }
 
       if (key === "contentEncoding" && value === "br") {
@@ -1385,15 +1385,15 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
       }
 
       if (key === "pageTitleLength") {
-        return `${value} tekens`;
+        return `${value} ${t("tekens")}`;
       }
 
       if (key === "metaDescriptionLength") {
-        return `${value} tekens`;
+        return `${value} ${t("tekens")}`;
       }
 
       if (key === "visibleTextLength") {
-        return `${value} tekens`;
+        return `${value} ${t("tekens")}`;
       }
 
       return safe(value);
@@ -2044,10 +2044,10 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
       ));
 
       const blocks = [
-        ["Wat we zagen", fact],
-        ["Waarom dit belangrijk is", why],
-        ["Aanbeveling", recommendationText],
-        ["Concreet voorstel", proposal],
+        [t("Wat we zagen"), fact],
+        [t("Waarom dit belangrijk is"), why],
+        [t("Aanbeveling"), recommendationText],
+        [t("Concreet voorstel"), proposal],
       ].filter((item) => item[1] && item[1] !== "Niet beschikbaar");
 
       doc.font("Helvetica-Bold").fontSize(11);
@@ -2136,7 +2136,7 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
         );
 
       drawPill(
-        `Impact: ${impact}`,
+        `${t("Impact")}: ${impact}`,
         PAGE.left + cardWidth - 132,
         y + 12,
         76,
@@ -2145,7 +2145,7 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
       );
 
       drawPill(
-        `Moeite: ${difficulty}`,
+        `${t("Moeite")}: ${difficulty}`,
         PAGE.left + cardWidth - 132,
         y + 38,
         76,
