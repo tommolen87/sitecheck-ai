@@ -71,7 +71,8 @@ function SeoHead() {
     upsertMeta('meta[name="twitter:description"]', description);
 
     const setLink = (rel: string, href: string, attrs: Record<string, string> = {}) => {
-      let element = document.head.querySelector<HTMLLinkElement>(`link[rel="${rel}"][${Object.keys(attrs).map((key) => `${key}="${attrs[key]}"`).join('][')}]`);
+      const attrSelector = Object.entries(attrs).map(([key, value]) => `[${key}="${value}"]`).join('');
+      let element = document.head.querySelector<HTMLLinkElement>(`link[rel="${rel}"]${attrSelector}`);
       if (!element) {
         element = document.createElement('link');
         element.rel = rel;
@@ -83,7 +84,24 @@ function SeoHead() {
     setLink('canonical', canonical);
     setLink('alternate', nlUrl, { hreflang: 'nl' });
     setLink('alternate', enUrl, { hreflang: 'en' });
-    setLink('alternate', canonical, { hreflang: 'x-default' });
+    setLink('alternate', nlUrl, { hreflang: 'x-default' });
+
+    const structuredData = {
+      '@context': 'https://schema.org',
+      '@type': 'WebSite',
+      name: 'SiteCheck AI',
+      url: new URL(locale === 'nl' ? '/nl' : '/en', window.location.origin).href,
+      description,
+      inLanguage: locale,
+    };
+    let script = document.head.querySelector<HTMLScriptElement>('script[data-sitecheck-schema]');
+    if (!script) {
+      script = document.createElement('script');
+      script.type = 'application/ld+json';
+      script.dataset.sitecheckSchema = 'true';
+      document.head.appendChild(script);
+    }
+    script.textContent = JSON.stringify(structuredData);
   }, [canonical, description, enUrl, locale, nlUrl, title]);
 
   return null;
