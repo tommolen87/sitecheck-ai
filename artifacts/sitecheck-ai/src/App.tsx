@@ -5,6 +5,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import NotFound from '@/pages/not-found';
 import { LanguageProvider, LanguageSwitcher, Localized, useLanguage } from '@/lib/i18n';
+import { getScanAccessToken, setScanAccessToken } from '@/lib/scan-access';
 import ScanResults from '@/pages/scan-results';
 import Upgrade from '@/pages/upgrade';
 import {
@@ -51,6 +52,7 @@ function Home() {
     },
   });
   const activeScan = useGetScan(activeScanId ?? 0, {
+    request: activeScanId !== null && getScanAccessToken(activeScanId) ? { headers: { 'x-scan-access-token': getScanAccessToken(activeScanId)! } } : undefined,
     query: {
       enabled: activeScanId !== null,
       queryKey: getGetScanQueryKey(activeScanId ?? 0),
@@ -112,6 +114,12 @@ function Home() {
       { data: { url: normalizedUrl } },
       {
         onSuccess: (scan) => {
+          const accessToken = (scan as typeof scan & { accessToken?: string }).accessToken;
+          if (!accessToken) {
+            setSubmitError('Er kon geen beveiligde toegang voor deze scan worden aangemaakt. Probeer het opnieuw.');
+            return;
+          }
+          setScanAccessToken(scan.id, accessToken);
           setActiveScanId(scan.id);
           void queryClient.invalidateQueries({ queryKey: getListScansQueryKey() });
           setLocation(`/scans/${scan.id}`);
@@ -130,6 +138,13 @@ function Home() {
       { data: { url: normalizedUrl } },
       {
         onSuccess: (scan) => {
+          const accessToken = (scan as typeof scan & { accessToken?: string }).accessToken;
+          if (!accessToken) {
+            setPaidScanPending(false);
+            setSubmitError('Er kon geen beveiligde toegang voor deze scan worden aangemaakt. Probeer het opnieuw.');
+            return;
+          }
+          setScanAccessToken(scan.id, accessToken);
           void queryClient.invalidateQueries({ queryKey: getListScansQueryKey() });
           setPaidScanPending(false);
           setLocation(`/scans/${scan.id}/upgrade`);

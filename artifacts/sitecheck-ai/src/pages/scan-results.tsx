@@ -2,6 +2,7 @@ import { ArrowLeft, Check, CheckCircle2, CircleAlert, CircleHelp, Clock3, Extern
 import { Link, useLocation, useParams } from 'wouter';
 import { getGetScanQueryKey, useGetScan, type AiRecommendation, type ScanAnalysis, type ScanIssue } from '@workspace/api-client-react';
 import { LanguageSwitcher, Localized, useLanguage } from '@/lib/i18n';
+import { getScanAccessToken } from '@/lib/scan-access';
 
 const categoryOrder = [
   { key: 'conversie', label: 'Conversie' },
@@ -471,6 +472,7 @@ function ResultsContent({
   isPaid: boolean;
 }) {
   const [, setLocation] = useLocation();
+  const { locale } = useLanguage();
   const aiRecommendations = analysis.aiRecommendations ?? null;
   console.log("AI COUNT", aiRecommendations?.length, aiRecommendations);
   console.log("PAID DEBUG", { isPaid, paymentStatus: analysis });
@@ -500,13 +502,36 @@ function ResultsContent({
               </p>
             </div>
 
-            <a
-              href={`/api/scans/${scanId}/report.pdf?lang=${locale}`}
+            <button
+              type="button"
               className="upgrade-button"
-              download
+              onClick={async () => {
+                const accessToken = getScanAccessToken(scanId);
+                if (!accessToken) {
+                  alert('Deze scan is niet meer beschikbaar in deze browser. Start een nieuwe scan.');
+                  return;
+                }
+                try {
+                  const response = await fetch(`/api/scans/${scanId}/report.pdf?lang=${locale}`, {
+                    headers: { 'x-scan-access-token': accessToken },
+                  });
+                  if (!response.ok) throw new Error('Het rapport kon niet worden gedownload.');
+                  const blob = await response.blob();
+                  const url = URL.createObjectURL(blob);
+                  const link = document.createElement('a');
+                  link.href = url;
+                  link.download = 'sitecheck-ai-rapport.pdf';
+                  document.body.appendChild(link);
+                  link.click();
+                  link.remove();
+                  URL.revokeObjectURL(url);
+                } catch (error) {
+                  alert(error instanceof Error ? error.message : 'Het rapport kon niet worden gedownload.');
+                }
+              }}
             >
               PDF downloaden
-            </a>
+            </button>
           </div>
         </section>
       )}
@@ -675,15 +700,18 @@ export default function ScanResults() {
   const scanId = Number(params.scanId);
   const { locale } = useLanguage();
   const validScanId = Number.isInteger(scanId) && scanId > 0;
+  const accessToken = validScanId ? getScanAccessToken(scanId) : null;
   const scanQuery = useGetScan(validScanId ? scanId : 0, {
+    request: accessToken ? { headers: { 'x-scan-access-token': accessToken } } : undefined,
     query: {
       enabled: validScanId,
-      queryKey: getGetScanQueryKey(validScanId ? scanId : 0),
+      queryKey: [...getGetScanQueryKey(validScanId ? scanId : 0), accessToken ?? 'no-access-token'],
       refetchInterval: (query) => query.state.data?.status === 'analyzing' ? 4_000 : false,
     },
   });
 
   if (!validScanId) return <ScanProblem title="Dit scanadres klopt niet." message="We kunnen zonder een geldig scan-ID geen resultaat ophalen." />;
+  if (validScanId && !accessToken) return <ScanProblem title="Deze scan is niet beschikbaar." message="Open deze scan in de browser waarin je hem hebt gestart, of start een nieuwe scan." />;
   if (scanQuery.isLoading) return <LoadingResults />;
   if (scanQuery.isError) return <ScanProblem title="We konden deze scan niet ophalen." message={getErrorMessage(scanQuery.error)} />;
   if (!scanQuery.data) return <ScanProblem title="Geen resultaat gevonden." message="Voor dit scanadres is geen resultaat beschikbaar." />;
