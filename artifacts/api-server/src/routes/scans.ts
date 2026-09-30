@@ -979,7 +979,33 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
     };
 
     const plainLanguage = (value: string): string => {
-      return t(value)
+      const translated = t(value);
+
+      if (locale === "en") {
+        return translated
+          .replace(/\bCTA('s|’s|s)?\b/gi, "call-to-action button")
+          .replace(/\bH1-koppen?\b/gi, "main headings")
+          .replace(/\bH1-kop\b/gi, "main heading")
+          .replace(/\bH1\b/gi, "main heading")
+          .replace(/\bSEO\b/gi, "search visibility")
+          .replace(/meta description/gi, "page description for Google")
+          .replace(/Open Graph/gi, "social sharing preview")
+          .replace(/LocalBusiness structured data/gi, "structured business information for search engines")
+          .replace(/structured data/gi, "structured information for search engines")
+          .replace(/Core Web Vitals/gi, "key speed and usability measurements")
+          .replace(/PageSpeed Insights/gi, "Google speed and performance measurement")
+          .replace(/robots\.txt/gi, "search engine instructions (robots.txt)")
+          .replace(/sitemap\.xml/gi, "search engine page overview (sitemap)")
+          .replace(/\bCanonical-link\b/gi, "preferred page address")
+          .replace(/\bCanonical URL\b/gi, "preferred page address")
+          .replace(/\bCanonical\b/gi, "preferred page address")
+          .replace(/\bHTTP-status\b/gi, "server response")
+          .replace(/\bViewport-instelling\b/gi, "mobile display setting")
+          .replace(/\bcontent encoding\b/gi, "compression method")
+          .replace(/\bRobots-directives\b/gi, "search engine instructions");
+      }
+
+      return translated
         .replace(/\bCTA('s|’s|s)?\b/gi, (_match, suffix = "") =>
           suffix ? "actieknoppen" : "actieknop",
         )
@@ -996,12 +1022,12 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
         .replace(/robots\.txt/gi, "instructies voor zoekmachines (robots.txt)")
         .replace(/sitemap\.xml/gi, "pagina-overzicht voor zoekmachines (sitemap)")
         .replace(/\bCanonical-link\b/gi, "voorkeursadres van de pagina")
-    .replace(/\bCanonical URL\b/gi, "voorkeursadres van de pagina")
-    .replace(/\bCanonical\b/gi, "voorkeursadres van de pagina")
-    .replace(/\bHTTP-status\b/gi, "serverantwoord")
-    .replace(/\bViewport-instelling\b/gi, "instelling voor mobiele weergave")
-    .replace(/\bcontent encoding\b/gi, "compressiemethode")
-    .replace(/\bRobots-directives\b/gi, "instructies voor zoekmachines");
+        .replace(/\bCanonical URL\b/gi, "voorkeursadres van de pagina")
+        .replace(/\bCanonical\b/gi, "voorkeursadres van de pagina")
+        .replace(/\bHTTP-status\b/gi, "serverantwoord")
+        .replace(/\bViewport-instelling\b/gi, "instelling voor mobiele weergave")
+        .replace(/\bcontent encoding\b/gi, "compressiemethode")
+        .replace(/\bRobots-directives\b/gi, "instructies voor zoekmachines");
     };
 
     const scoreColor = (score: number | null | undefined) => {
