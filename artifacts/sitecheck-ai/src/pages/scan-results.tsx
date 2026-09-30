@@ -1,6 +1,7 @@
 import { ArrowLeft, Check, CheckCircle2, CircleAlert, CircleHelp, Clock3, ExternalLink, FileWarning, Gauge, LockKeyhole, RefreshCw, ShieldCheck, XCircle } from 'lucide-react';
 import { Link, useLocation, useParams } from 'wouter';
 import { getGetScanQueryKey, useGetScan, type AiRecommendation, type ScanAnalysis, type ScanIssue } from '@workspace/api-client-react';
+import { LanguageSwitcher, Localized, useLanguage } from '@/lib/i18n';
 
 const categoryOrder = [
   { key: 'conversie', label: 'Conversie' },
@@ -64,10 +65,10 @@ function plainLanguage(value: string): string {
     .replace(/\bRobots-directives\b/gi, "instructies voor zoekmachines");
 }
 
-function formatDate(value: string) {
+function formatDate(value: string, locale: 'nl' | 'en' = 'nl') {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return value;
-  return new Intl.DateTimeFormat('nl-NL', { dateStyle: 'long', timeStyle: 'short' }).format(date);
+  return new Intl.DateTimeFormat(locale === 'en' ? 'en-US' : 'nl-NL', { dateStyle: 'long', timeStyle: 'short' }).format(date);
 }
 
 function getErrorMessage(error: unknown) {
@@ -373,7 +374,7 @@ function ResultHeader({ scan, analysis }: { scan: { url: string; createdAt: stri
             <a className="scanned-url" href={scan.url} target="_blank" rel="noreferrer" data-testid="link-scanned-url">
               <span>{scan.url}</span><ExternalLink />
             </a>
-            <p className="scan-date"><Clock3 /> Gescand op {formatDate(scan.createdAt)}</p>
+            <p className="scan-date"><Clock3 /> Gescand op {formatDate(scan.createdAt, locale)}</p>
           </div>
           <div className="overall-score-card reveal reveal-delay-1">
             <div className="score-card-caption"><span>Totale score</span><span>SiteCheck AI</span></div>
@@ -500,7 +501,7 @@ function ResultsContent({
             </div>
 
             <a
-              href={`/api/scans/${scanId}/report.pdf`}
+              href={`/api/scans/${scanId}/report.pdf?lang=${locale}`}
               className="upgrade-button"
               download
             >
@@ -636,7 +637,7 @@ function ResultsContent({
 
 function LoadingResults() {
   return (
-    <main className="site-shell results-shell">
+    <Localized><main className="site-shell results-shell">
       <nav className="nav-wrap"><div className="page-frame"><Link href="/" className="brand-mark" data-testid="link-home-loading"><span className="brand-symbol" aria-hidden="true"><RefreshCw /></span><span className="brand-name">SiteCheck <span>AI</span></span></Link></div></nav>
       <div className="page-frame loading-results" role="status" data-testid="status-scan-loading">
         <div className="loading-orbit"><RefreshCw /></div>
@@ -645,13 +646,13 @@ function LoadingResults() {
         <p>We halen de pagina op en kijken rustig naar wat er daadwerkelijk te controleren is. Deze pagina ververst automatisch.</p>
         <div className="loading-lines" aria-hidden="true"><span /><span /><span /></div>
       </div>
-    </main>
+    </main></Localized>
   );
 }
 
 function ScanProblem({ title, message, url }: { title: string; message: string; url?: string }) {
   return (
-    <main className="site-shell results-shell">
+    <Localized><main className="site-shell results-shell">
       <nav className="nav-wrap"><div className="page-frame"><Link href="/" className="brand-mark" data-testid="link-home-problem"><span className="brand-symbol" aria-hidden="true"><RadarIcon /></span><span className="brand-name">SiteCheck <span>AI</span></span></Link></div></nav>
       <div className="page-frame scan-problem" role="alert" data-testid="status-scan-problem">
         <div className="problem-icon"><CircleAlert /></div>
@@ -661,7 +662,7 @@ function ScanProblem({ title, message, url }: { title: string; message: string; 
         {url && <span className="problem-url">{url}</span>}
         <Link href="/" className="scan-button problem-button" data-testid="link-start-new-scan"><ArrowLeft /> Terug naar een nieuwe scan</Link>
       </div>
-    </main>
+    </main></Localized>
   );
 }
 
@@ -672,6 +673,7 @@ function RadarIcon() {
 export default function ScanResults() {
   const params = useParams<{ scanId?: string }>();
   const scanId = Number(params.scanId);
+  const { locale } = useLanguage();
   const validScanId = Number.isInteger(scanId) && scanId > 0;
   const scanQuery = useGetScan(validScanId ? scanId : 0, {
     query: {
@@ -693,8 +695,8 @@ export default function ScanResults() {
   if (!scan.analysis) return <ScanProblem title="Er is nog geen analyse beschikbaar." message="De scan is afgerond, maar de API heeft geen analyse meegestuurd. Probeer deze pagina later opnieuw." url={scan.url} />;
 
   return (
-    <main className="site-shell results-shell">
-      <nav className="nav-wrap results-nav"><div className="page-frame flex items-center justify-between"><Link href="/" className="brand-mark" data-testid="link-home-results"><span className="brand-symbol" aria-hidden="true"><LockKeyhole /></span><span className="brand-name">SiteCheck <span>AI</span></span></Link><span className="nav-note">Een rustige check voor ambitieuze ondernemers</span></div></nav>
+    <Localized><main className="site-shell results-shell">
+      <nav className="nav-wrap results-nav"><div className="page-frame flex items-center justify-between"><Link href="/" className="brand-mark" data-testid="link-home-results"><span className="brand-symbol" aria-hidden="true"><LockKeyhole /></span><span className="brand-name">SiteCheck <span>AI</span></span></Link><div className="nav-actions"><span className="nav-note">Een rustige check voor ambitieuze ondernemers</span><LanguageSwitcher /></div></div></nav>
       <ResultHeader scan={scan} analysis={scan.analysis} />
       <ResultsContent
         analysis={scan.analysis}
@@ -716,6 +718,6 @@ export default function ScanResults() {
           </Link>
         </div>
       </footer>
-   </main>
+   </main></Localized>
   );
 }

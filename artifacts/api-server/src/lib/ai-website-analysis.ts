@@ -15,6 +15,10 @@ export type AiRecommendation = {
 
 type RawSelection = {
   issueId: string;
+  title: string;
+  whatFound: string;
+  whyImportant: string;
+  whatToImprove: string;
   confidence: "high" | "medium" | "low";
   proposal: string | null;
 };
@@ -33,9 +37,13 @@ const outputSchema = {
         items: {
           type: "object",
           additionalProperties: false,
-          required: ["issueId", "confidence", "proposal"],
+          required: ["issueId", "title", "whatFound", "whyImportant", "whatToImprove", "confidence", "proposal"],
           properties: {
             issueId: { type: "string" },
+            title: { type: "string" },
+            whatFound: { type: "string" },
+            whyImportant: { type: "string" },
+            whatToImprove: { type: "string" },
             confidence: { type: "string", enum: ["high", "medium", "low"] },
             proposal: { type: "string" },
           },
@@ -67,13 +75,17 @@ function validateSelection(value: unknown): RawSelection | null {
   if (
     !isRecord(value) ||
     Object.keys(value).some(
-      (key) => key !== "issueId" && key !== "confidence" && key !== "proposal",
+      (key) => key !== "issueId" && key !== "title" && key !== "whatFound" && key !== "whyImportant" && key !== "whatToImprove" && key !== "confidence" && key !== "proposal",
     )
   ) {
     return null;
   }
   if (
     typeof value.issueId !== "string" ||
+    typeof value.title !== "string" ||
+    typeof value.whatFound !== "string" ||
+    typeof value.whyImportant !== "string" ||
+    typeof value.whatToImprove !== "string" ||
     !["high", "medium", "low"].includes(String(value.confidence)) ||
     (value.proposal !== null && typeof value.proposal !== "string")
   ) {
@@ -81,6 +93,10 @@ function validateSelection(value: unknown): RawSelection | null {
   }
   return {
     issueId: value.issueId,
+    title: value.title,
+    whatFound: value.whatFound,
+    whyImportant: value.whyImportant,
+    whatToImprove: value.whatToImprove,
     confidence: value.confidence as RawSelection["confidence"],
     proposal: value.proposal as string | null,
   };
@@ -89,6 +105,7 @@ function validateSelection(value: unknown): RawSelection | null {
 export async function generateAiRecommendations(
   analysis: ScanAnalysisResult,
   context: WebsiteAiContext,
+  locale: "nl" | "en" = "nl",
 ): Promise<AiRecommendation[] | null> {
   const client = getClient();
 
@@ -163,7 +180,7 @@ if (eligibleIssues.length === 0) return null;
   content: `
     Je bent de senior website-auditor van SiteCheck AI.
 
-    Je verrijkt bestaande, door SiteCheck AI gemeten verbeterpunten voor een Nederlandse ondernemer.
+    Je verrijkt bestaande, door SiteCheck AI gemeten verbeterpunten. De gewenste rapporttaal is ${locale === "en" ? "Engels" : "Nederlands"}.
 
     BELANGRIJK:
     De lijst deterministicRecommendations is leidend.
@@ -181,10 +198,10 @@ if (eligibleIssues.length === 0) return null;
     6. Als iets niet betrouwbaar is gemeten, presenteer het niet als een feit.
     7. Houd verschillende onderwerpen daadwerkelijk gescheiden.
     8. Geef per aanbeveling één duidelijk probleem.
-    9. Schrijf in natuurlijk, professioneel Nederlands.
+    9. Schrijf in de gewenste rapporttaal: ${locale === "en" ? "natuurlijk, professioneel Engels." : "natuurlijk, professioneel Nederlands."}
     10. Schrijf voor een ondernemer en niet voor een developer.
     11. Gebruik geen technische vaktaal tenzij die nodig is om de aanbeveling te begrijpen.
-    12. Gebruik afkortingen zoals CTA, SEO en H1 niet losstaand in de klanttekst. Schrijf bijvoorbeeld "actieknop", "vindbaarheid in Google" en "hoofdtitel". Als een technische term echt nodig is, leg hem direct in gewone taal uit.
+    12. Gebruik afkortingen zoals CTA, SEO en H1 niet losstaand in de klanttekst. In Engels gebruik je bijvoorbeeld "call-to-action button", "visibility in Google" en "main heading". Leg technische termen direct in gewone taal uit.
     13. Verander geen scores.
     13. Verander impact en difficulty niet.
     14. Houd de bestaande issueId exact hetzelfde.
@@ -334,11 +351,17 @@ if (eligibleIssues.length === 0) return null;
 
     Geef uitsluitend JSON volgens het aangeleverde schema.
 
-    Voor iedere recommendation moet minimaal worden teruggegeven:
+    Voor iedere recommendation moet worden teruggegeven:
 
     - issueId
+    - title
+    - whatFound
+    - whyImportant
+    - whatToImprove
     - confidence
     - proposal
+
+    Vertaal en herschrijf de vier inhoudelijke velden naar de gewenste rapporttaal, maar verander de feitelijke betekenis, prioriteit of volgorde niet.
 
     Geef voor ieder bestaand deterministicRecommendation precies één resultaat terug.
 
@@ -350,7 +373,7 @@ if (eligibleIssues.length === 0) return null;
     },
       {
         role: "user",
-        content: JSON.stringify(payload),
+        content: JSON.stringify({ ...payload, requestedLanguage: locale }),
       },
     ],
   });
@@ -391,6 +414,10 @@ for (const value of parsed.recommendations) {
   }
 
   aiByIssueId.set(selection.issueId, {
+    title: selection.title,
+    whatFound: selection.whatFound,
+    whyImportant: selection.whyImportant,
+    whatToImprove: selection.whatToImprove,
     confidence: selection.confidence,
     proposal: selection.proposal,
   });
@@ -400,10 +427,10 @@ const recommendations: AiRecommendation[] = eligibleIssues.map((issue) => {
   const ai = aiByIssueId.get(issue.id);
 
   return {
-    title: issue.title,
-    whatFound: issue.fact,
-    whyImportant: issue.whyItMatters,
-    whatToImprove: issue.recommendation,
+    title: ai?.title ?? issue.title,
+    whatFound: ai?.whatFound ?? issue.fact,
+    whyImportant: ai?.whyImportant ?? issue.whyItMatters,
+    whatToImprove: ai?.whatToImprove ?? issue.recommendation,
     proposal: ai?.proposal ?? issue.recommendation,
     impact: issue.impact,
     difficulty: issue.difficulty,

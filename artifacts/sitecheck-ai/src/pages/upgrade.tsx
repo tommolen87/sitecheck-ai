@@ -1,12 +1,15 @@
 import { ArrowLeft, Check } from 'lucide-react';
 import { useLocation, useParams } from 'wouter';
+import { LanguageSwitcher, Localized, translateText, useLanguage } from '@/lib/i18n';
 
 export default function Upgrade() {
   const [, setLocation] = useLocation();
   const params = useParams();
+  const { locale } = useLanguage();
+  const translate = (value: string) => translateText(value, locale);
 
   return (
-    <main className="site-shell min-h-[100dvh]">
+    <Localized><main className="site-shell min-h-[100dvh]">
       <nav className="nav-wrap">
         <div className="page-frame flex items-center justify-between">
           <button
@@ -20,7 +23,7 @@ export default function Upgrade() {
             </span>
           </button>
 
-          <span className="nav-note">Volledig verbeterplan</span>
+          <div className="nav-actions"><span className="nav-note">Volledig verbeterplan</span><LanguageSwitcher /></div>
         </div>
       </nav>
 
@@ -90,7 +93,7 @@ export default function Upgrade() {
 
                     if (!response.ok || !data.url) {
                       throw new Error(
-                        data.error || 'Betaling kon niet worden gestart.',
+                        translate(data.error || 'Betaling kon niet worden gestart.'),
                       );
                     }
 
@@ -98,8 +101,8 @@ export default function Upgrade() {
                   } catch (error) {
                     alert(
                       error instanceof Error
-                        ? error.message
-                        : 'Betaling kon niet worden gestart.',
+                        ? translate(error.message)
+                        : translate('Betaling kon niet worden gestart.'),
                     );
                   }
                 }}
@@ -121,6 +124,6 @@ export default function Upgrade() {
           </div>
         </div>
       </section>
-    </main>
+    </main></Localized>
   );
 }
