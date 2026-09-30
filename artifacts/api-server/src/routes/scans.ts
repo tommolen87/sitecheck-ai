@@ -558,6 +558,7 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
 
     const pdfTranslations: Record<string, string> = {
       "Website rapport": "Website report",
+      "SiteCheck AI • Website analyse": "SiteCheck AI • Website analysis",
       "Website analyse": "Website analysis",
       "Website analyse voor": "Website analysis for",
       "Onderdeel": "Area",
@@ -880,7 +881,7 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
         .font("Helvetica-Bold")
         .fontSize(17)
         .fillColor(COLORS.gray900)
-        .text(title, PAGE.left, doc.y, {
+        .text(t(title), PAGE.left, doc.y, {
           width: contentWidth,
           lineBreak: false,
         });
@@ -892,7 +893,7 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
           .font("Helvetica")
           .fontSize(9)
           .fillColor(COLORS.gray500)
-          .text(subtitle, PAGE.left, doc.y, {
+          .text(t(subtitle), PAGE.left, doc.y, {
             width: contentWidth,
           });
 
@@ -908,19 +909,19 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
 
       const descriptions: Record<string, string> = {
         conversie:
-          "Hoe goed de pagina bezoekers richting een gewenste actie stuurt.",
+          t("Hoe goed de pagina bezoekers richting een gewenste actie stuurt."),
         seo:
-          "Hoe goed zoekmachines de pagina kunnen begrijpen en indexeren.",
+          t("Hoe goed zoekmachines de pagina kunnen begrijpen en indexeren."),
         mobiel:
-          "Signalen rondom mobiele weergave en gebruik.",
+          t("Signalen rondom mobiele weergave en gebruik."),
         techniek:
-          "Technische kwaliteit, prestaties en basisinstellingen van de pagina.",
+          t("Technische kwaliteit, prestaties en basisinstellingen van de pagina."),
         content:
-          "De hoeveelheid en structuur van de zichtbare inhoud.",
+          t("De hoeveelheid en structuur van de zichtbare inhoud."),
         vertrouwen:
-          "Signalen die bezoekers helpen vertrouwen in de organisatie te krijgen.",
+          t("Signalen die bezoekers helpen vertrouwen in de organisatie te krijgen."),
         lokaal:
-          "Signalen die helpen om lokaal gevonden te worden.",
+          t("Signalen die helpen om lokaal gevonden te worden."),
       };
 
       if (descriptions[key]) {
@@ -933,7 +934,7 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
         }
       }
 
-      return "Een verzameling controles die samen dit onderdeel van de website beoordelen.";
+      return t("Een verzameling controles die samen dit onderdeel van de website beoordelen.");
     };
 
     const TECHNICAL_LABELS: Record<string, string> = {
