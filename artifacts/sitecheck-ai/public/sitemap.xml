@@ -72,4 +72,7 @@
     <xhtml:link rel="alternate" hreflang="nl" href="https://www.sitecheckai.nl/nl/seo-audit"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://www.sitecheckai.nl/en/seo-audit"/>
   </url>
+
+  <url><loc>https://www.sitecheckai.nl/nl/gratis-website-scan</loc><xhtml:link rel="alternate" hreflang="en" href="https://www.sitecheckai.nl/en/gratis-website-scan"/></url>
+  <url><loc>https://www.sitecheckai.nl/en/gratis-website-scan</loc><xhtml:link rel="alternate" hreflang="nl" href="https://www.sitecheckai.nl/nl/gratis-website-scan"/></url>
 </urlset>
