@@ -748,6 +748,57 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
 
     const pdfTranslations: Record<string, string> = {
       "Website rapport": "Website report",
+      "Volledig website-rapport": "Full website report",
+      "Een overzicht van wat goed gaat, wat beter kan en welke acties het meeste verschil kunnen maken.": "An overview of what is working well, what can be improved and which actions can make the biggest difference.",
+      "Gegenereerd op": "Generated on",
+      "TOTAALSCORE": "OVERALL SCORE",
+      "De totaalscore is een samengestelde score op basis van de gemeten kwaliteit en de beschikbare meetdekking.": "The overall score combines measured quality with the available measurement coverage.",
+      "Gemeten kwaliteit": "Measured quality",
+      "Hoe goed de onderdelen die daadwerkelijk konden worden gemeten scoorden.": "How well the parts that could actually be measured performed.",
+      "Meetdekking": "Measurement coverage",
+      "Hoeveel van de beschikbare controles tijdens deze scan konden worden uitgevoerd.": "How many of the available checks could be completed during this scan.",
+      "Dit rapport bevat zowel meetresultaten als verbeteradviezen. Niet alle website-eigenschappen zijn automatisch te controleren.": "This report contains both measurement results and improvement advice. Not every website property can be checked automatically.",
+      "De belangrijkste uitkomsten van de website-analyse in één overzicht.": "The key results of the website analysis in one overview.",
+      "Totaalscore": "Overall score",
+      "De totaalscore combineert de uitkomsten van de verschillende onderdelen van de website.": "The overall score combines the results of the different areas of the website.",
+      "kwaliteit": "quality",
+      "van de uitgevoerde controles": "of the completed checks",
+      "Categorie": "Category",
+      "Begrippen eenvoudig uitgelegd": "Key terms explained simply",
+      "Geen technische voorkennis nodig. Hieronder staan de belangrijkste termen uit dit rapport in gewone taal.": "No technical knowledge is required. Below are the key terms from this report explained in plain language.",
+      "Vindbaarheid in Google": "Visibility in Google",
+      "Hoe goed zoekmachines kunnen begrijpen en vinden waar een pagina over gaat.": "How well search engines can understand and identify what a page is about.",
+      "Actieknop": "Call-to-action button",
+      "Een knop of link die een bezoeker uitnodigt om iets te doen, zoals contact opnemen of een product bekijken.": "A button or link that invites a visitor to take an action, such as getting in touch or viewing a product.",
+      "Hoofdtitel": "Main heading",
+      "De belangrijkste titel van een pagina. Deze helpt bezoekers en zoekmachines begrijpen waar de pagina over gaat.": "The main heading of a page. It helps visitors and search engines understand what the page is about.",
+      "Korte omschrijving voor Google": "Page description for Google",
+      "Een korte beschrijving van een pagina die zoekmachines kunnen gebruiken in zoekresultaten.": "A short description of a page that search engines may use in search results.",
+      "Voorkeursadres van de pagina": "Preferred page address",
+      "Het adres dat aan zoekmachines aangeeft welke versie van een pagina de hoofdversie is.": "The address that tells search engines which version of a page is the main version.",
+      "Voorvertoning bij delen": "Sharing preview",
+      "Informatie die bepaalt hoe een pagina eruitziet wanneer de link wordt gedeeld via sociale media of berichtenapps.": "Information that determines how a page appears when its link is shared through social media or messaging apps.",
+      "Instructies voor zoekmachines": "Search engine instructions",
+      "Instellingen waarmee een website zoekmachines aanwijzingen kan geven over welke onderdelen ze mogen bezoeken.": "Settings that give search engines instructions about which parts of a website they may visit.",
+      "Pagina-overzicht voor zoekmachines": "Search engine page overview",
+      "Een overzicht van belangrijke pagina’s waarmee zoekmachines nieuwe of gewijzigde pagina’s kunnen ontdekken.": "An overview of important pages that helps search engines discover new or changed pages.",
+      "Alt-tekst": "Alt text",
+      "Een korte beschrijving van een afbeelding. Dit helpt mensen die de afbeelding niet kunnen zien en geeft zoekmachines extra context.": "A short description of an image. It helps people who cannot see the image and gives search engines additional context.",
+      "Google-meting voor snelheid en prestaties": "Google speed and performance measurement",
+      "Een automatische Google-meting die onder andere kijkt naar de prestaties van een pagina op een mobiel apparaat.": "An automated Google measurement that assesses, among other things, page performance on a mobile device.",
+      "De 10 belangrijkste verbeterpunten uit het betaalde rapport.": "The 10 most important improvement points from the paid report.",
+      "belangrijkste verbeterpunten uit het betaalde rapport.": "most important improvement points from the paid report.",
+      "Actieplan": "Action plan",
+      "Een compacte samenvatting van de verbeterpunten en de bijbehorende aanpak.": "A concise summary of the improvement points and the corresponding approach.",
+      "Technische metingen": "Technical measurements",
+      "De belangrijkste technische meetwaarden uit de scan, inclusief uitleg in gewone taal.": "The key technical measurements from the scan, explained in plain language.",
+      "Er zijn geen afzonderlijke technische meetwaarden beschikbaar.": "No individual technical measurements are available.",
+      "Wat konden we niet controleren?": "What could we not check?",
+      "Niet iedere eigenschap van een website kan betrouwbaar automatisch worden vastgesteld.": "Not every website property can be reliably determined automatically.",
+      "Samengevat": "Summary",
+      "Gebruik de verbeterpunten in dit rapport als praktische checklist. Begin met de punten met de grootste impact en werk daarna de technische en inhoudelijke verbeteringen verder uit.": "Use the improvement points in this report as a practical checklist. Start with the highest-impact items, then work through the technical and content improvements.",
+      "Er zijn geen afzonderlijke sterke punten beschikbaar in de scanresultaten.": "No individual strengths are available in the scan results.",
+      "Er zijn geen AI-verbeterpunten beschikbaar voor deze scan.": "No AI improvement points are available for this scan.",
       "SiteCheck AI • Website analyse": "SiteCheck AI • Website analysis",
       "Website analyse": "Website analysis",
       "Website analyse voor": "Website analysis for",
@@ -1309,7 +1360,7 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
       .font("Helvetica-Bold")
       .fontSize(30)
       .fillColor(COLORS.white)
-      .text("Volledig website-rapport", PAGE.left, 115, {
+      .text(t("Volledig website-rapport"), PAGE.left, 115, {
         width: contentWidth,
       });
 
@@ -1318,7 +1369,7 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
       .fontSize(11)
       .fillColor("#CBD5E1")
       .text(
-        "Een overzicht van wat goed gaat, wat beter kan en welke acties het meeste verschil kunnen maken.",
+        t("Een overzicht van wat goed gaat, wat beter kan en welke acties het meeste verschil kunnen maken."),
         PAGE.left,
         160,
         {
@@ -1331,7 +1382,7 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
       .font("Helvetica-Bold")
       .fontSize(10)
       .fillColor(COLORS.white)
-      .text("Website", PAGE.left, 232);
+      .text(t("Website"), PAGE.left, 232);
 
     doc
       .font("Helvetica")
@@ -1346,7 +1397,7 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
       .fontSize(9)
       .fillColor("#94A3B8")
       .text(
-        `Gegenereerd op ${new Date().toLocaleDateString("nl-NL")}`,
+        `${t("Gegenereerd op")} ${new Date().toLocaleDateString(locale === "en" ? "en-GB" : "nl-NL")}`,
         PAGE.left,
         274,
       );
@@ -1371,7 +1422,7 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
       .font("Helvetica-Bold")
       .fontSize(10)
       .fillColor(COLORS.gray500)
-      .text("TOTAALSCORE", PAGE.left + 28, coverCardY + 28);
+      .text(t("TOTAALSCORE"), PAGE.left + 28, coverCardY + 28);
 
     drawScoreCircle(
       PAGE.left + 100,
@@ -1398,7 +1449,7 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
       .fontSize(9)
       .fillColor(COLORS.gray600)
       .text(
-        "De totaalscore is een samengestelde score op basis van de gemeten kwaliteit en de beschikbare meetdekking.",
+        t("De totaalscore is een samengestelde score op basis van de gemeten kwaliteit en de beschikbare meetdekking."),
         PAGE.left + 185,
         coverCardY + 92,
         {
@@ -1423,7 +1474,7 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
       .fontSize(10)
       .fillColor(COLORS.gray900)
       .text(
-        "Gemeten kwaliteit",
+        t("Gemeten kwaliteit"),
         PAGE.left + 42,
         coverCardY + 191,
       );
@@ -1445,7 +1496,7 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
       .fontSize(7.8)
       .fillColor(COLORS.gray600)
       .text(
-        "Hoe goed de onderdelen die daadwerkelijk konden worden gemeten scoorden.",
+        t("Hoe goed de onderdelen die daadwerkelijk konden worden gemeten scoorden."),
         PAGE.left + 42,
         coverCardY + 241,
         {
@@ -1470,7 +1521,7 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
       .fontSize(10)
       .fillColor(COLORS.gray900)
       .text(
-        "Meetdekking",
+        t("Meetdekking"),
         PAGE.left + 299,
         coverCardY + 191,
       );
@@ -1492,7 +1543,7 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
       .fontSize(7.8)
       .fillColor(COLORS.gray600)
       .text(
-        "Hoeveel van de beschikbare controles tijdens deze scan konden worden uitgevoerd.",
+        t("Hoeveel van de beschikbare controles tijdens deze scan konden worden uitgevoerd."),
         PAGE.left + 299,
         coverCardY + 241,
         {
@@ -1506,7 +1557,7 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
       .fontSize(8)
       .fillColor(COLORS.gray400)
       .text(
-        "Dit rapport bevat zowel meetresultaten als verbeteradviezen. Niet alle website-eigenschappen zijn automatisch te controleren.",
+        t("Dit rapport bevat zowel meetresultaten als verbeteradviezen. Niet alle website-eigenschappen zijn automatisch te controleren."),
         PAGE.left + 28,
         coverCardY + 292,
         {
@@ -1522,7 +1573,7 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
 
     sectionTitle(
       "1. Executive summary",
-      "De belangrijkste uitkomsten van de website-analyse in één overzicht.",
+      t("De belangrijkste uitkomsten van de website-analyse in één overzicht."),
     );
 
     const summaryY = doc.y;
@@ -1549,7 +1600,7 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
       .fontSize(14)
       .fillColor(COLORS.gray900)
       .text(
-        "Totaalscore",
+        t("Totaalscore"),
         PAGE.left + 125,
         summaryY + 24,
       );
@@ -1559,7 +1610,7 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
       .fontSize(8.5)
       .fillColor(COLORS.gray600)
       .text(
-        "De totaalscore combineert de uitkomsten van de verschillende onderdelen van de website.",
+        t("De totaalscore combineert de uitkomsten van de verschillende onderdelen van de website."),
         PAGE.left + 125,
         summaryY + 46,
         {
@@ -1573,7 +1624,7 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
       .fontSize(8)
       .fillColor(COLORS.gray700)
       .text(
-        `${Math.round(Number(analysis.overallQualityScore ?? 0))}% kwaliteit`,
+        `${Math.round(Number(analysis.overallQualityScore ?? 0))}% ${t("kwaliteit")}`,
         PAGE.left + 125,
         summaryY + 78,
       );
@@ -1583,7 +1634,7 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
       .fontSize(7.5)
       .fillColor(COLORS.gray600)
       .text(
-        "van de uitgevoerde controles",
+        t("van de uitgevoerde controles"),
         PAGE.left + 205,
         summaryY + 79,
       );
@@ -1702,7 +1753,7 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
 
     sectionTitle(
       "Begrippen eenvoudig uitgelegd",
-      "Geen technische voorkennis nodig. Hieronder staan de belangrijkste termen uit dit rapport in gewone taal.",
+      t("Geen technische voorkennis nodig. Hieronder staan de belangrijkste termen uit dit rapport in gewone taal."),
     );
 
     const glossary = [
