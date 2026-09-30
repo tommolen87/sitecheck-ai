@@ -55,7 +55,13 @@ function plainLanguage(value: string): string {
     .replace(/PageSpeed Insights/gi, "Google-meting voor snelheid en prestaties")
     .replace(/robots\.txt/gi, "instructies voor zoekmachines (robots.txt)")
     .replace(/sitemap\.xml/gi, "pagina-overzicht voor zoekmachines (sitemap)")
-    .replace(/\bCanonical-link\b/gi, "voorkeursadres van de pagina");
+    .replace(/\bCanonical-link\b/gi, "voorkeursadres van de pagina")
+    .replace(/\bCanonical URL\b/gi, "voorkeursadres van de pagina")
+    .replace(/\bCanonical\b/gi, "voorkeursadres van de pagina")
+    .replace(/\bHTTP-status\b/gi, "serverantwoord")
+    .replace(/\bViewport-instelling\b/gi, "instelling voor mobiele weergave")
+    .replace(/\bcontent encoding\b/gi, "compressiemethode")
+    .replace(/\bRobots-directives\b/gi, "instructies voor zoekmachines");
 }
 
 function formatDate(value: string) {
