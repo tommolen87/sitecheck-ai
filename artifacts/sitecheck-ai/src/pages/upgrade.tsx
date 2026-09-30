@@ -1,6 +1,7 @@
 import { ArrowLeft, Check } from 'lucide-react';
 import { useLocation, useParams } from 'wouter';
 import { LanguageSwitcher, Localized, translateText, useLanguage } from '@/lib/i18n';
+import { getScanAccessToken } from '@/lib/scan-access';
 
 export default function Upgrade() {
   const [, setLocation] = useLocation();
@@ -79,12 +80,16 @@ export default function Upgrade() {
                 className="upgrade-main-button"
                 onClick={async () => {
                   try {
+                    const scanId = Number(params?.scanId);
+                    const accessToken = Number.isInteger(scanId) ? getScanAccessToken(scanId) : null;
+                    if (!accessToken) throw new Error(translate('Deze scan is niet beschikbaar in deze browser. Start een nieuwe scan.'));
                     const response = await fetch(
-                      `/api/scans/${params?.scanId}/checkout`,
+                      `/api/scans/${scanId}/checkout`,
                       {
                         method: 'POST',
                         headers: {
                           'Content-Type': 'application/json',
+                          'x-scan-access-token': accessToken,
                         },
                       },
                     );
