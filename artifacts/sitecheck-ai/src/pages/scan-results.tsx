@@ -291,8 +291,8 @@ function IssueCard({ issue, index }: { issue: RecommendationDisplay; index: numb
         <p className="issue-related-checks">Gebaseerd op: {issue.relatedChecks.map((label) => plainLanguage(label)).join(' · ')}</p>
       )}
     </article>
+  </Localized>
   );
-    </Localized>
 }
 
 function DetectedFacts({ analysis }: { analysis: ScanAnalysis }) {
@@ -327,8 +327,8 @@ function DetectedFacts({ analysis }: { analysis: ScanAnalysis }) {
         </div>
       </div>
     </section>
+  </Localized>
   );
-    </Localized>
 }
 
 const glossaryTerms = [
@@ -362,8 +362,8 @@ function Glossary() {
         ))}
       </div>
     </section>
+  </Localized>
   );
-    </Localized>
 }
 
 function ResultHeader({ scan, analysis }: { scan: { url: string; createdAt: string }; analysis: ScanAnalysis }) {
@@ -406,8 +406,8 @@ function ResultHeader({ scan, analysis }: { scan: { url: string; createdAt: stri
         </div>
       </div>
     </header>
+  </Localized>
   );
-    </Localized>
 }
 
 function Strengths({ analysis }: { analysis: ScanAnalysis }) {
@@ -466,8 +466,8 @@ function Strengths({ analysis }: { analysis: ScanAnalysis }) {
         ))}
       </div>
     </section>
+  </Localized>
   );
-    </Localized>
 }
 
 function ResultsContent({
@@ -665,8 +665,8 @@ function ResultsContent({
         </div>
       </section>
     </div>
+  </Localized>
   );
-    </Localized>
 }
 
 function LoadingResults() {
