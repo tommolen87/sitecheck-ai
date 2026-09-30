@@ -184,7 +184,8 @@ if (eligibleIssues.length === 0) return null;
     9. Schrijf in natuurlijk, professioneel Nederlands.
     10. Schrijf voor een ondernemer en niet voor een developer.
     11. Gebruik geen technische vaktaal tenzij die nodig is om de aanbeveling te begrijpen.
-    12. Verander geen scores.
+    12. Gebruik afkortingen zoals CTA, SEO en H1 niet losstaand in de klanttekst. Schrijf bijvoorbeeld "actieknop", "vindbaarheid in Google" en "hoofdtitel". Als een technische term echt nodig is, leg hem direct in gewone taal uit.
+    13. Verander geen scores.
     13. Verander impact en difficulty niet.
     14. Houd de bestaande issueId exact hetzelfde.
     15. Geef bij proposal een concrete verbetering die daadwerkelijk uit de scan kan worden afgeleid.

@@ -94,7 +94,11 @@ function normalizeScanAnalysis<T extends { analysis: unknown }>(scan: T): T {
                   : "unknown";
             const weight = typeof checkRecord.weight === "number" ? checkRecord.weight : 1;
             if (status !== "unknown") totals.total += weight;
-            if (status === "passed") totals.passed += weight;
+            if (typeof checkRecord.score === "number") {
+              totals.passed += weight * Math.max(0, Math.min(100, checkRecord.score)) / 100;
+            } else if (status === "passed") {
+              totals.passed += weight;
+            }
             return totals;
           },
           { passed: 0, total: 0 },
@@ -553,6 +557,32 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
       }
 
       return String(value);
+    };
+
+    const plainLanguage = (value: string): string => {
+      return value
+        .replace(/\bCTA('s|’s|s)?\b/gi, (_match, suffix = "") =>
+          suffix ? "actieknoppen" : "actieknop",
+        )
+        .replace(/\bH1-koppen?\b/gi, "hoofdtitels")
+        .replace(/\bH1-kop\b/gi, "hoofdtitel")
+        .replace(/\bH1\b/gi, "hoofdtitel")
+        .replace(/\bSEO\b/gi, "vindbaarheid in Google")
+        .replace(/meta description/gi, "korte omschrijving voor Google")
+        .replace(/Open Graph/gi, "voorvertoning bij delen")
+        .replace(/LocalBusiness structured data/gi, "gestructureerde bedrijfsinformatie voor zoekmachines")
+        .replace(/structured data/gi, "gestructureerde informatie voor zoekmachines")
+        .replace(/Core Web Vitals/gi, "belangrijke metingen voor snelheid en gebruiksgemak")
+        .replace(/PageSpeed Insights/gi, "Google-meting voor snelheid en prestaties")
+        .replace(/robots\.txt/gi, "instructies voor zoekmachines (robots.txt)")
+        .replace(/sitemap\.xml/gi, "pagina-overzicht voor zoekmachines (sitemap)")
+        .replace(/\bCanonical-link\b/gi, "voorkeursadres van de pagina")
+    .replace(/\bCanonical URL\b/gi, "voorkeursadres van de pagina")
+    .replace(/\bCanonical\b/gi, "voorkeursadres van de pagina")
+    .replace(/\bHTTP-status\b/gi, "serverantwoord")
+    .replace(/\bViewport-instelling\b/gi, "instelling voor mobiele weergave")
+    .replace(/\bcontent encoding\b/gi, "compressiemethode")
+    .replace(/\bRobots-directives\b/gi, "instructies voor zoekmachines");
     };
 
     const scoreColor = (score: number | null | undefined) => {
@@ -1297,7 +1327,7 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
         .fontSize(9.5)
         .fillColor(COLORS.gray900)
         .text(
-          safe(category?.label, "Categorie"),
+          plainLanguage(safe(category?.label, "Categorie")),
           x + 14,
           y + 13,
           {
@@ -1357,6 +1387,65 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
     });
 
     doc.y = categoryStartY + categoryGridHeight + 12;
+
+    // -------------------------------------------------------------------------
+    // GLOSSARY
+    // -------------------------------------------------------------------------
+
+    sectionTitle(
+      "Begrippen eenvoudig uitgelegd",
+      "Geen technische voorkennis nodig. Hieronder staan de belangrijkste termen uit dit rapport in gewone taal.",
+    );
+
+    const glossary = [
+      ["Vindbaarheid in Google", "Hoe goed zoekmachines kunnen begrijpen en vinden waar een pagina over gaat."],
+      ["Actieknop", "Een knop of link die een bezoeker uitnodigt om iets te doen, zoals contact opnemen of een product bekijken."],
+      ["Hoofdtitel", "De belangrijkste titel van een pagina. Deze helpt bezoekers en zoekmachines begrijpen waar de pagina over gaat."],
+      ["Korte omschrijving voor Google", "Een korte beschrijving van een pagina die zoekmachines kunnen gebruiken in zoekresultaten."],
+      ["Voorkeursadres van de pagina", "Het adres dat aan zoekmachines aangeeft welke versie van een pagina de hoofdversie is."],
+      ["Voorvertoning bij delen", "Informatie die bepaalt hoe een pagina eruitziet wanneer de link wordt gedeeld via sociale media of berichtenapps."],
+      ["Instructies voor zoekmachines", "Instellingen waarmee een website zoekmachines aanwijzingen kan geven over welke onderdelen ze mogen bezoeken."],
+      ["Pagina-overzicht voor zoekmachines", "Een overzicht van belangrijke pagina’s waarmee zoekmachines nieuwe of gewijzigde pagina’s kunnen ontdekken."],
+      ["Alt-tekst", "Een korte beschrijving van een afbeelding. Dit helpt mensen die de afbeelding niet kunnen zien en geeft zoekmachines extra context."],
+      ["Google-meting voor snelheid en prestaties", "Een automatische Google-meting die onder andere kijkt naar de prestaties van een pagina op een mobiel apparaat."],
+    ];
+
+    ensureSpace(210);
+    const glossaryWidth = contentWidth;
+    const glossaryStartY = doc.y;
+    let glossaryY = glossaryStartY;
+
+    glossary.forEach(([term, explanation]) => {
+      doc
+        .font("Helvetica-Bold")
+        .fontSize(8.5)
+        .fillColor(COLORS.gray900)
+        .text(term, PAGE.left, glossaryY, {
+          width: 175,
+          lineBreak: false,
+        });
+
+      doc
+        .font("Helvetica")
+        .fontSize(8)
+        .fillColor(COLORS.gray600)
+        .text(explanation, PAGE.left + 185, glossaryY, {
+          width: glossaryWidth - 185,
+          lineGap: 2,
+        });
+
+      glossaryY += Math.max(28, doc.heightOfString(explanation, {
+        width: glossaryWidth - 185,
+        lineGap: 2,
+      }) + 12);
+
+      if (glossaryY > PAGE.height - PAGE.bottom - 35) {
+        newPage();
+        glossaryY = doc.y;
+      }
+    });
+
+    doc.y = glossaryY + 8;
 
     // -------------------------------------------------------------------------
     // STRENGTHS
@@ -1438,7 +1527,7 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
                   issue?.name ??
                   issue?.key,
                 "Sterk punt",
-              ),
+              )),
             x + 14,
             y + 13,
             {
@@ -1451,7 +1540,7 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
           .fontSize(8)
           .fillColor(COLORS.gray600)
           .text(
-            safe(
+            plainLanguage(safe(
               issue?.evidence ??
                 issue?.description ??
                 issue?.explanation ??
@@ -1487,12 +1576,12 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
       const cardWidth = contentWidth;
       const innerWidth = cardWidth - 32;
 
-      const title = safe(
+      const title = plainLanguage(safe(
         recommendation?.title ??
           recommendation?.issue ??
           recommendation?.name,
         `Verbeterpunt ${index + 1}`,
-      );
+      ));
 
       const impact = safe(
         recommendation?.impact,
@@ -1504,33 +1593,33 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
         "Niet aangegeven",
       );
 
-      const fact = safe(
+      const fact = plainLanguage(safe(
         recommendation?.fact ??
           recommendation?.finding ??
           recommendation?.what,
         "",
-      );
+      ));
 
-      const why = safe(
+      const why = plainLanguage(safe(
         recommendation?.why ??
           recommendation?.importance ??
           recommendation?.reason,
         "",
-      );
+      ));
 
-      const recommendationText = safe(
+      const recommendationText = plainLanguage(safe(
         recommendation?.recommendation ??
           recommendation?.advice ??
           recommendation?.solution,
         "",
-      );
+      ));
 
-      const proposal = safe(
+      const proposal = plainLanguage(safe(
         recommendation?.concreteProposal ??
           recommendation?.proposal ??
           recommendation?.action,
         "",
-      );
+      ));
 
       const blocks = [
         ["Wat we zagen", fact],
@@ -1873,9 +1962,9 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
       })
       .map(([key, value]) => ({
         key,
-        label: getTechnicalLabel(key),
+        label: plainLanguage(getTechnicalLabel(key)),
         value: formatTechnicalValue(key, value),
-        explanation: getTechnicalExplanation(key),
+        explanation: plainLanguage(getTechnicalExplanation(key)),
       }));
 
     if (technicalEntries.length === 0) {

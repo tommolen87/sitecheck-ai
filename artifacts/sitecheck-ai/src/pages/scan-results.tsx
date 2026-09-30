@@ -4,7 +4,7 @@ import { getGetScanQueryKey, useGetScan, type AiRecommendation, type ScanAnalysi
 
 const categoryOrder = [
   { key: 'conversie', label: 'Conversie' },
-  { key: 'seo', label: 'SEO' },
+  { key: 'seo', label: 'Vindbaarheid in Google' },
   { key: 'mobiel', label: 'Mobiel' },
   { key: 'techniek', label: 'Techniek & snelheid' },
   { key: 'content', label: 'Content' },
@@ -15,27 +15,54 @@ const categoryOrder = [
 const factLabels: Array<{ key: keyof ScanAnalysis['detectedFacts']; label: string; format?: (value: unknown) => string }> = [
   { key: 'pageTitle', label: 'Paginatitel', format: (value) => value ? String(value) : 'Niet aangetroffen' },
   { key: 'pageTitleLength', label: 'Lengte paginatitel', format: (value) => `${Number(value).toLocaleString('nl-NL')} tekens` },
-  { key: 'metaDescription', label: 'Meta description', format: (value) => value ? String(value) : 'Niet aangetroffen' },
-  { key: 'metaDescriptionLength', label: 'Lengte meta description', format: (value) => `${Number(value).toLocaleString('nl-NL')} tekens` },
-  { key: 'h1Count', label: 'H1-koppen' },
+  { key: 'metaDescription', label: 'Korte omschrijving voor Google', format: (value) => value ? String(value) : 'Niet aangetroffen' },
+  { key: 'metaDescriptionLength', label: 'Lengte omschrijving voor Google', format: (value) => `${Number(value).toLocaleString('nl-NL')} tekens` },
+  { key: 'h1Count', label: 'Hoofdtitels van de pagina' },
   { key: 'headingCount', label: 'Alle koppen' },
   { key: 'visibleTextLength', label: 'Zichtbare tekens', format: (value) => `${Number(value).toLocaleString('nl-NL')}` },
   { key: 'internalLinkCount', label: 'Interne links' },
   { key: 'externalLinkCount', label: 'Externe links' },
   { key: 'imageCount', label: 'Afbeeldingen' },
   { key: 'imagesWithAlt', label: 'Afbeeldingen met alt-tekst' },
-  { key: 'ctaCount', label: 'CTA’s' },
-  { key: 'primaryCta', label: 'Eerste duidelijke CTA', format: (value) => value ? String(value) : 'Niet aangetroffen' },
-  { key: 'canonical', label: 'Canonical', format: (value) => value ? 'Aangetroffen' : 'Niet aangetroffen' },
-  { key: 'hasRobotsTxt', label: 'robots.txt', format: (value) => value ? 'Bereikbaar' : 'Niet gevonden' },
-  { key: 'hasSitemap', label: 'Sitemap', format: (value) => value ? 'Bereikbaar' : 'Niet gevonden' },
-  { key: 'openGraphSignals', label: 'Open Graph-signalen', format: (value) => `${Array.isArray(value) ? value.length : 0}` },
+  { key: 'ctaCount', label: 'Actieknoppen' },
+  { key: 'primaryCta', label: 'Belangrijkste actieknop', format: (value) => value ? String(value) : 'Niet aangetroffen' },
+  { key: 'canonical', label: 'Voorkeursadres van de pagina', format: (value) => value ? 'Aangetroffen' : 'Niet aangetroffen' },
+  { key: 'hasRobotsTxt', label: 'Instructies voor zoekmachines', format: (value) => value ? 'Bereikbaar' : 'Niet gevonden' },
+  { key: 'hasSitemap', label: 'Pagina-overzicht voor zoekmachines', format: (value) => value ? 'Bereikbaar' : 'Niet gevonden' },
+  { key: 'openGraphSignals', label: 'Voorvertoning bij delen', format: (value) => `${Array.isArray(value) ? value.length : 0}` },
   { key: 'httpStatus', label: 'HTTP-status' },
   { key: 'responseTimeMs', label: 'Responstijd', format: (value) => `${Number(value).toLocaleString('nl-NL')} ms` },
   { key: 'pageSizeKb', label: 'Paginagrootte', format: (value) => `${Number(value).toLocaleString('nl-NL')} KB` },
   { key: 'https', label: 'HTTPS', format: (value) => value ? 'Ja' : 'Nee' },
-  { key: 'compressed', label: 'Compressie', format: (value) => value === null ? 'Niet vastgesteld' : value ? 'Ja' : 'Nee' },
+  { key: 'compressed', label: 'Gegevenscompressie', format: (value) => value === null ? 'Niet vastgesteld' : value ? 'Ja' : 'Nee' },
 ];
+
+function plainLanguage(value: string): string {
+  return value
+    .replace(/\bCTA('s|’s|s)?\b/gi, (_match, suffix = "") => {
+      const normalized = suffix.toLowerCase().includes("s") ? "actieknoppen" : "actieknop";
+      return normalized;
+    })
+    .replace(/\bH1-koppen?\b/gi, "hoofdtitels")
+    .replace(/\bH1-kop\b/gi, "hoofdtitel")
+    .replace(/\bH1\b/gi, "hoofdtitel")
+    .replace(/\bSEO\b/gi, "vindbaarheid in Google")
+    .replace(/meta description/gi, "korte omschrijving voor Google")
+    .replace(/Open Graph/gi, "voorvertoning bij delen")
+    .replace(/LocalBusiness structured data/gi, "gestructureerde bedrijfsinformatie voor zoekmachines")
+    .replace(/structured data/gi, "gestructureerde informatie voor zoekmachines")
+    .replace(/Core Web Vitals/gi, "belangrijke metingen voor snelheid en gebruiksgemak")
+    .replace(/PageSpeed Insights/gi, "Google-meting voor snelheid en prestaties")
+    .replace(/robots\.txt/gi, "instructies voor zoekmachines (robots.txt)")
+    .replace(/sitemap\.xml/gi, "pagina-overzicht voor zoekmachines (sitemap)")
+    .replace(/\bCanonical-link\b/gi, "voorkeursadres van de pagina")
+    .replace(/\bCanonical URL\b/gi, "voorkeursadres van de pagina")
+    .replace(/\bCanonical\b/gi, "voorkeursadres van de pagina")
+    .replace(/\bHTTP-status\b/gi, "serverantwoord")
+    .replace(/\bViewport-instelling\b/gi, "instelling voor mobiele weergave")
+    .replace(/\bcontent encoding\b/gi, "compressiemethode")
+    .replace(/\bRobots-directives\b/gi, "instructies voor zoekmachines");
+}
 
 function formatDate(value: string) {
   const date = new Date(value);
@@ -88,8 +115,8 @@ function CategoryScores({ analysis }: { analysis: ScanAnalysis }) {
               <div className="category-score-name">
                 <span className="category-score-index">{String(categoryOrder.indexOf(category) + 1).padStart(2, '0')}</span>
                 <div>
-                  <h3>{result?.label || category.label}</h3>
-                  <p>{result ? result.note : 'Niet beschikbaar in deze analyse.'}</p>
+                  <h3>{plainLanguage(result?.label || category.label)}</h3>
+                  <p>{plainLanguage(result ? result.note : 'Niet beschikbaar in deze analyse.')}</p>
                   {result && (
                     <div className="category-coverage">
                       <span>Kwaliteit gemeten: <strong>{result.qualityScore ?? '—'}{result.qualityScore !== null ? '/100' : ''}</strong></span>
@@ -124,10 +151,10 @@ function CategoryScores({ analysis }: { analysis: ScanAnalysis }) {
                         </span>
                         <div>
                           <div className="check-title-row">
-                            <strong>{check.label}</strong>
+                            <strong>{plainLanguage(check.label)}</strong>
                             <span>Weging {check.weight === 3 ? 'hoog' : check.weight === 2 ? 'middel' : 'laag'}</span>
                           </div>
-                          <p>{check.evidence}</p>
+                          <p>{plainLanguage(check.evidence)}</p>
                         </div>
                         <span className="check-status-label">
                           {check.status === 'passed' ? 'Geslaagd' : check.status === 'failed' ? 'Niet geslaagd' : 'Onbekend'}
@@ -193,23 +220,23 @@ function IssueCard({ issue, index }: { issue: RecommendationDisplay; index: numb
         <span className="issue-number">{String(index + 1).padStart(2, '0')}</span>
         <span className="severity-label">Impact: {impactLabel}</span>
       </div>
-      <h3>{issue.title}</h3>
+      <h3>{plainLanguage(issue.title)}</h3>
       <div className="issue-detail">
         <div className="issue-detail-label"><CircleAlert /> Waar we het vonden</div>
-        <p>{issue.fact}</p>
+        <p>{plainLanguage(issue.fact)}</p>
       </div>
       <div className="issue-detail">
         <div className="issue-detail-label"><CircleHelp /> Waarom dit belangrijk is</div>
-        <p>{issue.whyItMatters}</p>
+        <p>{plainLanguage(issue.whyItMatters)}</p>
       </div>
       <div className="issue-detail recommendation">
         <div className="issue-detail-label"><Check /> Wat je concreet kunt verbeteren</div>
-        <p>{issue.recommendation}</p>
+        <p>{plainLanguage(issue.recommendation)}</p>
       </div>
       {issue.proposal && (
         <div className="issue-detail proposal">
           <div className="issue-detail-label"><FileWarning /> Concreet voorstel</div>
-          <p>{issue.proposal}</p>
+          <p>{plainLanguage(issue.proposal)}</p>
         </div>
       )}
       <div className="issue-meta" aria-label={`Impact ${impactLabel}, moeilijkheid ${difficultyLabel}${confidenceLabel ? `, vertrouwen ${confidenceLabel}` : ''}`}>
@@ -218,7 +245,7 @@ function IssueCard({ issue, index }: { issue: RecommendationDisplay; index: numb
         {confidenceLabel && <span>Vertrouwen <strong>{confidenceLabel}</strong></span>}
       </div>
       {issue.relatedChecks.length > 0 && (
-        <p className="issue-related-checks">Gebaseerd op: {issue.relatedChecks.join(' · ')}</p>
+        <p className="issue-related-checks">Gebaseerd op: {issue.relatedChecks.map((label) => plainLanguage(label)).join(' · ')}</p>
       )}
     </article>
   );
@@ -259,6 +286,40 @@ function DetectedFacts({ analysis }: { analysis: ScanAnalysis }) {
   );
 }
 
+const glossaryTerms = [
+  { term: 'Vindbaarheid in Google', explanation: 'Hoe goed zoekmachines kunnen begrijpen en vinden waar je pagina over gaat.' },
+  { term: 'Actieknop', explanation: 'Een knop of link die een bezoeker uitnodigt om iets te doen, zoals contact opnemen, een offerte aanvragen of een product bekijken.' },
+  { term: 'Hoofdtitel', explanation: 'De belangrijkste titel van een pagina. Deze helpt bezoekers en zoekmachines begrijpen waar de pagina over gaat.' },
+  { term: 'Korte omschrijving voor Google', explanation: 'Een korte beschrijving van een pagina die zoekmachines kunnen gebruiken in zoekresultaten.' },
+  { term: 'Voorkeursadres van de pagina', explanation: 'Het adres dat aan zoekmachines aangeeft welke versie van een pagina de hoofdversie is.' },
+  { term: 'Voorvertoning bij delen', explanation: 'Informatie die bepaalt hoe een pagina eruitziet wanneer iemand de link deelt via sociale media of berichtenapps.' },
+  { term: 'Instructies voor zoekmachines', explanation: 'Instellingen waarmee een website zoekmachines aanwijzingen kan geven over welke onderdelen ze mogen bezoeken.' },
+  { term: 'Pagina-overzicht voor zoekmachines', explanation: 'Een overzicht van belangrijke pagina’s waarmee zoekmachines nieuwe of gewijzigde pagina’s kunnen ontdekken.' },
+  { term: 'Alt-tekst', explanation: 'Een korte beschrijving van een afbeelding. Die helpt mensen die de afbeelding niet kunnen zien en kan ook zoekmachines extra context geven.' },
+  { term: 'Google-meting voor snelheid en prestaties', explanation: 'Een automatische meting van Google die onder andere kijkt naar de prestaties van een pagina op een mobiel apparaat.' },
+];
+function Glossary() {
+  return (
+    <section className="results-section" aria-labelledby="glossary-title">
+      <div className="results-section-heading">
+        <div>
+          <div className="section-kicker">Geen technische voorkennis nodig</div>
+          <h2 className="results-title" id="glossary-title">Begrippen eenvoudig uitgelegd</h2>
+        </div>
+        <p className="results-section-note">Kom je een term tegen die je niet kent? Hier leggen we de belangrijkste begrippen uit.</p>
+      </div>
+      <div className="facts-grid">
+        {glossaryTerms.map((item) => (
+          <div className="fact-item" key={item.term}>
+            <span>{item.term}</span>
+            <strong>{item.explanation}</strong>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 function ResultHeader({ scan, analysis }: { scan: { url: string; createdAt: string }; analysis: ScanAnalysis }) {
   const checkedCategoryCount = analysis.categoryScores.filter((category) => category.checked).length;
   const allCategoriesMeasured = checkedCategoryCount === analysis.categoryScores.length;
@@ -281,7 +342,7 @@ function ResultHeader({ scan, analysis }: { scan: { url: string; createdAt: stri
               <ScoreRing score={analysis.overallScore} />
               <div>
                 <strong className="score-verdict">{analysis.overallScore >= 70 ? 'Een stevige basis' : analysis.overallScore >= 40 ? 'Ruimte om te groeien' : 'Tijd voor aandacht'}</strong>
-                <p>De totaalscore weegt Conversie en SEO elk voor 20%, Mobiel en Techniek elk voor 15%, en de overige onderdelen elk voor 10%.</p>
+                <p>De totaalscore weegt Conversie en vindbaarheid in Google elk voor 20%, Mobiel en Techniek elk voor 15%, en de overige onderdelen elk voor 10%.</p>
                 <div className="overall-coverage">
                   <strong>Gemeten kwaliteit: {analysis.overallQualityScore ?? '—'}{analysis.overallQualityScore !== null ? '/100' : ''}</strong>
                   <strong>Totale meetdekking: {analysis.overallCoveragePercent}%</strong>
