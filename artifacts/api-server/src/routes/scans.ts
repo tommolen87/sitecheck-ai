@@ -1956,9 +1956,9 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
       })
       .map(([key, value]) => ({
         key,
-        label: getTechnicalLabel(key),
+        label: plainLanguage(getTechnicalLabel(key)),
         value: formatTechnicalValue(key, value),
-        explanation: getTechnicalExplanation(key),
+        explanation: plainLanguage(getTechnicalExplanation(key)),
       }));
 
     if (technicalEntries.length === 0) {
