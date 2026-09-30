@@ -286,6 +286,10 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
       if (path === "/" || path === "/nl" || path === "/en" || path === "/nl/" || path === "/en/") {
         window.history.pushState({}, "", next === "nl" ? "/nl" : "/en");
         window.dispatchEvent(new PopStateEvent("popstate"));
+      } else if (path.startsWith("/nl/") || path.startsWith("/en/")) {
+        const slug = path.split("/").filter(Boolean).slice(1).join("/");
+        window.history.pushState({}, "", `/${next}/${slug}`);
+        window.dispatchEvent(new PopStateEvent("popstate"));
       }
     }
   };
