@@ -1383,6 +1383,65 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
     doc.y = categoryStartY + categoryGridHeight + 12;
 
     // -------------------------------------------------------------------------
+    // GLOSSARY
+    // -------------------------------------------------------------------------
+
+    sectionTitle(
+      "Begrippen eenvoudig uitgelegd",
+      "Geen technische voorkennis nodig. Hieronder staan de belangrijkste termen uit dit rapport in gewone taal.",
+    );
+
+    const glossary = [
+      ["Vindbaarheid in Google", "Hoe goed zoekmachines kunnen begrijpen en vinden waar een pagina over gaat."],
+      ["Actieknop", "Een knop of link die een bezoeker uitnodigt om iets te doen, zoals contact opnemen of een product bekijken."],
+      ["Hoofdtitel", "De belangrijkste titel van een pagina. Deze helpt bezoekers en zoekmachines begrijpen waar de pagina over gaat."],
+      ["Korte omschrijving voor Google", "Een korte beschrijving van een pagina die zoekmachines kunnen gebruiken in zoekresultaten."],
+      ["Voorkeursadres van de pagina", "Het adres dat aan zoekmachines aangeeft welke versie van een pagina de hoofdversie is."],
+      ["Voorvertoning bij delen", "Informatie die bepaalt hoe een pagina eruitziet wanneer de link wordt gedeeld via sociale media of berichtenapps."],
+      ["Instructies voor zoekmachines", "Instellingen waarmee een website zoekmachines aanwijzingen kan geven over welke onderdelen ze mogen bezoeken."],
+      ["Pagina-overzicht voor zoekmachines", "Een overzicht van belangrijke pagina’s waarmee zoekmachines nieuwe of gewijzigde pagina’s kunnen ontdekken."],
+      ["Alt-tekst", "Een korte beschrijving van een afbeelding. Dit helpt mensen die de afbeelding niet kunnen zien en geeft zoekmachines extra context."],
+      ["Google-meting voor snelheid en prestaties", "Een automatische Google-meting die onder andere kijkt naar de prestaties van een pagina op een mobiel apparaat."],
+    ];
+
+    ensureSpace(210);
+    const glossaryWidth = contentWidth;
+    const glossaryStartY = doc.y;
+    let glossaryY = glossaryStartY;
+
+    glossary.forEach(([term, explanation]) => {
+      doc
+        .font("Helvetica-Bold")
+        .fontSize(8.5)
+        .fillColor(COLORS.gray900)
+        .text(term, PAGE.left, glossaryY, {
+          width: 175,
+          lineBreak: false,
+        });
+
+      doc
+        .font("Helvetica")
+        .fontSize(8)
+        .fillColor(COLORS.gray600)
+        .text(explanation, PAGE.left + 185, glossaryY, {
+          width: glossaryWidth - 185,
+          lineGap: 2,
+        });
+
+      glossaryY += Math.max(28, doc.heightOfString(explanation, {
+        width: glossaryWidth - 185,
+        lineGap: 2,
+      }) + 12);
+
+      if (glossaryY > PAGE.height - PAGE.bottom - 35) {
+        newPage();
+        glossaryY = doc.y;
+      }
+    });
+
+    doc.y = glossaryY + 8;
+
+    // -------------------------------------------------------------------------
     // STRENGTHS
     // -------------------------------------------------------------------------
 
