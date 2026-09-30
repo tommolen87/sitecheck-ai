@@ -202,7 +202,7 @@ function CategoryScores({ analysis }: { analysis: ScanAnalysis }) {
                     })}
                   </div>
                 </details>
-              )}}
+              )}
             </article>
           );
         })}
