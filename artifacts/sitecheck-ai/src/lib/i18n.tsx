@@ -61,6 +61,13 @@ const translations: Record<string, string> = {
   "Volledig verbeterplan": "Full improvement plan",
   "Van inzicht naar": "From insight to",
   " concrete actie.": " concrete action.",
+  "concrete actie.": "concrete action.",
+  "Je gratis scan laat zien waar kansen liggen. Voor €29 krijg je het volledige verbeterplan: concrete verbeterpunten, duidelijke prioriteiten, AI-voorstellen en een praktisch plan om je website stap voor stap te verbeteren.": "Your free scan shows where opportunities lie. For €29, you get the full improvement plan: concrete improvement points, clear priorities, AI suggestions and a practical plan to improve your website step by step.",
+  "10 belangrijkste verbeterpunten": "10 most important improvement points",
+  "Prioriteit, impact en moeilijkheid per punt": "Priority, impact and difficulty for each point",
+  "Een duidelijk actieplan voor de komende 30 dagen": "A clear action plan for the next 30 days",
+  "Volledig rapport als PDF": "Full report as PDF",
+
   "Je gratis scan laat zien waar de belangrijkste problemen en kansen op je website zitten. Met het volledige rapport krijg je per gevonden punt een concrete aanpak, zodat je weet wat je als eerste kunt verbeteren.": "Your free scan shows where the main problems and opportunities are on your website. With the full report, you get a concrete approach for every finding, so you know what to improve first.",
   "eenmalig · geen abonnement": "one-time payment · no subscription",
   "Alle gevonden verbeterpunten": "All identified improvement points",
