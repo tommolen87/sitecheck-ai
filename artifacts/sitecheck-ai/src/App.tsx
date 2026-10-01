@@ -79,6 +79,19 @@ const seoPages: Record<string, { nl: { title: string; description: string; headi
     nl: { title: 'SEO audit website | SiteCheck AI', description: 'SEO audit voor je website met concrete aandachtspunten voor titels, content, links en technische SEO-signalen.', heading: 'SEO audit met concrete verbeterpunten', intro: 'Een SEO audit helpt je begrijpen welke signalen op je pagina bijdragen aan vindbaarheid en welke onderdelen aandacht verdienen. SiteCheck AI zet de meetbare bevindingen overzichtelijk voor je op een rij.', points: ['Titels, omschrijvingen en koppen', 'Links en crawlbare signalen', 'Technische basis voor zoekmachines'], questions: ['Wat controleert een SEO audit?', 'Krijg ik concrete aanbevelingen?', 'Kan ik de audit als PDF ontvangen?'] },
     en: { title: 'SEO Website Audit | SiteCheck AI', description: 'SEO website audit with practical findings for titles, content, links and technical SEO signals.', heading: 'SEO audit with practical improvement points', intro: 'An SEO audit helps you understand which signals support search visibility and which areas need attention. SiteCheck AI organizes measurable findings into clear next steps.', points: ['Titles, descriptions and headings', 'Links and crawlable signals', 'Technical foundations for search engines'], questions: ['What does an SEO audit check?', 'Do I get practical recommendations?', 'Can I receive the audit as a PDF?'] },
   },
+  'website-vindbaarheid-google': {
+    nl: { title: 'Website beter vindbaar in Google | SiteCheck AI', description: 'Ontdek waarom je website slecht vindbaar kan zijn in Google en welke SEO-, content- en technische signalen je kunt verbeteren.', heading: 'Website beter vindbaar maken in Google', intro: 'Wil je dat meer mensen je website via Google vinden? Controleer eerst de basis: indexatie, pagina-inhoud, titels, interne links en technische bereikbaarheid. SiteCheck AI helpt je om zichtbare aandachtspunten snel te vinden.', points: ['Indexatie en technische bereikbaarheid', 'Content, titels en zoekintentie', 'Interne links en belangrijke pagina’s'], questions: ['Waarom is mijn website slecht vindbaar in Google?', 'Hoe kan ik mijn website beter vindbaar maken?', 'Kan een website scan helpen bij SEO?'] },
+    en: { title: 'How to make your website more visible on Google | SiteCheck AI', description: 'Find out why your website may have low Google visibility and which SEO, content and technical signals you can improve.', heading: 'Make your website more visible on Google', intro: 'Want more people to find your website through Google? Start with the basics: indexing, page content, titles, internal links and technical accessibility. SiteCheck AI helps you find visible areas that need attention.', points: ['Indexing and technical accessibility', 'Content, titles and search intent', 'Internal links and important pages'], questions: ['Why is my website hard to find on Google?', 'How can I improve my website visibility?', 'Can a website scan help with SEO?'] },
+  },
+  'website-seo-verbeteren': {
+    nl: { title: 'Website SEO verbeteren: praktische aanpak | SiteCheck AI', description: 'Leer hoe je de SEO van je website stap voor stap verbetert met betere titels, content, interne links, techniek en zoekintentie.', heading: 'Website SEO verbeteren: begin met de basis', intro: 'SEO verbeteren hoeft niet te betekenen dat je alles tegelijk aanpast. Begin met de pagina’s die belangrijk zijn voor je bedrijf en werk van technische basis naar content en interne structuur.', points: ['Sterke titels, koppen en content', 'Technische SEO en indexatie', 'Interne links en duidelijke paginastructuur'], questions: ['Waar begin ik met SEO verbeteren?', 'Welke SEO-fouten kan een website scan vinden?', 'Moet ik iedere pagina optimaliseren?'] },
+    en: { title: 'Improve website SEO: a practical approach | SiteCheck AI', description: 'Learn how to improve website SEO step by step with better titles, content, internal links, technical foundations and search intent.', heading: 'Improve website SEO: start with the basics', intro: 'Improving SEO does not mean changing everything at once. Start with the pages that matter most to your business and work from technical foundations to content and internal structure.', points: ['Strong titles, headings and content', 'Technical SEO and indexing', 'Internal links and clear site structure'], questions: ['Where should I start with SEO?', 'What SEO issues can a website scan find?', 'Do I need to optimize every page?'] },
+  },
+  'website-conversie-verbeteren': {
+    nl: { title: 'Website conversie verbeteren | SiteCheck AI', description: 'Ontdek praktische manieren om websiteconversie te verbeteren met duidelijke CTA’s, vertrouwen, contactmogelijkheden en minder drempels.', heading: 'Website conversie verbeteren', intro: 'Meer bezoekers is niet het enige doel. Je website moet bezoekers ook helpen om contact op te nemen, een offerte aan te vragen, een afspraak te maken of een andere gewenste actie uit te voeren.', points: ['Duidelijke actieknoppen en vervolgstappen', 'Vertrouwen, bewijs en duidelijke waarde', 'Contact en formulieren zonder onnodige drempels'], questions: ['Waarom converteert mijn website slecht?', 'Wat kan ik direct verbeteren voor meer conversie?', 'Kan een scan conversieproblemen signaleren?'] },
+    en: { title: 'Improve website conversion | SiteCheck AI', description: 'Discover practical ways to improve website conversion with clearer calls to action, trust signals, contact paths and fewer barriers.', heading: 'Improve website conversion', intro: 'More visitors are not the only goal. Your website should also help visitors contact you, request a quote, book an appointment or take another desired action.', points: ['Clear calls to action and next steps', 'Trust, proof and a clear value proposition', 'Contact paths and forms without unnecessary friction'], questions: ['Why is my website converting poorly?', 'What can I improve immediately?', 'Can a website scan flag conversion issues?'] },
+  },
+
 };
 
 function SeoHead() {
@@ -177,6 +190,27 @@ function SeoHead() {
           inLanguage: locale,
           author: { '@type': 'Organization', name: 'SiteCheck AI', url: window.location.origin },
           publisher: { '@type': 'Organization', name: 'SiteCheck AI', url: window.location.origin },
+        }
+      : page
+      ? {
+          '@context': 'https://schema.org',
+          '@graph': [
+            {
+              '@type': 'WebPage',
+              name: title,
+              description,
+              url: canonical,
+              inLanguage: locale,
+            },
+            {
+              '@type': 'FAQPage',
+              mainEntity: page.questions.map((question) => ({
+                '@type': 'Question',
+                name: question,
+                acceptedAnswer: { '@type': 'Answer', text: faqAnswer(question, locale) },
+              })),
+            },
+          ],
         }
       : {
           '@context': 'https://schema.org',
@@ -621,6 +655,27 @@ function SeoLandingPage() {
         </section>
         <section className="section">
           <div className="page-frame" style={{ maxWidth: '900px' }}>
+            <div className="section-kicker">{locale === 'nl' ? 'Ook interessant' : 'Related checks'}</div>
+            <div className="check-grid" style={{ marginBottom: '48px' }}>
+              {(locale === 'nl'
+                ? [
+                    ['/nl/website-scan', 'Website scan'],
+                    ['/nl/seo-check', 'SEO check'],
+                    ['/nl/website-vindbaarheid-google', 'Beter vindbaar in Google'],
+                    ['/nl/website-seo-verbeteren', 'Website SEO verbeteren'],
+                    ['/nl/website-conversie-verbeteren', 'Website conversie verbeteren'],
+                  ]
+                : [
+                    ['/en/website-scan', 'Website scan'],
+                    ['/en/seo-check', 'SEO check'],
+                    ['/en/website-vindbaarheid-google', 'Improve Google visibility'],
+                    ['/en/website-seo-verbeteren', 'Improve website SEO'],
+                    ['/en/website-conversie-verbeteren', 'Improve website conversion'],
+                  ]
+              ).filter(([href]) => href !== location).slice(0, 4).map(([href, label]) => (
+                <a className="check-card" key={href} href={href}><h2>{label}</h2><span className="text-link">{locale === 'nl' ? 'Bekijk onderwerp' : 'Explore topic'} <ArrowRight /></span></a>
+              ))}
+            </div>
             <div className="section-kicker">{locale === 'nl' ? 'Veelgestelde vragen' : 'Frequently asked questions'}</div>
             {page.questions.map((question) => (
               <article key={question} style={{ padding: '22px 0', borderBottom: '1px solid rgba(0,0,0,.08)' }}>
@@ -682,6 +737,27 @@ function BlogPage() {
           <section className="section"><div className="page-frame" style={{ maxWidth: '820px' }}>
             <div style={{ marginBottom: '32px', fontSize: '0.95rem', opacity: 0.72 }}><a href={homePath}>SiteCheck AI</a> / <a href={blogPath}>{locale === 'nl' ? 'Kennisbank' : 'Guides'}</a> / {article[locale].title}</div>
             {article[locale].sections.map((section) => <section key={section.heading} style={{ marginBottom: '38px' }}><h2 className="section-title" style={{ fontSize: '1.65rem', marginBottom: '14px' }}>{section.heading}</h2>{section.paragraphs.map((paragraph) => <p className="section-intro" key={paragraph} style={{ marginBottom: '12px' }}>{paragraph}</p>)}</section>)}
+            <div className="section-kicker" style={{ marginTop: '48px' }}>{locale === 'nl' ? 'Verder lezen' : 'Read next'}</div>
+            <div className="check-grid" style={{ marginBottom: '48px' }}>
+              {(locale === 'nl'
+                ? [
+                    ['/nl/website-scan', 'Website scan'],
+                    ['/nl/seo-check', 'SEO check'],
+                    ['/nl/website-vindbaarheid-google', 'Beter vindbaar in Google'],
+                    ['/nl/website-seo-verbeteren', 'Website SEO verbeteren'],
+                    ['/nl/website-conversie-verbeteren', 'Website conversie verbeteren'],
+                  ]
+                : [
+                    ['/en/website-scan', 'Website scan'],
+                    ['/en/seo-check', 'SEO check'],
+                    ['/en/website-vindbaarheid-google', 'Improve Google visibility'],
+                    ['/en/website-seo-verbeteren', 'Improve website SEO'],
+                    ['/en/website-conversie-verbeteren', 'Improve website conversion'],
+                  ]
+              ).slice(0, 4).map(([href, label]) => (
+                <a className="check-card" key={href} href={href}><h2>{label}</h2><span className="text-link">{locale === 'nl' ? 'Bekijk onderwerp' : 'Explore topic'} <ArrowRight /></span></a>
+              ))}
+            </div>
             <div className="closing-box" style={{ marginTop: '48px' }}><h2>{article[locale].cta}</h2><p>{locale === 'nl' ? 'Bekijk direct welke signalen op jouw website aandacht verdienen.' : 'See which signals on your website deserve attention.'}</p><a className="scan-button" href={homePath}>{locale === 'nl' ? 'Start gratis scan' : 'Start free scan'} <ArrowRight /></a></div>
           </div></section></article>
         ) : <section className="hero"><div className="page-frame"><h1>{locale === 'nl' ? 'Artikel niet gevonden' : 'Article not found'}</h1></div></section>}
