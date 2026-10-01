@@ -600,6 +600,28 @@ function ResultsContent({
         </div>
       )}
 
+      {!effectivePaid && issues.length > 0 && (() => {
+        const totalAvailable = Math.min(10, aiRecommendations?.length ?? analysis.issues.length);
+        const remaining = Math.max(0, totalAvailable - issues.length);
+        if (remaining === 0) return null;
+        return (
+          <div className="locked-improvements">
+            <div className="locked-improvements-icon"><LockKeyhole /></div>
+            <div className="locked-improvements-copy">
+              <strong>Je hebt {issues.length} van de {totalAvailable} belangrijkste verbeterpunten gezien.</strong>
+              <p>Er staan nog {remaining} verbeterpunten klaar, met concrete voorstellen, impact en moeilijkheid.</p>
+            </div>
+            <button
+              type="button"
+              className="locked-improvements-button"
+              onClick={() => setLocation(`/scans/${scanId}/upgrade`)}
+            >
+              Bekijk alle {totalAvailable} verbeterpunten — €29
+            </button>
+          </div>
+        );
+      })()}
+
       {isPaid && issues.length > 0 && (
         <section className="action-plan" aria-labelledby="action-plan-title">
           <div className="results-section-heading">
