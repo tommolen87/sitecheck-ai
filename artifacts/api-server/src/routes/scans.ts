@@ -583,7 +583,22 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
         : {};
 
     const notChecked = Array.isArray(analysis.notChecked)
-      ? analysis.notChecked
+      ? analysis.notChecked.map((item: unknown) => {
+          const text = typeof item === "string" ? item : String(item ?? "");
+          const friendly: Record<string, string> = {
+            "De mobiele PageSpeed Insights-performancecheck kon niet worden uitgevoerd.":
+              "De mobiele snelheidstest kon op dit moment niet worden uitgevoerd.",
+            "Alleen de homepage en de vaste robots.txt/sitemap-locaties zijn opgehaald; interne pagina's zijn niet gecrawld.":
+              "We hebben alleen de homepage bekeken. Andere pagina's zijn niet meegenomen in deze scan.",
+            "De inhoud en kwaliteit van externe backlinks zijn niet gecontroleerd.":
+              "We hebben niet onderzocht welke andere websites naar deze website linken.",
+            "De volledigheid van juridische teksten, reviews en bedrijfsgegevens is niet juridisch of handmatig beoordeeld.":
+              "We hebben juridische teksten, reviews en bedrijfsgegevens niet inhoudelijk beoordeeld.",
+            "CTA-plaatsing boven de vouw is niet gecontroleerd zonder browserrendering.":
+              "We hebben niet getest hoe de belangrijkste knop zichtbaar is voordat een bezoeker naar beneden scrollt.",
+          };
+          return friendly[text] ?? text;
+        })
       : [];
 
     const doc = new PDFDocument({
