@@ -23,6 +23,27 @@ type RawSelection = {
   proposal: string | null;
 };
 
+const AI_MAX_INPUT_CHARS = 60_000;
+const AI_MAX_OUTPUT_TOKENS = 4_096;
+const AI_DAILY_CALL_LIMIT = 100;
+const aiDailyUsage = { day: "", calls: 0 };
+
+function reserveAiCall(): void {
+  const day = new Date().toISOString().slice(0, 10);
+  if (aiDailyUsage.day !== day) {
+    aiDailyUsage.day = day;
+    aiDailyUsage.calls = 0;
+  }
+  if (aiDailyUsage.calls >= AI_DAILY_CALL_LIMIT) {
+    throw new Error("Daily AI analysis limit reached.");
+  }
+  aiDailyUsage.calls += 1;
+}
+
+function limitText(value: unknown, maxChars: number): string {
+  return typeof value === "string" ? value.slice(0, maxChars) : "";
+}
+
 const outputSchema = {
   name: "sitecheck_ai_recommendations",
   strict: true,
@@ -129,14 +150,16 @@ const eligibleIssues = analysis.issues.map((issue) => ({
 
 if (eligibleIssues.length === 0) return null;
 
+  reserveAiCall();
+
   const payload = {
     url: context.url,
     page: {
       title: analysis.detectedFacts.pageTitle,
       metaDescription: analysis.detectedFacts.metaDescription,
-      headings: analysis.detectedFacts.headings,
-      visibleHomepageText: context.visibleTextSnippet,
-      callsToAction: analysis.detectedFacts.callsToAction,
+      headings: Array.isArray(analysis.detectedFacts.headings) ? analysis.detectedFacts.headings.slice(0, 40).map((value) => limitText(value, 300)) : [],
+      visibleHomepageText: limitText(context.visibleTextSnippet, 12_000),
+      callsToAction: Array.isArray(analysis.detectedFacts.callsToAction) ? analysis.detectedFacts.callsToAction.slice(0, 30).map((value) => limitText(value, 300)) : [],
       primaryCta: analysis.detectedFacts.primaryCta,
       valuePropositionSignal: analysis.detectedFacts.valuePropositionSignal,
       targetAudienceSignal: analysis.detectedFacts.targetAudienceSignal,
@@ -161,7 +184,7 @@ if (eligibleIssues.length === 0) return null;
       action: issue.recommendation,
       impact: issue.impact,
       difficulty: issue.difficulty,
-      basedOnFailedChecks: issue.relatedChecks,
+      basedOnFailedChecks: issue.relatedChecks.slice(0, 20).map((value) => limitText(value, 300)),
     })),
   };
   
@@ -169,7 +192,7 @@ if (eligibleIssues.length === 0) return null;
   
   const response = await client.chat.completions.create({
     model: "gpt-5.4-mini",
-    max_completion_tokens: 8192,
+    max_completion_tokens: AI_MAX_OUTPUT_TOKENS,
     response_format: {
       type: "json_schema",
       json_schema: outputSchema,
