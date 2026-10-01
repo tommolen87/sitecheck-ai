@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { ArrowLeft, Check, CheckCircle2, CircleAlert, CircleHelp, Clock3, ExternalLink, FileWarning, Gauge, LockKeyhole, RefreshCw, ShieldCheck, XCircle } from 'lucide-react';
 import { Link, useLocation, useParams } from 'wouter';
 import { getGetScanQueryKey, useGetScan, type AiRecommendation, type ScanAnalysis, type ScanIssue } from '@workspace/api-client-react';
@@ -709,7 +710,21 @@ export default function ScanResults() {
   const { locale } = useLanguage();
   const paymentSuccess = new URLSearchParams(window.location.search).get("payment") === "success";
   const validScanId = Number.isInteger(scanId) && scanId > 0;
-  const accessToken = validScanId ? getScanAccessToken(scanId) : null;
+  const accessTokenFromUrl =
+    validScanId
+      ? new URLSearchParams(window.location.search).get("access")
+      : null;
+  const accessToken = accessTokenFromUrl || (validScanId ? getScanAccessToken(scanId) : null);
+
+  useEffect(() => {
+    if (!validScanId || !accessTokenFromUrl) return;
+
+    setScanAccessToken(scanId, accessTokenFromUrl);
+
+    const cleanUrl = `/scans/${scanId}`;
+    window.history.replaceState({}, document.title, cleanUrl);
+  }, [accessTokenFromUrl, scanId, validScanId]);
+
   const scanQuery = useGetScan(validScanId ? scanId : 0, {
     request: accessToken ? { headers: { 'x-scan-access-token': accessToken } } : undefined,
     query: {
