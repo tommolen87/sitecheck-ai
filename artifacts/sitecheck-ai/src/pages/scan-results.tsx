@@ -492,6 +492,38 @@ function ResultsContent({
     : analysis.issues.slice(0, issueLimit).map(deterministicRecommendation); 
   return (
   <Localized><div className="page-frame results-content-frame">
+    {!effectivePaid && (
+      <section className="results-upgrade-hero" aria-labelledby="results-upgrade-title">
+        <div className="results-upgrade-copy">
+          <div className="section-kicker">Wil je weten wat je écht kunt verbeteren?</div>
+          <h2 id="results-upgrade-title">Van gratis scan naar een concreet verbeterplan.</h2>
+          <p>
+            Je hebt nu de belangrijkste uitkomsten van je scan. Voor €29 krijg je de volledige analyse,
+            met de 10 belangrijkste verbeterpunten voor jouw website en concrete voorstellen om ze aan te pakken.
+          </p>
+        </div>
+        <div className="results-upgrade-offer">
+          <div className="results-upgrade-price"><strong>€29</strong><span>eenmalig</span></div>
+          <ul>
+            <li><CheckCircle2 /> 10 belangrijkste verbeterpunten</li>
+            <li><CheckCircle2 /> Concrete AI-voorstellen per punt</li>
+            <li><CheckCircle2 /> Uitleg waarom elk punt belangrijk is</li>
+            <li><CheckCircle2 /> Impact en moeilijkheid per verbetering</li>
+            <li><CheckCircle2 /> Praktisch actieplan voor de komende 30 dagen</li>
+            <li><CheckCircle2 /> Volledig rapport als PDF</li>
+          </ul>
+          <button
+            type="button"
+            className="results-upgrade-button"
+            onClick={() => setLocation(`/scans/${scanId}/upgrade`)}
+          >
+            Bekijk mijn 10 verbeterpunten — €29
+          </button>
+          <span className="results-upgrade-note">Eenmalige betaling · geen abonnement</span>
+        </div>
+      </section>
+    )}
+
     <CategoryScores analysis={analysis} />
 
       {effectivePaid && <Strengths analysis={analysis} />}
@@ -622,34 +654,7 @@ function ResultsContent({
         </section>
       )}
 
-      <hr />
-      {isPaid === false && (
-        <div className="upgrade-card">
-          <div>
-            <div className="section-kicker">Volledig rapport</div>
-            <h3>We laten je niet achter met alleen een score.</h3>
-            <p>
-              Ontdek alle gevonden verbeterpunten op je website, inclusief concrete
-              AI-voorstellen, impact, moeilijkheid en een praktisch actieplan op volgorde.
-            </p>
-          </div>
 
-          <button
-            type="button"
-            className="upgrade-button"
-            style={{
-              maxWidth: '100%',
-              minWidth: 0,
-              flexShrink: 1,
-              whiteSpace: 'normal',
-              textAlign: 'center',
-            }}
-            onClick={() => setLocation(`/scans/${scanId}/upgrade`)}
-          >
-            Bekijk alle verbeterpunten — €29
-          </button>
-        </div>
-      )}
       </section>
       <DetectedFacts analysis={analysis} />
       <section className="results-section not-checked-section" aria-labelledby="not-checked-title">
