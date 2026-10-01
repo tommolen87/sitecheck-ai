@@ -1,5 +1,6 @@
 import { ArrowLeft, Check } from 'lucide-react';
 import { useLocation, useParams } from 'wouter';
+import { useState } from 'react';
 import { LanguageSwitcher, Localized, translateText, useLanguage } from '@/lib/i18n';
 import { getScanAccessToken } from '@/lib/scan-access';
 
@@ -8,6 +9,7 @@ export default function Upgrade() {
   const params = useParams();
   const { locale } = useLanguage();
   const translate = (value: string) => translateText(value, locale);
+  const [legalConsent, setLegalConsent] = useState(false);
 
   return (
     <Localized><main className="site-shell min-h-[100dvh]">
@@ -75,9 +77,23 @@ export default function Upgrade() {
                 </div>
               </div>
 
+              <label className="legal-consent">
+                <input
+                  type="checkbox"
+                  checked={legalConsent}
+                  onChange={(event) => setLegalConsent(event.target.checked)}
+                />
+                <span>
+                  {locale === 'nl'
+                    ? <>Ik ga akkoord met de <a href="/nl/voorwaarden" target="_blank" rel="noreferrer">algemene voorwaarden</a> en vraag om de betaalde dienst direct te starten. Ik begrijp dat dit gevolgen kan hebben voor mijn wettelijke bedenktijd.</>
+                    : <>I agree to the <a href="/en/terms" target="_blank" rel="noreferrer">terms and conditions</a> and ask for the paid service to start immediately. I understand that this may affect my statutory withdrawal right.</>}
+                </span>
+              </label>
+
               <button
                 type="button"
                 className="upgrade-main-button"
+                disabled={!legalConsent}
                 onClick={async () => {
                   try {
                     const scanId = Number(params?.scanId);
@@ -91,6 +107,7 @@ export default function Upgrade() {
                           'Content-Type': 'application/json',
                           'x-scan-access-token': accessToken,
                           'x-sitecheck-language': locale,
+                          'x-sitecheck-terms-accepted': 'true',
                         },
                       },
                     );
