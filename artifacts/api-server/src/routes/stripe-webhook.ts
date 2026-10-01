@@ -60,12 +60,6 @@ router.post("/stripe/webhook", async (req, res): Promise<void> => {
     const session = event.data.object as Stripe.Checkout.Session;
     const scanId = Number(session.metadata?.scanId);
 
-    console.log("STRIPE WEBHOOK DEBUG", {
-      sessionId: session.id,
-      metadata: session.metadata,
-      scanId,
-    });
-
     if (Number.isInteger(scanId) && scanId > 0) {
       const [scan] = await db
         .select()
@@ -103,11 +97,7 @@ router.post("/stripe/webhook", async (req, res): Promise<void> => {
               siteUrl: frontendUrl,
             });
 
-            console.log("PAYMENT EMAIL SENT", {
-              scanId,
-              emailId,
-              customerEmail,
-            });
+            console.log("PAYMENT EMAIL SENT", { scanId, emailId });
           } catch (error) {
             console.error("PAYMENT EMAIL FAILED", {
               scanId,
@@ -117,9 +107,7 @@ router.post("/stripe/webhook", async (req, res): Promise<void> => {
             // a safe retry possible without duplicating the email.
           }
         } else {
-          console.warn("PAYMENT EMAIL SKIPPED: Stripe did not provide an email.", {
-            scanId,
-          });
+          console.warn("PAYMENT EMAIL SKIPPED: Stripe did not provide an email.", { scanId });
         }
       }
     }
