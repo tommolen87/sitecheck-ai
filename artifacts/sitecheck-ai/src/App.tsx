@@ -553,7 +553,7 @@ function faqAnswer(question: string, locale: 'nl' | 'en'): string {
 
   if (question.includes('really free')) return 'Yes. The first scan is free and shows measurable signals and important areas to improve on your website.';
   if (question.includes('What do I get from the free scan')) return 'You get an overview of the areas the scan could actually assess, including the most important findings.';
-  if (question.includes('purchase a full report')) return 'Yes. After the free scan, you can purchase the full report for a one-time €29 payment.';
+  if (question.includes('purchase a full report')) return 'Yes. After the free scan, you can purchase the full report for a one-time payment of €29.';
   if (question.includes('What does a website scan check')) return 'The scan checks measurable signals around SEO, technical quality, mobile, content, trust and conversion.';
   if (question.includes('only get a score')) return 'No. You also get context about the measured areas and practical points to address.';
   if (question.includes('start the scan for free')) return 'Yes. You only need the web address of your website to start the free scan.';
