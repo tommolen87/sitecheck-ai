@@ -628,7 +628,12 @@ function SeoLandingPage() {
           </div>
         </section>
         <footer className="footer">
-          <div className="page-frame footer-inner"><span>© {new Date().getFullYear()} SiteCheck AI</span></div>
+          <div className="page-frame footer-inner"><span>© {new Date().getFullYear()} SiteCheck AI</span><span className="legal-links">
+            <a href={locale === 'nl' ? '/nl/privacy' : '/en/privacy'}>Privacy</a>
+            <a href={locale === 'nl' ? '/nl/voorwaarden' : '/en/terms'}>{locale === 'nl' ? 'Voorwaarden' : 'Terms'}</a>
+            <a href={locale === 'nl' ? '/nl/cookies' : '/en/cookies'}>Cookies</a>
+            <a href={locale === 'nl' ? '/nl/herroepen' : '/en/withdraw'}>{locale === 'nl' ? 'Herroepen' : 'Withdraw'}</a>
+          </span></div>
         </footer>
       </main>
     </Localized>
@@ -677,7 +682,12 @@ function BlogPage() {
             <div className="closing-box" style={{ marginTop: '48px' }}><h2>{article[locale].cta}</h2><p>{locale === 'nl' ? 'Bekijk direct welke signalen op jouw website aandacht verdienen.' : 'See which signals on your website deserve attention.'}</p><a className="scan-button" href={homePath}>{locale === 'nl' ? 'Start gratis scan' : 'Start free scan'} <ArrowRight /></a></div>
           </div></section></article>
         ) : <section className="hero"><div className="page-frame"><h1>{locale === 'nl' ? 'Artikel niet gevonden' : 'Article not found'}</h1></div></section>}
-        <footer className="footer"><div className="page-frame footer-inner"><span>© {new Date().getFullYear()} SiteCheck AI</span><span>{locale === 'nl' ? 'Praktische kennis voor ondernemers' : 'Practical knowledge for business owners'}</span></div></footer>
+        <footer className="footer"><div className="page-frame footer-inner"><span>© {new Date().getFullYear()} SiteCheck AI</span><span>{locale === 'nl' ? 'Praktische kennis voor ondernemers' : 'Practical knowledge for business owners'}</span><span className="legal-links">
+            <a href={locale === 'nl' ? '/nl/privacy' : '/en/privacy'}>Privacy</a>
+            <a href={locale === 'nl' ? '/nl/voorwaarden' : '/en/terms'}>{locale === 'nl' ? 'Voorwaarden' : 'Terms'}</a>
+            <a href={locale === 'nl' ? '/nl/cookies' : '/en/cookies'}>Cookies</a>
+            <a href={locale === 'nl' ? '/nl/herroepen' : '/en/withdraw'}>{locale === 'nl' ? 'Herroepen' : 'Withdraw'}</a>
+          </span></div></footer>
       </main>
     </Localized>
   );
