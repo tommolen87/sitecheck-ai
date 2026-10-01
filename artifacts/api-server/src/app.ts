@@ -6,7 +6,8 @@ import { logger } from "./lib/logger";
 
 const app: Express = express();
 
-// Render/Vercel plaatsen de client-IP in de eerste trusted proxylaag.\napp.set("trust proxy", 1);
+// Render/Vercel plaatsen de client-IP in de eerste trusted proxylaag.
+app.set("trust proxy", 1);
 
 app.use(
   pinoHttp({
@@ -27,7 +28,13 @@ app.use(
     },
   }),
 );
-const frontendOrigin = (process.env.FRONTEND_URL ?? "http://localhost:5173").replace(/\\/$/, "");\napp.use(\n  cors({\n    origin: frontendOrigin,\n    methods: ["GET", "POST", "OPTIONS"],\n  }),\n);
+const frontendOrigin = (process.env.FRONTEND_URL ?? "http://localhost:5173").replace(/\\/$/, "");
+app.use(
+  cors({
+    origin: frontendOrigin,
+    methods: ["GET", "POST", "OPTIONS"],
+  }),
+);
 
 // Stripe webhook moet de originele, onbewerkte body ontvangen
 app.use(
