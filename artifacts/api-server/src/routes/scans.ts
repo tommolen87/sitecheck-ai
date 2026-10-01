@@ -13,7 +13,8 @@ import {
 import { analyzeWebsite } from "../lib/website-analysis";
 import { generateAiRecommendations } from "../lib/ai-website-analysis";
 import Stripe from "stripe";
-import PDFDocument from "pdfkit";\nimport { checkoutRateLimit, scanRateLimit } from "../lib/rate-limit";
+import PDFDocument from "pdfkit";
+import { checkoutRateLimit, scanRateLimit } from "../lib/rate-limit";
 
 const router: IRouter = Router();
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY ?? "");
