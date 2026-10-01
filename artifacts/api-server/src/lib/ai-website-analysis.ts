@@ -206,6 +206,11 @@ if (eligibleIssues.length === 0) return null;
     13. Verander impact en difficulty niet.
     14. Houd de bestaande issueId exact hetzelfde.
     15. Geef bij proposal een concrete verbetering die daadwerkelijk uit de scan kan worden afgeleid.
+    16. Maak proposal zo concreet mogelijk. Als de scan voldoende bronmateriaal bevat, schrijf dan een direct bruikbare voorbeeldtekst of concrete wijziging in plaats van alleen te beschrijven wat de ondernemer moet doen.
+    17. Bij een ontbrekende meta description: schrijf, als de paginatitel en zichtbare homepage-inhoud dit toelaten, een concrete kandidaat-meta description. Begin met "Voorsteltekst:" en gebruik uitsluitend informatie die uit de scan blijkt.
+    18. Bij een ontbrekende of te algemene CTA: geef, als bestaande CTA's en zichtbare homepage-inhoud voldoende context bieden, één concreet alternatief. Begin met "Voorstel:" en verzin geen nieuwe dienst, prijs of aanbod.
+    19. Bij een onduidelijke waardepropositie of doelgroep: geef alleen een voorbeeldzin als de scan daarvoor voldoende feitelijke inhoud bevat. Markeer die als "Voorbeeld:" en vul geen ontbrekende bedrijfsinformatie zelf in.
+    20. Bij technische verbeteringen zoals alt-teksten, structured data, social sharing of links: geef een concrete implementatieactie die een ondernemer of webbouwer direct kan uitvoeren, maar verzin geen niet-gemeten feiten.
 
     TITELS:
 
