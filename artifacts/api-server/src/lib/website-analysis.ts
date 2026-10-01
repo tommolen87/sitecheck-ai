@@ -1584,60 +1584,59 @@ function getIssues(facts: ScanAnalysisResult["detectedFacts"]): ScanAnalysisResu
     .slice(0, 10);
 }
 
-async function checkInternalLinks(
+async function checkLinks(
   links: string[],
 ): Promise<Array<{ url: string; status: number | null }>> {
-  const results: Array<{ url: string; status: number | null }> = [];
+  const results: Array<{ url: string; status: number | null }> = new Array(links.length);
+  const concurrency = 6;
+  let nextIndex = 0;
 
-  for (const url of links) {
-    try {
-      const result = await fetchResource(url, {
-        maximumBytes: 50_000,
-        timeoutMs: 5_000,
-        requireHtml: false,
-      });
+  async function worker(): Promise<void> {
+    while (true) {
+      const index = nextIndex;
+      nextIndex += 1;
+      if (index >= links.length) return;
 
-      results.push({
-        url,
-        status: result?.response.status ?? null,
-      });
-    } catch {
-      results.push({
-        url,
-        status: null,
-      });
+      const url = links[index];
+      try {
+        const result = await fetchResource(url, {
+          maximumBytes: 50_000,
+          timeoutMs: 5_000,
+          requireHtml: false,
+        });
+
+        results[index] = {
+          url,
+          status: result?.response.status ?? null,
+        };
+      } catch {
+        results[index] = {
+          url,
+          status: null,
+        };
+      }
     }
   }
 
-  return results;
+  await Promise.all(
+    Array.from({ length: Math.min(concurrency, links.length) }, () => worker()),
+  );
+
+  return results.filter(
+    (result): result is { url: string; status: number | null } => Boolean(result),
+  );
+}
+
+async function checkInternalLinks(
+  links: string[],
+): Promise<Array<{ url: string; status: number | null }>> {
+  return checkLinks(links);
 }
 
 async function checkExternalLinks(
   links: string[],
 ): Promise<Array<{ url: string; status: number | null }>> {
-  const results: Array<{ url: string; status: number | null }> = [];
-
-  for (const url of links) {
-    try {
-      const result = await fetchResource(url, {
-        maximumBytes: 50_000,
-        timeoutMs: 5_000,
-        requireHtml: false,
-      });
-
-      results.push({
-        url,
-        status: result?.response.status ?? null,
-      });
-    } catch {
-      results.push({
-        url,
-        status: null,
-      });
-    }
-  }
-
-  return results;
+  return checkLinks(links);
 }
 
 async function runMobilePageSpeed(url: URL): Promise<MobilePageSpeedResult | null> {
@@ -1694,15 +1693,21 @@ async function runMobilePageSpeed(url: URL): Promise<MobilePageSpeedResult | nul
 
 async function createAnalysis(snapshot: WebsiteSnapshot): Promise<WebsiteAnalysisWithContext> {
   const { html, url, responseTimeMs } = snapshot;
-  const mobilePageSpeed = await runMobilePageSpeed(url);
+  // Start the external PageSpeed measurement immediately. The rest of the
+  // HTML analysis can run while Google is measuring the page.
+  const mobilePageSpeedPromise = runMobilePageSpeed(url);
   const titleMatch = html.match(/<title\b[^>]*>([\s\S]*?)<\/title>/i);
   const pageTitle = titleMatch ? cleanText(titleMatch[1]) || null : null;
   const metaDescription = extractMetaDescription(html);
   const { headings, headingLevels, h1Count } = extractHeadings(html);
   const visibleText = getVisibleText(html);
   const links = extractLinks(html, url);
-  const checkedInternalLinks = await checkInternalLinks(links.internalLinks);
-  const checkedExternalLinks = await checkExternalLinks(links.externalLinks);
+  // Check internal and external links concurrently, with a small concurrency
+  // limit inside checkLinks so one slow site cannot block every other request.
+  const [checkedInternalLinks, checkedExternalLinks] = await Promise.all([
+    checkInternalLinks(links.internalLinks),
+    checkExternalLinks(links.externalLinks),
+  ]);
   const imageTags = html.match(/<img\b[^>]*>/gi) ?? [];
   const imagesWithAlt = imageTags.filter((tag) => getAttribute(tag, "alt") !== null).length;
   const imageAltTexts = imageTags
@@ -1731,6 +1736,7 @@ async function createAnalysis(snapshot: WebsiteSnapshot): Promise<WebsiteAnalysi
     sitemapUrl ? new URL(sitemapUrl) : new URL("/sitemap.xml", url),
     url,
   );
+  const mobilePageSpeed = await mobilePageSpeedPromise;
 
   const compressed =
     snapshot.contentEncoding === null
