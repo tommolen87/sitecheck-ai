@@ -632,6 +632,11 @@
   color: hsl(var(--foreground));
   opacity: 1;
 }
+.scan-progress-time {
+  margin-top: 13px;
+  font-size: .78rem;
+  color: hsl(var(--muted-foreground));
+}
 .scan-progress-step.is-active span:first-child {
   border-color: hsl(var(--primary));
   color: hsl(var(--primary));
