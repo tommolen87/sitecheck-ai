@@ -496,10 +496,10 @@ function ResultsContent({
       <section className="results-upgrade-hero" aria-labelledby="results-upgrade-title">
         <div className="results-upgrade-copy">
           <div className="section-kicker">Wil je weten wat je écht kunt verbeteren?</div>
-          <h2 id="results-upgrade-title">Van gratis scan naar een concreet verbeterplan.</h2>
+          <h2 id="results-upgrade-title">Maak van je scan een concreet verbeterplan.</h2>
           <p>
-            Je hebt nu de belangrijkste uitkomsten van je scan. Voor €29 krijg je de volledige analyse,
-            met de 10 belangrijkste verbeterpunten voor jouw website en concrete voorstellen om ze aan te pakken.
+            Je gratis scan laat zien waar kansen liggen. Voor €29 krijg je het volledige verbeterplan:
+            10 concrete verbeterpunten, duidelijke prioriteiten, AI-voorstellen, een 30-dagen actieplan en het volledige rapport als PDF.
           </p>
         </div>
         <div className="results-upgrade-offer">
@@ -517,7 +517,7 @@ function ResultsContent({
             className="results-upgrade-button"
             onClick={() => setLocation(`/scans/${scanId}/upgrade`)}
           >
-            Bekijk mijn 10 verbeterpunten — €29
+            Maak mijn volledige verbeterplan — €29
           </button>
           <span className="results-upgrade-note">Eenmalige betaling · geen abonnement</span>
         </div>
@@ -609,14 +609,14 @@ function ResultsContent({
             <div className="locked-improvements-icon"><LockKeyhole /></div>
             <div className="locked-improvements-copy">
               <strong>Je hebt {issues.length} van de {totalAvailable} belangrijkste verbeterpunten gezien.</strong>
-              <p>Er staan nog {remaining} verbeterpunten klaar, met concrete voorstellen, impact en moeilijkheid.</p>
+              <p>Er staan nog {remaining} verbeterpunten klaar. Je krijgt daarnaast concrete voorstellen, prioriteiten, impact, moeilijkheid, een 30-dagen actieplan en het volledige rapport als PDF.</p>
             </div>
             <button
               type="button"
               className="locked-improvements-button"
               onClick={() => setLocation(`/scans/${scanId}/upgrade`)}
             >
-              Bekijk alle {totalAvailable} verbeterpunten — €29
+              Maak mijn volledige verbeterplan — €29
             </button>
           </div>
         );
