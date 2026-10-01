@@ -90,6 +90,7 @@ export default function Upgrade() {
                         headers: {
                           'Content-Type': 'application/json',
                           'x-scan-access-token': accessToken,
+                          'x-sitecheck-language': locale,
                         },
                       },
                     );
