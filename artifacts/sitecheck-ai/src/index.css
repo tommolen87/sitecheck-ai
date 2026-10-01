@@ -570,7 +570,74 @@
 .scan-problem h1 { max-width: 700px; }
 .problem-url { max-width: min(100%, 620px); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: hsl(var(--primary)); font-size: .8rem; margin-top: 19px; }
 .problem-button { width: auto; text-decoration: none; margin-top: 30px; }
-@keyframes loading-sheen { 0% { background-position: 100% 0; } 100% { background-position: -100% 0; } }
+@keyframes loading-sheen { 0% { background-position: 100% 0; } 100% { background-position: -100% 0; } }\n.scan-progress {
+  width: min(100%, 620px);
+  margin-top: 34px;
+}
+.scan-progress-label {
+  margin-bottom: 10px;
+  font-size: .78rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: hsl(var(--muted-foreground));
+}
+.scan-progress-active {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 52px;
+  padding: 14px 16px;
+  border: 1px solid hsl(var(--border));
+  border-radius: 14px;
+  background: hsl(var(--card));
+  box-shadow: 0 8px 24px rgba(17, 24, 39, 0.05);
+}
+.scan-progress-active svg {
+  width: 19px;
+  flex: 0 0 auto;
+  color: hsl(var(--primary));
+  animation: pulse-soft 1.2s ease-in-out infinite;
+}
+.scan-progress-active strong {
+  font-size: .94rem;
+  line-height: 1.4;
+}
+.scan-progress-steps {
+  display: grid;
+  gap: 7px;
+  margin-top: 14px;
+}
+.scan-progress-step {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: hsl(var(--muted-foreground));
+  font-size: .82rem;
+  line-height: 1.35;
+  opacity: .62;
+  transition: opacity .25s ease, color .25s ease;
+}
+.scan-progress-step span:first-child {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  flex: 0 0 auto;
+  border: 1px solid hsl(var(--border));
+  border-radius: 50%;
+  font-size: .7rem;
+}
+.scan-progress-step.is-active {
+  color: hsl(var(--foreground));
+  opacity: 1;
+}
+.scan-progress-step.is-active span:first-child {
+  border-color: hsl(var(--primary));
+  color: hsl(var(--primary));
+  background: hsl(var(--secondary));
+}
+
 
 @media (max-width: 800px) {
   .results-hero { padding-top: 35px; }
