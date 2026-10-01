@@ -38,23 +38,23 @@ export async function sendPaymentConfirmationEmail(
     : "Je SiteCheck AI-rapport staat klaar";
 
   const title = locale
-    ? "Je volledige rapport staat klaar"
+    ? "Your full report is ready"
     : "Je volledige rapport staat klaar";
 
   const intro = locale
-    ? "Bedankt voor je betaling. Je volledige SiteCheck AI-rapport is nu beschikbaar."
+    ? "Thank you for your payment. Your full SiteCheck AI report is now available."
     : "Bedankt voor je betaling. Je volledige SiteCheck AI-rapport is nu beschikbaar.";
 
   const button = locale
-    ? "Bekijk mijn volledige rapport"
+    ? "View my full report"
     : "Bekijk mijn volledige rapport";
 
   const details = locale
-    ? "Op de rapportpagina vind je alle gevonden verbeterpunten, concrete AI-voorstellen en het praktische actieplan. Daar kun je ook de PDF downloaden."
+    ? "On the report page you'll find all detected improvement points, concrete AI suggestions and the practical action plan. You can also download the PDF there."
     : "Op de rapportpagina vind je alle gevonden verbeterpunten, concrete AI-voorstellen en het praktische actieplan. Daar kun je ook de PDF downloaden.";
 
   const footer = locale
-    ? "Deze link geeft je toegang tot jouw persoonlijke scanresultaat."
+    ? "This link gives you access to your personal scan results."
     : "Deze link geeft je toegang tot jouw persoonlijke scanresultaat.";
 
   const html = `<!doctype html>
