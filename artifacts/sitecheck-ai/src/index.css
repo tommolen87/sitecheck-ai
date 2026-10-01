@@ -920,6 +920,23 @@
   gap: 12px;
 }
 
+.upgrade-benefit-extra {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(20, 75, 78, 0.12);
+  font-weight: 600;
+}
+
+.upgrade-benefit-extra svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  color: #168b80;
+}
+
 .upgrade-benefits svg {
   width: 20px;
   height: 20px;
