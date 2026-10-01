@@ -617,6 +617,140 @@
   .not-checked-section { grid-template-columns: 1fr; gap: 17px; }
   .loading-results, .scan-problem { min-height: calc(100dvh - 75px); }
 }
+.results-upgrade-hero {
+  margin: 8px 0 42px;
+  padding: 34px;
+  border-radius: 24px;
+  border: 1px solid rgba(20, 75, 78, 0.18);
+  background: linear-gradient(135deg, #f3eee2 0%, #eef6f3 100%);
+  box-shadow: 0 14px 34px rgba(17, 24, 39, 0.08);
+}
+
+.results-upgrade-copy {
+  max-width: 760px;
+  margin-bottom: 24px;
+}
+
+.results-upgrade-copy h2 {
+  margin: 7px 0 12px;
+  font-family: var(--app-font-serif);
+  font-size: clamp(32px, 5vw, 52px);
+  line-height: .98;
+  letter-spacing: -.035em;
+}
+
+.results-upgrade-copy p {
+  max-width: 720px;
+  margin: 0;
+  font-size: 17px;
+  line-height: 1.6;
+  color: #46565a;
+}
+
+.results-upgrade-offer {
+  display: grid;
+  grid-template-columns: 150px 1fr minmax(230px, auto);
+  gap: 24px 30px;
+  align-items: center;
+  padding-top: 24px;
+  border-top: 1px solid rgba(20, 75, 78, 0.14);
+}
+
+.results-upgrade-price {
+  display: flex;
+  flex-direction: column;
+}
+
+.results-upgrade-price strong {
+  font-size: 48px;
+  line-height: 1;
+  color: #174b4e;
+}
+
+.results-upgrade-price span,
+.results-upgrade-note {
+  margin-top: 7px;
+  color: #667477;
+  font-size: 13px;
+}
+
+.results-upgrade-offer ul {
+  display: grid;
+  gap: 9px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.results-upgrade-offer li {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  font-size: 14px;
+  line-height: 1.35;
+}
+
+.results-upgrade-offer li svg {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+  margin-top: 1px;
+  color: #168b80;
+}
+
+.results-upgrade-button {
+  grid-column: 3;
+  grid-row: 1 / span 2;
+  border: 0;
+  border-radius: 14px;
+  padding: 17px 24px;
+  background: #174b4e;
+  color: white;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.25;
+  cursor: pointer;
+  box-shadow: 0 8px 18px rgba(23, 75, 78, 0.22);
+}
+
+.results-upgrade-button:hover {
+  background: #123f42;
+  transform: translateY(-1px);
+}
+
+.results-upgrade-note {
+  grid-column: 3;
+  grid-row: 3;
+  text-align: center;
+}
+
+@media (max-width: 850px) {
+  .results-upgrade-offer {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .results-upgrade-button,
+  .results-upgrade-note {
+    grid-column: 1 / -1;
+    grid-row: auto;
+  }
+}
+
+@media (max-width: 600px) {
+  .results-upgrade-hero {
+    padding: 24px 20px;
+  }
+
+  .results-upgrade-offer {
+    grid-template-columns: 1fr;
+  }
+
+  .results-upgrade-button,
+  .results-upgrade-note {
+    grid-column: 1;
+  }
+}
+
 .upgrade-card {
   margin-top: 32px;
   padding: 28px 32px;
