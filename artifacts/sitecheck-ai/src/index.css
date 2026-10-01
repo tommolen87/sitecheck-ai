@@ -751,6 +751,70 @@
   }
 }
 
+.locked-improvements {
+  margin: 26px 0 8px;
+  padding: 22px 24px;
+  border: 1px solid rgba(20, 75, 78, 0.16);
+  border-radius: 18px;
+  background: #f7f4ec;
+  display: grid;
+  grid-template-columns: auto 1fr minmax(220px, auto);
+  align-items: center;
+  gap: 16px;
+}
+
+.locked-improvements-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: #e4f0ed;
+  color: #174b4e;
+}
+
+.locked-improvements-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.locked-improvements-copy strong {
+  display: block;
+  font-size: 16px;
+}
+
+.locked-improvements-copy p {
+  margin: 5px 0 0;
+  color: #667477;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.locked-improvements-button {
+  border: 0;
+  border-radius: 12px;
+  padding: 13px 18px;
+  background: #174b4e;
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.locked-improvements-button:hover {
+  background: #123f42;
+}
+
+@media (max-width: 760px) {
+  .locked-improvements {
+    grid-template-columns: auto 1fr;
+  }
+
+  .locked-improvements-button {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+}
+
 .upgrade-card {
   margin-top: 32px;
   padding: 28px 32px;
