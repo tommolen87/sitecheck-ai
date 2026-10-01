@@ -1833,11 +1833,11 @@ async function createAnalysis(snapshot: WebsiteSnapshot): Promise<WebsiteAnalysi
       notChecked: [
         ...(mobilePageSpeed
           ? []
-          : ["De mobiele PageSpeed Insights-performancecheck kon niet worden uitgevoerd."]),
-        "Alleen de homepage en de vaste robots.txt/sitemap-locaties zijn opgehaald; interne pagina's zijn niet gecrawld.",
-        "De inhoud en kwaliteit van externe backlinks zijn niet gecontroleerd.",
-        "De volledigheid van juridische teksten, reviews en bedrijfsgegevens is niet juridisch of handmatig beoordeeld.",
-        "CTA-plaatsing boven de vouw is niet gecontroleerd zonder browserrendering.",
+          : ["De mobiele snelheidstest kon op dit moment niet worden uitgevoerd."]),
+        "We hebben alleen de homepage bekeken. Andere pagina's zijn niet meegenomen in deze scan.",
+        "We hebben niet onderzocht welke andere websites naar deze website linken.",
+        "We hebben juridische teksten, reviews en bedrijfsgegevens niet inhoudelijk beoordeeld.",
+        "We hebben niet getest hoe de belangrijkste knop zichtbaar is voordat een bezoeker naar beneden scrollt.",
       ],
       issues: getIssues(detectedFacts),
     },
