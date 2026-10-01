@@ -110,7 +110,7 @@ function SeoHead() {
     ? (locale === 'nl' ? '/nl' : '/en')
     : pathname;
   const canonical = new URL(basePath, window.location.origin).href;
-  const seoSlug = seoPages[slug] ? slug : '';
+  const seoSlug = blogSlug ? 'blog/' + blogSlug : (seoPages[slug] ? slug : '');
   const nlUrl = new URL(seoSlug ? `/nl/${seoSlug}` : '/nl', window.location.origin).href;
   const enUrl = new URL(seoSlug ? `/en/${seoSlug}` : '/en', window.location.origin).href;
 
@@ -316,7 +316,7 @@ function Home() {
             <span className="brand-symbol" aria-hidden="true"><Radar /></span>
             <span className="brand-name">SiteCheck <span>AI</span></span>
           </a>
-          <div className="nav-actions"><span className="nav-note">Voor ondernemers met een helder verhaal</span><LanguageSwitcher /></div>
+          <div className="nav-actions"><a className="nav-note" href={(locale === 'nl' ? '/nl' : '/en') + '/blog'}>Kennisbank</a><span className="nav-note">Voor ondernemers met een helder verhaal</span><LanguageSwitcher /></div>
         </div>
       </nav>
 
@@ -564,7 +564,7 @@ function SeoLandingPage() {
             <a className="brand-mark" href={locale === 'nl' ? '/nl' : '/en'}>
               <span className="brand-name">SiteCheck <span>AI</span></span>
             </a>
-            <LanguageSwitcher />
+            <div className="nav-actions"><a className="nav-note" href={(locale === 'nl' ? '/nl' : '/en') + '/blog'}>{locale === 'nl' ? 'Kennisbank' : 'Guides'}</a><LanguageSwitcher /></div>
           </div>
         </nav>
         <section className="hero">
