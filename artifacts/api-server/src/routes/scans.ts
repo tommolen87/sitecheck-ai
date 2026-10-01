@@ -387,6 +387,10 @@ router.post("/scans/:scanId/checkout", async (req, res): Promise<void> => {
       cancel_url: `${frontendUrl}/scans/${scanId}/upgrade?payment=cancelled`,
       metadata: {
         scanId: String(scanId),
+        locale:
+          String(req.headers["x-sitecheck-language"] ?? "").toLowerCase() === "en"
+            ? "en"
+            : "nl",
       },
     });
 
