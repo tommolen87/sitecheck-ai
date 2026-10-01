@@ -25,7 +25,7 @@ await fs.mkdir(publicDir, { recursive: true });
 await fs.writeFile(path.join(publicDir, `${key}.txt`), key + "\n", "utf8");
 
 const sitemap = await fs.readFile(sitemapPath, "utf8");
-const urls = [...sitemap.matchAll(/<loc>([^<]+)<\\/loc>/g)]
+const urls = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)]
   .map((match) => match[1].trim())
   .filter((url) => url.startsWith(SITE_HOST + "/") || url === SITE_HOST)
   .filter((url, index, list) => list.indexOf(url) === index);
