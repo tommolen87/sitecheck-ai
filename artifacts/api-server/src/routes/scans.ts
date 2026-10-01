@@ -13,7 +13,7 @@ import {
 import { analyzeWebsite } from "../lib/website-analysis";
 import { generateAiRecommendations } from "../lib/ai-website-analysis";
 import Stripe from "stripe";
-import PDFDocument from "pdfkit";
+import PDFDocument from "pdfkit";\nimport { checkoutRateLimit, scanRateLimit } from "../lib/rate-limit";
 
 const router: IRouter = Router();
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY ?? "");
@@ -311,7 +311,7 @@ async function processScan(
   }
 }
 
-router.post("/scans", async (req, res): Promise<void> => {
+router.post("/scans", scanRateLimit, async (req, res): Promise<void> => {
   const parsed = CreateScanBody.safeParse(req.body);
   if (!parsed.success || !isWebsiteUrl(parsed.data?.url ?? "")) {
     res.status(400).json({ error: "Vul een geldige website-URL in." });
@@ -371,7 +371,7 @@ router.get("/scans/:scanId", async (req, res): Promise<void> => {
   res.json(GetScanResponse.parse(normalizeScanAnalysis(scan)));
 });
 
-router.post("/scans/:scanId/checkout", async (req, res): Promise<void> => {
+router.post("/scans/:scanId/checkout", checkoutRateLimit, async (req, res): Promise<void> => {
   const scanId = Number(req.params.scanId);
 
   if (!Number.isInteger(scanId) || scanId <= 0) {
