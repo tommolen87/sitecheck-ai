@@ -346,6 +346,13 @@ router.post("/scans/:scanId/checkout", async (req, res): Promise<void> => {
     return;
   }
 
+  if (req.headers["x-sitecheck-terms-accepted"] !== "true") {
+    res.status(400).json({
+      error: "Bevestig eerst de algemene voorwaarden en het verzoek om de dienst direct te starten.",
+    });
+    return;
+  }
+
   if (!hasScanAccess(req, scanId)) {
     res.status(404).json({ error: "Scan niet gevonden." });
     return;
@@ -392,6 +399,8 @@ router.post("/scans/:scanId/checkout", async (req, res): Promise<void> => {
           String(req.headers["x-sitecheck-language"] ?? "").toLowerCase() === "en"
             ? "en"
             : "nl",
+        termsAccepted: "true",
+        serviceStartRequested: "true",
       },
     });
 
