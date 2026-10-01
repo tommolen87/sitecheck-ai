@@ -697,21 +697,15 @@ function ResultsContent({
 }
 
 function LoadingResults() {
-  const [activeStep, setActiveStep] = useState(0);
-  const steps = [
-    'Website ophalen en bereikbaarheid controleren',
-    'Vindbaarheid in Google en pagina-opbouw controleren',
-    'Content, contactmogelijkheden en conversie bekijken',
-    'Techniek en snelheid controleren',
-    'De belangrijkste verbeterpunten door AI laten analyseren',
-  ];
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
 
   useEffect(() => {
+    const startedAt = Date.now();
     const interval = window.setInterval(() => {
-      setActiveStep((current) => (current + 1) % steps.length);
-    }, 5000);
+      setElapsedSeconds(Math.floor((Date.now() - startedAt) / 1000));
+    }, 1000);
     return () => window.clearInterval(interval);
-  }, [steps.length]);
+  }, []);
 
   return (
     <Localized><main className="site-shell results-shell">
@@ -719,28 +713,25 @@ function LoadingResults() {
       <div className="page-frame loading-results" role="status" data-testid="status-scan-loading">
         <div className="loading-orbit"><RefreshCw /></div>
         <div className="eyebrow">Even geduld</div>
-        <h1>SiteCheck AI analyseert<br /><em>de website.</em></h1>
-        <p>We controleren je website stap voor stap. Een volledige scan duurt meestal ongeveer 30–60 seconden.</p>
+        <h1>We analyseren<br /><em>je website.</em></h1>
+        <p>We voeren meerdere controles tegelijk uit en laten daarna AI de belangrijkste verbeterpunten uitwerken. De scan duurt meestal ongeveer 15–30 seconden.</p>
         <div className="scan-progress" aria-live="polite">
-          <div className="scan-progress-label">We zijn nu bezig met</div>
+          <div className="scan-progress-label">Scan in uitvoering</div>
           <div className="scan-progress-active">
             <RefreshCw />
-            <strong>{steps[activeStep]}</strong>
+            <strong>Meerdere controles worden tegelijk uitgevoerd</strong>
           </div>
           <div className="scan-progress-steps">
-            {steps.map((step, index) => (
-              <div className={`scan-progress-step ${index === activeStep ? 'is-active' : ''}`} key={step}>
-                <span>{index + 1}</span>
-                <span>{step}</span>
-              </div>
-            ))}
+            <div className="scan-progress-step is-active"><span>✓</span><span>Website en pagina-inhoud controleren</span></div>
+            <div className="scan-progress-step is-active"><span>✓</span><span>Techniek, links en snelheid meten</span></div>
+            <div className="scan-progress-step is-active"><span>✓</span><span>Belangrijkste verbeterpunten met AI uitwerken</span></div>
           </div>
+          <div className="scan-progress-time">Bezig sinds {elapsedSeconds} sec.</div>
         </div>
       </div>
     </main></Localized>
   );
 }
-
 function ScanProblem({ title, message, url }: { title: string; message: string; url?: string }) {
   return (
     <Localized><main className="site-shell results-shell">
