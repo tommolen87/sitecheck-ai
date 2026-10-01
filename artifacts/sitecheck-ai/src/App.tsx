@@ -1,5 +1,5 @@
-import { type FormEvent, type ReactNode, useEffect, useMemo, useState } from 'react';
-import { QueryClient, QueryClientProvider, useQueryClient } from '@tanstack/react-query';
+import { type FormEvent, type ReactNode, useEffect, useState } from 'react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
@@ -12,10 +12,8 @@ import LegalPage from '@/pages/legal';
 import { blogArticles, getBlogArticle } from '@/lib/blog-data';
 import {
   getGetScanQueryKey,
-  getListScansQueryKey,
   useCreateScan,
   useGetScan,
-  useListScans,
 } from '@workspace/api-client-react';
 import {
   ArrowRight,
@@ -211,13 +209,22 @@ function Home() {
   const { locale } = useLanguage();
   const createScan = useCreateScan({ request: { headers: { 'x-sitecheck-language': locale } } });
   const [, setLocation] = useLocation();
-  const queryClient = useQueryClient();
-  const recentScans = useListScans({
-    query: {
-      queryKey: getListScansQueryKey(),
-      staleTime: 15_000,
-    },
-  });
+  const [queueCount, setQueueCount] = useState<number | null>(null);
+  useEffect(() => {
+    const controller = new AbortController();
+    fetch("/api/scans/stats", { signal: controller.signal })
+      .then((response) => {
+        if (!response.ok) throw new Error("Scan statistics unavailable");
+        return response.json() as Promise<{ last7Days: number }>;
+      })
+      .then((data) => {
+        if (Number.isSafeInteger(data.last7Days) && data.last7Days >= 0) {
+          setQueueCount(data.last7Days);
+        }
+      })
+      .catch(() => {});
+    return () => controller.abort();
+  }, []);
   const activeScan = useGetScan(activeScanId ?? 0, {
     request: activeScanId !== null && getScanAccessToken(activeScanId) ? { headers: { 'x-scan-access-token': getScanAccessToken(activeScanId)! } } : undefined,
     query: {
@@ -227,10 +234,6 @@ function Home() {
     },
   });
 
-  const queueCount = useMemo(
-    () => (Array.isArray(recentScans.data) ? recentScans.data.length : null),
-    [recentScans.data],
-  );
   const isQueued = activeScanId !== null && (activeScan.data?.status === 'analyzing' || activeScan.isLoading);
 
   useEffect(() => {
@@ -288,7 +291,7 @@ function Home() {
           }
           setScanAccessToken(scan.id, accessToken);
           setActiveScanId(scan.id);
-          void queryClient.invalidateQueries({ queryKey: getListScansQueryKey() });
+          setQueueCount((count) => count === null ? null : count + 1);
           setLocation(`/scans/${scan.id}`);
         },
         onError: (error) => setSubmitError(getErrorMessage(error)),
@@ -312,7 +315,7 @@ function Home() {
             return;
           }
           setScanAccessToken(scan.id, accessToken);
-          void queryClient.invalidateQueries({ queryKey: getListScansQueryKey() });
+          setQueueCount((count) => count === null ? null : count + 1);
           setPaidScanPending(false);
           setLocation(`/scans/${scan.id}/upgrade`);
         },
@@ -435,7 +438,7 @@ function Home() {
         <div className="page-frame signal-inner">
           <p className="signal-copy"><strong>Geen vakjargon.</strong> Wel zicht op wat je website voor je bedrijf kan doen.</p>
           <div className="signal-stats">
-            <span><span className="stat-dot" />{queueCount === null ? 'Aanvragen worden verwerkt' : `${queueCount} recente aanvraag${queueCount === 1 ? '' : 'en'}`}</span>
+            <span><span className="stat-dot" />{queueCount === null ? 'Aanvragen worden verwerkt' : `${queueCount} scans in de afgelopen 7 dagen`}</span>
             <span>Alleen je URL is nodig</span>
           </div>
         </div>
