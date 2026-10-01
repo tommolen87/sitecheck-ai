@@ -58,7 +58,7 @@ router.post("/stripe/webhook", async (req, res): Promise<void> => {
     const paymentIntentId =
       typeof charge.payment_intent === "string" ? charge.payment_intent : null;
 
-    if (paymentIntentId) {
+    if (charge.refunded && paymentIntentId) {
       try {
         const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
         const scanId = Number(paymentIntent.metadata?.scanId);
