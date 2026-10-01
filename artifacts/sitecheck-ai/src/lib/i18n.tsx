@@ -266,6 +266,12 @@ function detectInitialLocale(): Locale {
   if (pathname === "/nl" || pathname.startsWith("/nl/")) return "nl";
   if (pathname === "/en" || pathname.startsWith("/en/")) return "en";
 
+  const queryLocale = new URLSearchParams(window.location.search).get("lang");
+  if (queryLocale === "nl" || queryLocale === "en") {
+    window.localStorage.setItem("sitecheck-language", queryLocale);
+    return queryLocale;
+  }
+
   const saved = window.localStorage.getItem("sitecheck-language");
   if (saved === "nl" || saved === "en") return saved;
   const browserLanguage = navigator.language.toLowerCase();
