@@ -30,7 +30,7 @@ export async function sendPaymentConfirmationEmail(
     return null;
   }
 
-  const resultUrl = `${options.siteUrl.replace(/\/$/, "")}/scans/${options.scanId}?access=${encodeURIComponent(options.accessToken)}`;
+  const resultUrl = `${options.siteUrl.replace(/\/$/, "")}/scans/${options.scanId}?access=${encodeURIComponent(options.accessToken)}&lang=${options.locale}`;
   const locale = options.locale === "en";
 
   const subject = locale
