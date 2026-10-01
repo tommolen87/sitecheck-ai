@@ -177,6 +177,10 @@ function SeoHead() {
     upsertMeta('meta[property="og:title"]', title);
     upsertMeta('meta[property="og:description"]', description);
     upsertMeta('meta[property="og:type"]', 'website');
+    upsertMeta('meta[property="og:url"]', canonical);
+    upsertMeta('meta[property="og:site_name"]', 'SiteCheck AI');
+    upsertMeta('meta[property="og:locale"]', locale === 'nl' ? 'nl_NL' : 'en_US');
+    upsertMeta('meta[name="twitter:card"]', 'summary');
     upsertMeta('meta[name="twitter:title"]', title);
     upsertMeta('meta[name="twitter:description"]', description);
 
@@ -691,6 +695,25 @@ function SeoLandingPage() {
                   ]
               ).filter(([href]) => href !== location).slice(0, 4).map(([href, label]) => (
                 <a className="check-card" key={href} href={href}><h2>{label}</h2><span className="text-link">{locale === 'nl' ? 'Bekijk onderwerp' : 'Explore topic'} <ArrowRight /></span></a>
+              ))}
+            </div>
+            <div className="section-kicker" style={{ marginTop: '10px' }}>{locale === 'nl' ? 'Voor jouw type bedrijf' : 'For your type of business'}</div>
+            <div className="check-grid" style={{ marginBottom: '48px' }}>
+              {(locale === 'nl'
+                ? [
+                    ['/nl/website-check-makelaar', 'Makelaars'],
+                    ['/nl/website-check-hovenier', 'Hoveniers'],
+                    ['/nl/website-check-installatiebedrijf', 'Installatiebedrijven'],
+                    ['/nl/website-check-restaurant', 'Restaurants'],
+                  ]
+                : [
+                    ['/en/website-check-makelaar', 'Real estate agents'],
+                    ['/en/website-check-hovenier', 'Landscapers'],
+                    ['/en/website-check-installatiebedrijf', 'Installation companies'],
+                    ['/en/website-check-restaurant', 'Restaurants'],
+                  ]
+              ).filter(([href]) => href !== location).map(([href, label]) => (
+                <a className="check-card" key={href} href={href}><h2>{label}</h2><span className="text-link">{locale === 'nl' ? 'Bekijk check' : 'View check'} <ArrowRight /></span></a>
               ))}
             </div>
             <div className="section-kicker">{locale === 'nl' ? 'Veelgestelde vragen' : 'Frequently asked questions'}</div>
