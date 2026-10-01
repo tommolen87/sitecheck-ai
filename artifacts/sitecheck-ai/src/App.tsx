@@ -110,7 +110,7 @@ function SeoHead() {
     ? (locale === 'nl' ? '/nl' : '/en')
     : pathname;
   const canonical = new URL(basePath, window.location.origin).href;
-  const seoSlug = blogSlug ? 'blog/' + blogSlug : (seoPages[slug] ? slug : '');
+  const seoSlug = blogSlug ? 'blog/' + blogSlug : (isBlogIndex ? 'blog' : (seoPages[slug] ? slug : ''));
   const nlUrl = new URL(seoSlug ? `/nl/${seoSlug}` : '/nl', window.location.origin).href;
   const enUrl = new URL(seoSlug ? `/en/${seoSlug}` : '/en', window.location.origin).href;
 
