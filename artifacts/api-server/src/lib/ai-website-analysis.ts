@@ -188,6 +188,11 @@ if (eligibleIssues.length === 0) return null;
     })),
   };
   
+  const payloadJson = JSON.stringify(payload);
+  if (payloadJson.length > AI_MAX_INPUT_CHARS) {
+    throw new Error("AI input exceeds the configured size limit.");
+  }
+
   console.log("AI INPUT ISSUES", eligibleIssues.map((issue) => issue.id));
   
   const response = await client.chat.completions.create({
