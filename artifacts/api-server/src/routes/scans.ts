@@ -435,6 +435,11 @@ router.post("/scans/:scanId/checkout", checkoutRateLimit, async (req, res): Prom
         termsAccepted: "true",
         serviceStartRequested: "true",
       },
+      payment_intent_data: {
+        metadata: {
+          scanId: String(scanId),
+        },
+      },
     });
 
     await db
