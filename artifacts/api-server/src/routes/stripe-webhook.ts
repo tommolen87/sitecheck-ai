@@ -3,7 +3,7 @@ import Stripe from "stripe";
 import { eq } from "drizzle-orm";
 
 import { db, scansTable } from "@workspace/db";
-import { createHmac, timingSafeEqual } from "node:crypto";
+import { createHmac } from "node:crypto";
 import { sendPaymentConfirmationEmail } from "../lib/email";
 
 const router = Router();
@@ -113,8 +113,8 @@ router.post("/stripe/webhook", async (req, res): Promise<void> => {
               scanId,
               error: error instanceof Error ? error.message : "Unknown error",
             });
-            // Payment remains successful. Stripe can retry the webhook and
-            // Resend's idempotency key prevents duplicate delivery.
+            // Payment remains successful. Resend's idempotency key makes
+            // a safe retry possible without duplicating the email.
           }
         } else {
           console.warn("PAYMENT EMAIL SKIPPED: Stripe did not provide an email.", {
