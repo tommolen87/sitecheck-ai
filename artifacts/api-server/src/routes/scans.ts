@@ -369,6 +369,7 @@ router.post("/scans/:scanId/checkout", async (req, res): Promise<void> => {
   try {
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
+      customer_creation: "always",
       line_items: [
         {
           price_data: {
