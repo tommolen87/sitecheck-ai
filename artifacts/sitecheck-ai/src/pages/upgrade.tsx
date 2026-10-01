@@ -41,10 +41,9 @@ export default function Upgrade() {
             </h1>
 
             <p className="upgrade-intro">
-              Je gratis scan laat zien waar de belangrijkste problemen en
-              kansen op je website zitten. Met het volledige rapport krijg je
-              per gevonden punt een concrete aanpak, zodat je weet wat je
-              als eerste kunt verbeteren.
+              Je gratis scan laat zien waar kansen liggen. Voor €29 krijg je het volledige verbeterplan:
+              concrete verbeterpunten, duidelijke prioriteiten, AI-voorstellen en een praktisch plan
+              om je website stap voor stap te verbeteren.
             </p>
 
             <div className="upgrade-offer">
@@ -58,7 +57,7 @@ export default function Upgrade() {
               <div className="upgrade-benefits">
                 <div>
                   <Check />
-                  <span>Alle gevonden verbeterpunten</span>
+                  <span>10 belangrijkste verbeterpunten</span>
                 </div>
 
                 <div>
@@ -68,13 +67,18 @@ export default function Upgrade() {
 
                 <div>
                   <Check />
-                  <span>Impact en moeilijkheid per punt</span>
+                  <span>Prioriteit, impact en moeilijkheid per punt</span>
                 </div>
 
                 <div>
                   <Check />
-                  <span>Een praktisch actieplan op volgorde</span>
+                  <span>Een duidelijk actieplan voor de komende 30 dagen</span>
                 </div>
+              </div>
+
+              <div className="upgrade-benefit-extra">
+                <Check />
+                <span>Volledig rapport als PDF</span>
               </div>
 
               <label className="legal-consent">
