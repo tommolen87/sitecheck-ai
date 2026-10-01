@@ -2,7 +2,7 @@ import "dotenv/config";
 import OpenAI from "openai";
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { Router, type IRouter } from "express";
-import { eq } from "drizzle-orm";
+import { and, eq, isNotNull, lt, or } from "drizzle-orm";
 import { db, scansTable } from "@workspace/db";
 import {
   CreateScanBody,
@@ -20,6 +20,39 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY ?? "");
 
 const frontendUrl =
   process.env.FRONTEND_URL ?? "http://localhost:5173";
+
+const FREE_SCAN_RETENTION_DAYS = 30;
+const PAID_SCAN_RETENTION_DAYS = 365;
+
+async function cleanupExpiredScans(): Promise<void> {
+  const now = Date.now();
+  const freeCutoff = new Date(now - FREE_SCAN_RETENTION_DAYS * 24 * 60 * 60 * 1000);
+  const paidCutoff = new Date(now - PAID_SCAN_RETENTION_DAYS * 24 * 60 * 60 * 1000);
+
+  await db.delete(scansTable).where(
+    or(
+      and(
+        eq(scansTable.paymentStatus, "unpaid"),
+        lt(scansTable.createdAt, freeCutoff),
+      ),
+      and(
+        eq(scansTable.paymentStatus, "paid"),
+        lt(scansTable.paidAt, paidCutoff),
+      ),
+    ),
+  );
+}
+
+void cleanupExpiredScans().catch((error) => {
+  console.error("[retention] Initial scan cleanup failed", error);
+});
+
+setInterval(() => {
+  void cleanupExpiredScans().catch((error) => {
+    console.error("[retention] Scheduled scan cleanup failed", error);
+  });
+}, 24 * 60 * 60 * 1000);
+
 
 
 const scanAccessSecret = process.env.SCAN_ACCESS_SECRET ?? process.env.STRIPE_SECRET_KEY;
