@@ -783,6 +783,8 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
       "Concreet voorstel": "Concrete suggestion",
       "Verbeterpunt": "Improvement point",
       "4. Actieplan": "4. Action plan",
+      "Actieplan voor de komende 30 dagen": "30-day action plan",
+      "Pak eerst de punten met hoge impact en weinig moeite aan. Werk daarna de overige verbeterpunten stap voor stap af.": "Start with the high-impact, low-effort items. Then work through the remaining improvements step by step.",
       "Een compacte samenvatting van de verbeterpunten en de bijbehorende aanpak.": "A concise summary of the improvement points and the corresponding approach.",
       "ACTIE": "ACTION",
       "MOEITE": "EFFORT",
@@ -2302,8 +2304,21 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
 
     sectionTitle(
       t("4. Actieplan"),
-      t("Een compacte samenvatting van de verbeterpunten en de bijbehorende aanpak."),
+      t("Actieplan voor de komende 30 dagen"),
     );
+    
+    doc
+      .font("Helvetica")
+      .fontSize(8)
+      .fillColor(COLORS.gray600)
+      .text(
+        t("Pak eerst de punten met hoge impact en weinig moeite aan. Werk daarna de overige verbeterpunten stap voor stap af."),
+        PAGE.left,
+        doc.y,
+        { width: contentWidth, lineGap: 2 },
+      );
+
+    doc.y += 14;
 
     const actionHeaderY = doc.y;
 
