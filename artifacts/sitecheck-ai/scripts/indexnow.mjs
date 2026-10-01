@@ -17,7 +17,7 @@ if (!/^[A-Za-z0-9-]{8,128}$/.test(key)) {
 
 const projectRoot = process.cwd();
 const publicDir = path.join(projectRoot, "dist", "public");
-const sitemapPath = path.join(projectRoot, "sitemap.xml");
+const sitemapPath = path.join(projectRoot, "public", "sitemap.xml");
 
 await fs.mkdir(publicDir, { recursive: true });
 
