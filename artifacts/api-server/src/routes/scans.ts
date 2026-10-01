@@ -336,6 +336,21 @@ router.post("/scans", scanRateLimit, async (req, res): Promise<void> => {
   void processScan(scan.id, parsed.data.url, locale, req.log);
 });
 
+router.get("/scans/stats", async (_req, res): Promise<void> => {
+  try {
+    const since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    const recent = await db
+      .select({ id: scansTable.id })
+      .from(scansTable)
+      .where(and(lt(since, scansTable.createdAt)));
+    res.setHeader("Cache-Control", "no-store");
+    res.json({ last7Days: recent.length });
+  } catch (error) {
+    console.error("[stats] Could not count recent scans", error);
+    res.status(503).json({ error: "Statistieken tijdelijk niet beschikbaar." });
+  }
+});
+
 router.get("/scans", async (_req, res): Promise<void> => {
   // Scan records are private resources; never expose the global scan list publicly.
   res.json([]);
