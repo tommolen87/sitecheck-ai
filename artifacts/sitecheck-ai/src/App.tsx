@@ -8,6 +8,7 @@ import { LanguageProvider, LanguageSwitcher, Localized, useLanguage } from '@/li
 import { getScanAccessToken, setScanAccessToken } from '@/lib/scan-access';
 import ScanResults from '@/pages/scan-results';
 import Upgrade from '@/pages/upgrade';
+import { blogArticles, getBlogArticle } from '@/lib/blog-data';
 import {
   getGetScanQueryKey,
   getListScansQueryKey,
@@ -83,14 +84,27 @@ const seoPages: Record<string, { nl: { title: string; description: string; headi
 
 function SeoHead() {
   const { locale } = useLanguage();
-  const slug = window.location.pathname.split('/').filter(Boolean)[1] || '';
+  const pathParts = window.location.pathname.split('/').filter(Boolean);
+  const slug = pathParts[1] || '';
+  const blogSlug = (pathParts[0] === 'nl' || pathParts[0] === 'en') && pathParts[1] === 'blog' ? pathParts[2] : undefined;
+  const blogArticle = blogSlug ? getBlogArticle(blogSlug)?.[locale] : undefined;
   const page = seoPages[slug]?.[locale];
-  const title = page?.title ?? (locale === 'nl'
-    ? 'Website laten controleren? | SiteCheck AI'
-    : 'Website Audit & Website Checker | SiteCheck AI');
-  const description = page?.description ?? (locale === 'nl'
-    ? 'Laat je website controleren met SiteCheck AI. Ontdek SEO-, content-, techniek-, mobiel- en conversieproblemen en krijg praktische verbeteradviezen.'
-    : 'Check your website with SiteCheck AI. Find SEO, content, technical, mobile and conversion issues with practical improvement advice.');
+  const isBlogIndex = pathParts[1] === 'blog' && !blogSlug;
+  const title = blogArticle
+    ? blogArticle.title + ' | SiteCheck AI'
+    : isBlogIndex
+      ? (locale === 'nl' ? 'Website tips en SEO kennis | SiteCheck AI' : 'Website & SEO Guides | SiteCheck AI')
+      : page?.title ?? (locale === 'nl'
+        ? 'Website laten controleren? | SiteCheck AI'
+        : 'Website Audit & Website Checker | SiteCheck AI');
+  const description = blogArticle?.description
+    ?? (isBlogIndex
+      ? (locale === 'nl'
+        ? 'Praktische artikelen over SEO, websites, snelheid, conversie en online vindbaarheid voor ondernemers.'
+        : 'Practical guides about SEO, websites, speed, conversion and search visibility for business owners.')
+      : page?.description ?? (locale === 'nl'
+        ? 'Laat je website controleren met SiteCheck AI. Ontdek SEO-, content-, techniek-, mobiel- en conversieproblemen en krijg praktische verbeteradviezen.'
+        : 'Check your website with SiteCheck AI. Find SEO, content, technical, mobile and conversion issues with practical improvement advice.'));
   const pathname = window.location.pathname;
   const basePath = pathname === '/' || pathname === '/nl' || pathname === '/nl/' || pathname === '/en' || pathname === '/en/'
     ? (locale === 'nl' ? '/nl' : '/en')
@@ -136,14 +150,26 @@ function SeoHead() {
     setLink('alternate', enUrl, { hreflang: 'en' });
     setLink('alternate', nlUrl, { hreflang: 'x-default' });
 
-    const structuredData = {
-      '@context': 'https://schema.org',
-      '@type': 'WebSite',
-      name: 'SiteCheck AI',
-      url: new URL(locale === 'nl' ? '/nl' : '/en', window.location.origin).href,
-      description,
-      inLanguage: locale,
-    };
+    const structuredData = blogArticle
+      ? {
+          '@context': 'https://schema.org',
+          '@type': 'Article',
+          headline: blogArticle.title,
+          description: blogArticle.description,
+          mainEntityOfPage: canonical,
+          url: canonical,
+          inLanguage: locale,
+          author: { '@type': 'Organization', name: 'SiteCheck AI', url: window.location.origin },
+          publisher: { '@type': 'Organization', name: 'SiteCheck AI', url: window.location.origin },
+        }
+      : {
+          '@context': 'https://schema.org',
+          '@type': 'WebSite',
+          name: 'SiteCheck AI',
+          url: new URL(locale === 'nl' ? '/nl' : '/en', window.location.origin).href,
+          description,
+          inLanguage: locale,
+        };
     let script = document.head.querySelector<HTMLScriptElement>('script[data-sitecheck-schema]');
     if (!script) {
       script = document.createElement('script');
@@ -585,6 +611,53 @@ function SeoLandingPage() {
   );
 }
 
+function BlogPage() {
+  const { locale } = useLanguage();
+  const [location] = useLocation();
+  const parts = location.split('/').filter(Boolean);
+  const slug = parts[1] === 'blog' ? parts[2] : undefined;
+  const article = slug ? getBlogArticle(slug) : undefined;
+  const isIndex = !slug;
+  const homePath = locale === 'nl' ? '/nl' : '/en';
+  const blogPath = homePath + '/blog';
+
+  return (
+    <Localized>
+      <main className="site-shell min-h-[100dvh]">
+        <nav className="nav-wrap">
+          <div className="page-frame flex items-center justify-between">
+            <a className="brand-mark" href={homePath}><span className="brand-name">SiteCheck <span>AI</span></span></a>
+            <div className="nav-actions"><a className="nav-note" href={blogPath}>{locale === 'nl' ? 'Kennisbank' : 'Guides'}</a><LanguageSwitcher /></div>
+          </div>
+        </nav>
+        {isIndex ? (
+          <>
+            <section className="hero"><div className="page-frame"><div className="reveal" style={{ maxWidth: '820px' }}>
+              <div className="eyebrow">SiteCheck AI</div>
+              <h1>{locale === 'nl' ? 'Praktische kennis over websites, SEO en conversie.' : 'Practical guides about websites, SEO and conversion.'}</h1>
+              <p className="hero-lede">{locale === 'nl' ? 'Heldere artikelen voor ondernemers die willen weten wat hun website beter kan doen.' : 'Clear guides for business owners who want to understand what their website can do better.'}</p>
+              <div className="scan-actions"><a className="scan-button" href={homePath}>{locale === 'nl' ? 'Start gratis website scan' : 'Start free website scan'} <ArrowRight /></a></div>
+            </div></div></section>
+            <section className="section"><div className="page-frame"><div className="check-grid">
+              {blogArticles.map((item) => <article className="check-card" key={item.slug}><div className="check-icon"><ClipboardCheck /></div><h2>{item[locale].title}</h2><p>{item[locale].description}</p><a className="text-link" href={blogPath + '/' + item.slug}>{locale === 'nl' ? 'Lees artikel' : 'Read article'} <ArrowRight /></a></article>)}
+            </div></div></section>
+          </>
+        ) : article ? (
+          <article><section className="hero"><div className="page-frame"><div className="reveal" style={{ maxWidth: '850px' }}>
+            <div className="eyebrow"><a href={blogPath}>{locale === 'nl' ? 'Kennisbank' : 'Guides'}</a></div>
+            <h1>{article[locale].title}</h1><p className="hero-lede">{article[locale].intro}</p>
+          </div></div></section>
+          <section className="section"><div className="page-frame" style={{ maxWidth: '820px' }}>
+            <div style={{ marginBottom: '32px', fontSize: '0.95rem', opacity: 0.72 }}><a href={homePath}>SiteCheck AI</a> / <a href={blogPath}>{locale === 'nl' ? 'Kennisbank' : 'Guides'}</a> / {article[locale].title}</div>
+            {article[locale].sections.map((section) => <section key={section.heading} style={{ marginBottom: '38px' }}><h2 className="section-title" style={{ fontSize: '1.65rem', marginBottom: '14px' }}>{section.heading}</h2>{section.paragraphs.map((paragraph) => <p className="section-intro" key={paragraph} style={{ marginBottom: '12px' }}>{paragraph}</p>)}</section>)}
+            <div className="closing-box" style={{ marginTop: '48px' }}><h2>{article[locale].cta}</h2><p>{locale === 'nl' ? 'Bekijk direct welke signalen op jouw website aandacht verdienen.' : 'See which signals on your website deserve attention.'}</p><a className="scan-button" href={homePath}>{locale === 'nl' ? 'Start gratis scan' : 'Start free scan'} <ArrowRight /></a></div>
+          </div></section></article>
+        ) : <section className="hero"><div className="page-frame"><h1>{locale === 'nl' ? 'Artikel niet gevonden' : 'Article not found'}</h1></div></section>}
+        <footer className="footer"><div className="page-frame footer-inner"><span>© {new Date().getFullYear()} SiteCheck AI</span><span>{locale === 'nl' ? 'Praktische kennis voor ondernemers' : 'Practical knowledge for business owners'}</span></div></footer>
+      </main>
+    </Localized>
+  );
+}
 function Router() {
   const { locale } = useLanguage();
   return (
@@ -594,6 +667,10 @@ function Router() {
       <Switch>
         <Route path="/nl" component={Home} />
         <Route path="/en" component={Home} />
+        <Route path="/nl/blog" component={BlogPage} />
+        <Route path="/en/blog" component={BlogPage} />
+        <Route path="/nl/blog/:slug" component={BlogPage} />
+        <Route path="/en/blog/:slug" component={BlogPage} />
         <Route path="/nl/:slug" component={SeoLandingPage} />
         <Route path="/en/:slug" component={SeoLandingPage} />
         <Route path="/" component={Home} />
