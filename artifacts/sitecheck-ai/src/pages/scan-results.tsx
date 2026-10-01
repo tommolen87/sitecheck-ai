@@ -697,6 +697,22 @@ function ResultsContent({
 }
 
 function LoadingResults() {
+  const [activeStep, setActiveStep] = useState(0);
+  const steps = [
+    'Website ophalen en bereikbaarheid controleren',
+    'Vindbaarheid in Google en pagina-opbouw controleren',
+    'Content, contactmogelijkheden en conversie bekijken',
+    'Techniek en snelheid controleren',
+    'De belangrijkste verbeterpunten door AI laten analyseren',
+  ];
+
+  useEffect(() => {
+    const interval = window.setInterval(() => {
+      setActiveStep((current) => (current + 1) % steps.length);
+    }, 5000);
+    return () => window.clearInterval(interval);
+  }, [steps.length]);
+
   return (
     <Localized><main className="site-shell results-shell">
       <nav className="nav-wrap"><div className="page-frame"><Link href="/" className="brand-mark" data-testid="link-home-loading"><span className="brand-symbol" aria-hidden="true"><RefreshCw /></span><span className="brand-name">SiteCheck <span>AI</span></span></Link></div></nav>
@@ -704,8 +720,22 @@ function LoadingResults() {
         <div className="loading-orbit"><RefreshCw /></div>
         <div className="eyebrow">Even geduld</div>
         <h1>SiteCheck AI analyseert<br /><em>de website.</em></h1>
-        <p>We halen de pagina op en kijken rustig naar wat er daadwerkelijk te controleren is. Deze pagina ververst automatisch.</p>
-        <div className="loading-lines" aria-hidden="true"><span /><span /><span /></div>
+        <p>We controleren je website stap voor stap. Een volledige scan duurt meestal ongeveer 30–60 seconden.</p>
+        <div className="scan-progress" aria-live="polite">
+          <div className="scan-progress-label">We zijn nu bezig met</div>
+          <div className="scan-progress-active">
+            <RefreshCw />
+            <strong>{steps[activeStep]}</strong>
+          </div>
+          <div className="scan-progress-steps">
+            {steps.map((step, index) => (
+              <div className={`scan-progress-step ${index === activeStep ? 'is-active' : ''}`} key={step}>
+                <span>{index + 1}</span>
+                <span>{step}</span>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </main></Localized>
   );
