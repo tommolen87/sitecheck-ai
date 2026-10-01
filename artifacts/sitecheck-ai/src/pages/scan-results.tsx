@@ -315,6 +315,11 @@ const dynamicEnglishTranslations: Record<string, string> = {
   'robots.txt niet gevonden': 'robots.txt not found',
   'Sitemap bereikbaar': 'Sitemap available',
   'Sitemap niet gevonden': 'Sitemap not found',
+  'De mobiele snelheidstest kon op dit moment niet worden uitgevoerd.': 'The mobile speed test could not be completed at this time.',
+  'We hebben alleen de homepage bekeken. Andere pagina\'s zijn niet meegenomen in deze scan.': 'We only reviewed the homepage. Other pages were not included in this scan.',
+  'We hebben niet onderzocht welke andere websites naar deze website linken.': 'We did not investigate which other websites link to this website.',
+  'We hebben juridische teksten, reviews en bedrijfsgegevens niet inhoudelijk beoordeeld.': 'We did not assess legal texts, reviews or company information in detail.',
+  'We hebben niet getest hoe de belangrijkste knop zichtbaar is voordat een bezoeker naar beneden scrollt.': 'We did not test how visible the main button is before a visitor scrolls down.',
 };
 function displayDynamicText(value: string, locale: 'nl' | 'en'): string {
   return locale === 'en' ? dynamicEnglishTranslations[value] ?? value : value;
