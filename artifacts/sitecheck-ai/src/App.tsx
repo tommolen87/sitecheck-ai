@@ -8,6 +8,7 @@ import { LanguageProvider, LanguageSwitcher, Localized, useLanguage } from '@/li
 import { getScanAccessToken, setScanAccessToken } from '@/lib/scan-access';
 import ScanResults from '@/pages/scan-results';
 import Upgrade from '@/pages/upgrade';
+import LegalPage from '@/pages/legal';
 import { blogArticles, getBlogArticle } from '@/lib/blog-data';
 import {
   getGetScanQueryKey,
@@ -83,21 +84,35 @@ const seoPages: Record<string, { nl: { title: string; description: string; headi
 };
 
 function SeoHead() {
+  const legalPath = /^\/(nl|en)\/(privacy|voorwaarden|terms|cookies|herroepen|withdraw)$/.test(window.location.pathname);
   const { locale } = useLanguage();
   const pathParts = window.location.pathname.split('/').filter(Boolean);
   const slug = pathParts[1] || '';
+  const legalType = pathParts[1];
   const blogSlug = (pathParts[0] === 'nl' || pathParts[0] === 'en') && pathParts[1] === 'blog' ? pathParts[2] : undefined;
   const blogArticle = blogSlug ? getBlogArticle(blogSlug)?.[locale] : undefined;
   const page = seoPages[slug]?.[locale];
+  const legalTitles: Record<string, { nl: string; en: string }> = {
+    privacy: { nl: 'Privacyverklaring | SiteCheck AI', en: 'Privacy Policy | SiteCheck AI' },
+    voorwaarden: { nl: 'Algemene voorwaarden | SiteCheck AI', en: 'Terms and Conditions | SiteCheck AI' },
+    terms: { nl: 'Terms and Conditions | SiteCheck AI', en: 'Terms and Conditions | SiteCheck AI' },
+    cookies: { nl: 'Cookiebeleid | SiteCheck AI', en: 'Cookie Policy | SiteCheck AI' },
+    herroepen: { nl: 'Aankoop herroepen | SiteCheck AI', en: 'Withdraw a Purchase | SiteCheck AI' },
+    withdraw: { nl: 'Aankoop herroepen | SiteCheck AI', en: 'Withdraw a Purchase | SiteCheck AI' },
+  };
   const isBlogIndex = pathParts[1] === 'blog' && !blogSlug;
-  const title = blogArticle
+  const title = legalPath
+    ? (legalTitles[legalType]?.[locale] ?? 'SiteCheck AI')
+    : blogArticle
     ? blogArticle.title + ' | SiteCheck AI'
     : isBlogIndex
       ? (locale === 'nl' ? 'Website tips en SEO kennis | SiteCheck AI' : 'Website & SEO Guides | SiteCheck AI')
       : page?.title ?? (locale === 'nl'
         ? 'Website laten controleren? | SiteCheck AI'
         : 'Website Audit & Website Checker | SiteCheck AI');
-  const description = blogArticle?.description
+  const description = legalPath
+    ? (locale === 'nl' ? 'Juridische informatie van SiteCheck AI, waaronder privacy, voorwaarden, cookies en herroeping.' : 'Legal information for SiteCheck AI, including privacy, terms, cookies and withdrawal.')
+    : blogArticle?.description
     ?? (isBlogIndex
       ? (locale === 'nl'
         ? 'Praktische artikelen over SEO, websites, snelheid, conversie en online vindbaarheid voor ondernemers.'
@@ -109,10 +124,13 @@ function SeoHead() {
   const basePath = pathname === '/' || pathname === '/nl' || pathname === '/nl/' || pathname === '/en' || pathname === '/en/'
     ? (locale === 'nl' ? '/nl' : '/en')
     : pathname;
-  const canonical = new URL(basePath, window.location.origin).href;
+  const canonical = new URL(legalPath ? legalBase! : basePath, window.location.origin).href;
   const seoSlug = blogSlug ? 'blog/' + blogSlug : (isBlogIndex ? 'blog' : (seoPages[slug] ? slug : ''));
-  const nlUrl = new URL(seoSlug ? `/nl/${seoSlug}` : '/nl', window.location.origin).href;
-  const enUrl = new URL(seoSlug ? `/en/${seoSlug}` : '/en', window.location.origin).href;
+  const legalBase = legalPath ? (locale === 'nl' ? `/nl/${legalType}` : `/en/${legalType === 'voorwaarden' ? 'terms' : legalType === 'herroepen' ? 'withdraw' : legalType}`) : null;
+  const nlLegal = legalType === 'terms' || legalType === 'withdraw' ? `/nl/${legalType === 'terms' ? 'voorwaarden' : 'herroepen'}` : `/nl/${legalType}`;
+  const enLegal = `/en/${legalType === 'voorwaarden' ? 'terms' : legalType === 'herroepen' ? 'withdraw' : legalType}`;
+  const nlUrl = new URL(legalPath ? nlLegal : (seoSlug ? `/nl/${seoSlug}` : '/nl'), window.location.origin).href;
+  const enUrl = new URL(legalPath ? enLegal : (seoSlug ? `/en/${seoSlug}` : '/en'), window.location.origin).href;
 
   useEffect(() => {
     document.title = title;
@@ -495,6 +513,12 @@ function Home() {
         <div className="page-frame footer-inner">
           <span>© {new Date().getFullYear()} SiteCheck AI</span>
           <span>Een rustige check voor ambitieuze ondernemers</span>
+          <span className="legal-links">
+            <a href="/nl/privacy">{locale === 'nl' ? 'Privacy' : 'Privacy'}</a>
+            <a href={locale === 'nl' ? '/nl/voorwaarden' : '/en/terms'}>{locale === 'nl' ? 'Voorwaarden' : 'Terms'}</a>
+            <a href={locale === 'nl' ? '/nl/cookies' : '/en/cookies'}>{locale === 'nl' ? 'Cookies' : 'Cookies'}</a>
+            <a href={locale === 'nl' ? '/nl/herroepen' : '/en/withdraw'}>{locale === 'nl' ? 'Herroepen' : 'Withdraw'}</a>
+          </span>
         </div>
       </footer>
     </main></Localized>
@@ -671,6 +695,14 @@ function Router() {
         <Route path="/en/blog" component={BlogPage} />
         <Route path="/nl/blog/:slug" component={BlogPage} />
         <Route path="/en/blog/:slug" component={BlogPage} />
+        <Route path="/nl/privacy" component={() => <LegalPage type="privacy" />} />
+        <Route path="/en/privacy" component={() => <LegalPage type="privacy" />} />
+        <Route path="/nl/voorwaarden" component={() => <LegalPage type="terms" />} />
+        <Route path="/en/terms" component={() => <LegalPage type="terms" />} />
+        <Route path="/nl/cookies" component={() => <LegalPage type="cookies" />} />
+        <Route path="/en/cookies" component={() => <LegalPage type="cookies" />} />
+        <Route path="/nl/herroepen" component={() => <LegalPage type="withdraw" />} />
+        <Route path="/en/withdraw" component={() => <LegalPage type="withdraw" />} />
         <Route path="/nl/:slug" component={SeoLandingPage} />
         <Route path="/en/:slug" component={SeoLandingPage} />
         <Route path="/" component={Home} />
