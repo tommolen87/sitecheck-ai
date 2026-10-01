@@ -53,6 +53,40 @@ router.post("/stripe/webhook", async (req, res): Promise<void> => {
     return;
   }
 
+  if (event.type === "charge.refunded") {
+    const charge = event.data.object as Stripe.Charge;
+    const paymentIntentId =
+      typeof charge.payment_intent === "string" ? charge.payment_intent : null;
+
+    if (paymentIntentId) {
+      try {
+        const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+        const scanId = Number(paymentIntent.metadata?.scanId);
+
+        if (Number.isInteger(scanId) && scanId > 0) {
+          await db
+            .update(scansTable)
+            .set({
+              paymentStatus: "unpaid",
+              paidAt: null,
+            })
+            .where(eq(scansTable.id, scanId));
+
+          console.log("PAYMENT ACCESS REVOKED AFTER REFUND", { scanId });
+        }
+      } catch (error) {
+        console.error("REFUND ACCESS REVOCATION FAILED", {
+          error: error instanceof Error ? error.message : "Unknown error",
+        });
+        res.status(500).send("Refund verwerking mislukt.");
+        return;
+      }
+    }
+
+    res.json({ received: true });
+    return;
+  }
+
   if (
     event.type === "checkout.session.completed" ||
     event.type === "checkout.session.async_payment_succeeded"
