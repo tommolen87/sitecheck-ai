@@ -296,8 +296,32 @@ function IssueCard({ issue, index }: { issue: RecommendationDisplay; index: numb
   );
 }
 
+const dynamicEnglishTranslations: Record<string, string> = {
+  'E-mailadres gevonden': 'Email address found',
+  'Telefoonnummer gevonden': 'Phone number found',
+  'Adres- of locatiesignaal gevonden': 'Address or location signal found',
+  'HTTPS actief': 'HTTPS active',
+  'HTTP-status 200': 'HTTP status 200',
+  'Viewport-instelling gevonden': 'Viewport setting found',
+  'Geen viewport-instelling gevonden': 'No viewport setting found',
+  'Canonical-link gevonden': 'Canonical link found',
+  'Geen canonical-link gevonden': 'No canonical link found',
+  'Taalinstelling gevonden': 'Language setting found',
+  'Geen taalinstelling gevonden': 'No language setting found',
+  'Compressie niet vastgesteld': 'Compression not determined',
+  'Compressie gevonden (br)': 'Compression found (br)',
+  'Geen compressieheader gevonden': 'No compression header found',
+  'robots.txt bereikbaar': 'robots.txt available',
+  'robots.txt niet gevonden': 'robots.txt not found',
+  'Sitemap bereikbaar': 'Sitemap available',
+  'Sitemap niet gevonden': 'Sitemap not found',
+};
+function displayDynamicText(value: string, locale: 'nl' | 'en'): string {
+  return locale === 'en' ? dynamicEnglishTranslations[value] ?? value : value;
+}
 function DetectedFacts({ analysis }: { analysis: ScanAnalysis }) {
   const { detectedFacts } = analysis;
+  const { locale } = useLanguage();
   return (
     <Localized><section className="results-section facts-section" aria-labelledby="facts-title">
       <div className="results-section-heading">
@@ -319,11 +343,11 @@ function DetectedFacts({ analysis }: { analysis: ScanAnalysis }) {
         <div className="signal-panel">
           <div className="signal-panel-heading"><ShieldCheck /> Contactsignalen</div>
           {detectedFacts.contactSignals.length > 0 ? (
-            <ul>{detectedFacts.contactSignals.map((signal, index) => <li key={`${signal}-${index}`}>{signal}</li>)}</ul>
+            <ul>{detectedFacts.contactSignals.map((signal, index) => <li key={signal + '-' + index}>{displayDynamicText(signal, locale)}</li>)}</ul>
           ) : <p>Geen contactsignalen gerapporteerd.</p>}
           <div className="signal-panel-heading technical-heading"><Gauge /> Technische signalen</div>
           {detectedFacts.technicalSignals.length > 0 ? (
-            <ul>{detectedFacts.technicalSignals.map((signal, index) => <li key={`${signal}-${index}`}>{signal}</li>)}</ul>
+            <ul>{detectedFacts.technicalSignals.map((signal, index) => <li key={signal + '-' + index}>{displayDynamicText(signal, locale)}</li>)}</ul>
           ) : <p>Geen technische signalen gerapporteerd.</p>}
         </div>
       </div>
@@ -685,7 +709,7 @@ function ResultsContent({
           <div className="section-kicker">Transparant over de grenzen</div>
           <h2 className="results-title" id="not-checked-title">Dit konden we niet controleren.</h2>
           {analysis.notChecked.length > 0 ? (
-            <ul className="not-checked-list">{analysis.notChecked.map((item, index) => <li key={`${item}-${index}`}>{item}</li>)}</ul>
+            <ul className="not-checked-list">{analysis.notChecked.map((item, index) => <li key={item + '-' + index}>{displayDynamicText(item, locale)}</li>)}</ul>
           ) : (
             <p className="not-checked-none">Voor deze scan zijn geen niet-gecontroleerde onderdelen gerapporteerd.</p>
           )}
