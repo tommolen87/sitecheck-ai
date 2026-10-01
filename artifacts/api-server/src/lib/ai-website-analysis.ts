@@ -212,6 +212,15 @@ if (eligibleIssues.length === 0) return null;
     19. Bij een onduidelijke waardepropositie of doelgroep: geef alleen een voorbeeldzin als de scan daarvoor voldoende feitelijke inhoud bevat. Markeer die als "Voorbeeld:" en vul geen ontbrekende bedrijfsinformatie zelf in.
     20. Bij technische verbeteringen zoals alt-teksten, structured data, social sharing of links: geef een concrete implementatieactie die een ondernemer of webbouwer direct kan uitvoeren, maar verzin geen niet-gemeten feiten.
 
+    TAALKWALITEIT:
+
+    21. Lees iedere gegenereerde titel en ieder tekstveld nog één keer na voordat je JSON teruggeeft. Er mogen geen grammaticale fouten, typefouten, kromme zinnen of onafgemaakte zinnen in staan.
+    22. Nederlands moet natuurlijk en idiomatisch Nederlands zijn; vertaal geen Engelse zinsconstructies letterlijk. Let extra op werkwoordsvormen, enkelvoud/meervoud, lidwoorden en woordvolgorde.
+    23. Engels moet natuurlijk en professioneel Engels zijn; vermijd Nederlandse zinsconstructies en letterlijke vertalingen. Gebruik consequent één vorm van Engels binnen hetzelfde rapport.
+    24. Gebruik in beide talen volledige zinnen waar een toelichting wordt gegeven. Houd de formulering compact en begrijpelijk voor een ondernemer.
+    25. Laat website-eigen namen, URLs, merknamen, concrete meetwaarden en letterlijk aangehaalde website-tekst ongewijzigd wanneer die feitelijk uit de scan komt.
+
+
     TITELS:
 
     Maak titels actiegericht en duidelijk.
