@@ -672,6 +672,149 @@ const finalInternationalTranslations: Record<"de" | "fr" | "es", Record<string, 
   }
 };
 
+function translatePattern(value: string, locale: Locale): string {
+  if (locale === "nl") return value;
+
+  const patterns: Array<[RegExp, Record<"en" | "de" | "fr" | "es", string>]> = [
+    [/^(\\d+) van de (\\d+) belangrijkste verbeterpunten gezien\\.$/, {
+      en: "$1 of $2 most important improvement points seen.",
+      de: "$1 von $2 wichtigsten Verbesserungspunkten gesehen.",
+      fr: "$1 des $2 principaux points d’amélioration affichés.",
+      es: "$1 de los $2 principales puntos de mejora vistos.",
+    }],
+    [/^Er staan nog (\\d+) verbeterpunten klaar\\. Je krijgt daarnaast concrete voorstellen, prioriteiten, impact, moeilijkheid, een 30-dagen actieplan en het volledige rapport als PDF\\.$/, {
+      en: "$1 improvement points remain. You also get concrete suggestions, priorities, impact, difficulty, a 30-day action plan and the full report as a PDF.",
+      de: "Noch $1 Verbesserungspunkte sind verfügbar. Außerdem erhalten Sie konkrete Vorschläge, Prioritäten, Auswirkungen, Aufwand, einen 30-Tage-Aktionsplan und den vollständigen Bericht als PDF.",
+      fr: "Il reste $1 points d’amélioration. Vous recevez également des propositions concrètes, les priorités, l’impact, la difficulté, un plan d’action de 30 jours et le rapport complet en PDF.",
+      es: "Quedan $1 puntos de mejora. También recibirás propuestas concretas, prioridades, impacto, dificultad, un plan de acción de 30 días y el informe completo en PDF.",
+    }],
+    [/^(\\d+) van de (\\d+) onderdelen zijn gecontroleerd\\.$/, {
+      en: "$1 of $2 areas were checked.",
+      de: "$1 von $2 Bereichen wurden geprüft.",
+      fr: "$1 des $2 éléments ont été contrôlés.",
+      es: "$1 de $2 elementos han sido comprobados.",
+    }],
+    [/^Kwaliteit gemeten: (.+)$/, {
+      en: "Measured quality: $1",
+      de: "Gemessene Qualität: $1",
+      fr: "Qualité mesurée : $1",
+      es: "Calidad medida: $1",
+    }],
+    [/^Uitgevoerd: (.+)$/, {
+      en: "Executed: $1",
+      de: "Ausgeführt: $1",
+      fr: "Exécuté : $1",
+      es: "Ejecuté: $1",
+    }],
+    [/^Meetdekking: (.+)$/, {
+      en: "Coverage: $1",
+      de: "Messabdeckung: $1",
+      fr: "Couverture des mesures : $1",
+      es: "Cobertura de medición: $1",
+    }],
+    [/^Gewicht totaal: (.+)$/, {
+      en: "Total weight: $1",
+      de: "Gesamtgewicht: $1",
+      fr: "Poids total : $1",
+      es: "Peso total: $1",
+    }],
+    [/^(\\d+) belangrijke (check kon|checks konden) we niet betrouwbaar beoordelen\\.$/, {
+      en: "$1 important check(s) could not be reliably assessed.",
+      de: "$1 wichtige Prüfung(en) konnten nicht zuverlässig bewertet werden.",
+      fr: "$1 contrôle(s) important(s) n’ont pas pu être évalué(s) de manière fiable.",
+      es: "$1 comprobación(es) importante(s) no pudieron evaluarse de forma fiable.",
+    }],
+    [/^(\\d+) geslaagd · (\\d+) niet geslaagd · (\\d+) onbekend · (\\d+) uitgevoerd$/, {
+      en: "$1 passed · $2 not passed · $3 unknown · $4 executed",
+      de: "$1 bestanden · $2 nicht bestanden · $3 unbekannt · $4 ausgeführt",
+      fr: "$1 réussis · $2 non réussis · $3 inconnus · $4 exécutés",
+      es: "$1 superados · $2 no superados · $3 desconocidos · $4 ejecutados",
+    }],
+    [/^(.+) scoremeting(en)? uitgevoerd$/, {
+      en: "$1 score measurement$2 executed",
+      de: "$1 Punktmessung$2 ausgeführt",
+      fr: "$1 mesure$2 du score exécutée(s)",
+      es: "$1 medición(es) de puntuación ejecutada(s)",
+    }],
+    [/^De totaalscore weegt Conversie en vindbaarheid in Google elk voor 20%, Mobiel en Techniek elk voor 15%, en de overige onderdelen elk voor 10%\\.$/, {
+      en: "The overall score weights Conversion and Google visibility at 20% each, Mobile and Technology at 15% each, and the remaining areas at 10% each.",
+      de: "Die Gesamtnote gewichtet Konversion und Sichtbarkeit bei Google mit jeweils 20 %, Mobil und Technik mit jeweils 15 % und die übrigen Bereiche mit jeweils 10 %.",
+      fr: "Le score global pondère la conversion et la visibilité sur Google à 20 % chacune, le mobile et la technique à 15 % chacune, et les autres éléments à 10 % chacun.",
+      es: "La puntuación global pondera la conversión y la visibilidad en Google con un 20 % cada una, móvil y técnica con un 15 % cada una y las demás áreas con un 10 % cada una.",
+    }],
+    [/^Bezig sinds (\\d+) sec\\.$/, {
+      en: "Running for $1 sec.",
+      de: "Läuft seit $1 Sek.",
+      fr: "En cours depuis $1 s.",
+      es: "En curso desde $1 s.",
+    }],
+    [/^Impact: (.+)$/, {
+      en: "Impact: $1",
+      de: "Auswirkung: $1",
+      fr: "Impact : $1",
+      es: "Impacto: $1",
+    }],
+    [/^Impact (.+)$/, {
+      en: "Impact $1",
+      de: "Auswirkung $1",
+      fr: "Impact $1",
+      es: "Impacto $1",
+    }],
+    [/^Moeilijkheid (.+)$/, {
+      en: "Difficulty $1",
+      de: "Aufwand $1",
+      fr: "Difficulté $1",
+      es: "Dificultad $1",
+    }],
+    [/^Vertrouwen (.+)$/, {
+      en: "Confidence $1",
+      de: "Vertrauen $1",
+      fr: "Confiance $1",
+      es: "Confianza $1",
+    }],
+    [/^Weging (.+)$/, {
+      en: "Weight $1",
+      de: "Gewichtung $1",
+      fr: "Pondération $1",
+      es: "Ponderación $1",
+    }],
+    [/^([0-9.,]+) tekens$/, {
+      en: "$1 characters",
+      de: "$1 Zeichen",
+      fr: "$1 caractères",
+      es: "$1 caracteres",
+    }],
+    [/^([0-9.,]+) ms$/, {
+      en: "$1 ms",
+      de: "$1 ms",
+      fr: "$1 ms",
+      es: "$1 ms",
+    }],
+    [/^([0-9.,]+) KB$/, {
+      en: "$1 KB",
+      de: "$1 KB",
+      fr: "$1 Ko",
+      es: "$1 KB",
+    }],
+    [/^([^:]+): (.+)$/, {
+      en: "$1: $2",
+      de: "$1: $2",
+      fr: "$1 : $2",
+      es: "$1: $2",
+    }],
+  ];
+
+  for (const [pattern, translations] of patterns) {
+    if (pattern.test(value)) {
+      return translations[locale].replace(/\\$(\\d+)/g, (_, index) => {
+        const match = value.match(pattern);
+        return match?.[Number(index)] ?? "";
+      });
+    }
+  }
+  return value;
+}
+
 function normalize(value: string): string {
   return value.replace(/\s+/g, " ").trim();
 }
@@ -709,6 +852,10 @@ export function translateText(value: string, locale: Locale): string {
   }
 
   const intl = { ...internationalTranslations[locale], ...additionalInternationalTranslations[locale], ...finalInternationalTranslations[locale] };
+  const patterned = translatePattern(normalized, locale);
+  if (patterned !== normalized) {
+    return value.trim() === value ? patterned : value.replace(normalized, patterned);
+  }
   if (intl[normalized]) {
     return value.trim() === value ? intl[normalized] : value.replace(normalized, intl[normalized]);
   }
