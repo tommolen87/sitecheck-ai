@@ -89,7 +89,7 @@ function ScoreRing({ score }: { score: number }) {
       <div className="score-ring" style={{ background: `conic-gradient(hsl(var(--primary)) ${score}%, hsl(var(--border)) 0)` }} data-testid="score-overall">
         <div className="score-ring-inner">
           <strong>{score}</strong>
-          <span>van 100</span>
+          <span>{locale === 'nl' ? 'van 100' : locale === 'en' ? 'of 100' : locale === 'de' ? 'von 100' : locale === 'fr' ? 'sur 100' : 'de 100'}</span>
         </div>
       </div>
     </Localized>
@@ -405,7 +405,7 @@ function ResultHeader({ scan, analysis }: { scan: { url: string; createdAt: stri
   return (
     <Localized><header className="results-hero">
       <div className="page-frame">
-        <Link href="/" className="back-link" data-testid="link-back-home"><ArrowLeft /> Nieuwe scan</Link>
+        <Link href={`/${locale}`} className="back-link" data-testid="link-back-home"><ArrowLeft /> Nieuwe scan</Link>
         <div className="results-hero-grid">
           <div className="reveal">
             <div className="eyebrow">Scan afgerond</div>
@@ -843,7 +843,7 @@ export default function ScanResults() {
 
   return (
     <Localized><main className="site-shell results-shell">
-      <nav className="nav-wrap results-nav"><div className="page-frame flex items-center justify-between"><Link href="/" className="brand-mark" data-testid="link-home-results"><span className="brand-symbol" aria-hidden="true"><LockKeyhole /></span><span className="brand-name">SiteCheck <span>AI</span></span></Link><div className="nav-actions"><span className="nav-note">Een rustige check voor ambitieuze ondernemers</span></div></div></nav>
+      <nav className="nav-wrap results-nav"><div className="page-frame flex items-center justify-between"><Link href={`/${locale}`} className="brand-mark" data-testid="link-home-results"><span className="brand-symbol" aria-hidden="true"><LockKeyhole /></span><span className="brand-name">SiteCheck <span>AI</span></span></Link><div className="nav-actions"><span className="nav-note">{locale === 'nl' ? 'Een rustige check voor ambitieuze ondernemers' : locale === 'en' ? 'A clear check for ambitious business owners' : locale === 'de' ? 'Ein klarer Check für ambitionierte Unternehmen' : locale === 'fr' ? 'Un contrôle clair pour les entrepreneurs ambitieux' : 'Una revisión clara para empresas ambiciosas'}</span></div></div></nav>
       <ResultHeader scan={scan} analysis={scan.analysis} />
       <ResultsContent
         analysis={scan.analysis}
@@ -857,7 +857,7 @@ export default function ScanResults() {
             info@sjoomai.nl
           </a>
           <Link
-            href="/"
+            href={`/${locale}`}
             className="footer-link"
             data-testid="link-footer-new-scan"
           >
