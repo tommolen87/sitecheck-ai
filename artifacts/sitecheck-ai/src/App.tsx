@@ -1374,6 +1374,8 @@ function App() {
   return (
     <LanguageProvider>
       <SeoHead />
+      <VisitorTracker />
+      <VisitorConsentBanner />
       <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, '')}>
