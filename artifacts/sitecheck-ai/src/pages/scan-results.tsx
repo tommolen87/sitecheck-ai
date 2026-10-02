@@ -84,12 +84,23 @@ function getErrorMessage(error: unknown) {
 }
 
 function ScoreRing({ score }: { score: number }) {
+  const { locale } = useLanguage();
+  const scoreSuffix = locale === 'nl'
+    ? 'van 100'
+    : locale === 'en'
+      ? 'of 100'
+      : locale === 'de'
+        ? 'von 100'
+        : locale === 'fr'
+          ? 'sur 100'
+          : 'de 100';
+
   return (
     <Localized>
       <div className="score-ring" style={{ background: `conic-gradient(hsl(var(--primary)) ${score}%, hsl(var(--border)) 0)` }} data-testid="score-overall">
         <div className="score-ring-inner">
           <strong>{score}</strong>
-          <span>{locale === 'nl' ? 'van 100' : locale === 'en' ? 'of 100' : locale === 'de' ? 'von 100' : locale === 'fr' ? 'sur 100' : 'de 100'}</span>
+          <span>{scoreSuffix}</span>
         </div>
       </div>
     </Localized>
