@@ -537,7 +537,7 @@ function Home() {
     <Localized><main className="site-shell min-h-[100dvh]">
       <nav className="nav-wrap">
         <div className="page-frame flex items-center justify-between">
-          <a className="brand-mark" href={locale === 'nl' ? '/nl' : '/en'} data-testid="link-home">
+          <a className="brand-mark" href={homePath} data-testid="link-home">
             <span className="brand-symbol" aria-hidden="true"><Radar /></span>
             <span className="brand-name">SiteCheck <span>AI</span></span>
           </a>
@@ -720,23 +720,51 @@ function Home() {
               : 'Choose a topic and discover which website signals you can check.'}</p>
           </div>
           <div className="check-grid">
-            {(locale === 'nl'
-              ? [
-                  ['/nl/free-website-audit', 'Gratis website audit'],
-                  ['/nl/ai-website-audit', 'AI website audit'],
-                  ['/nl/website-seo-checker', 'Website SEO checker'],
-                  ['/nl/website-performance-check', 'Website performance check'],
-                  ['/nl/website-conversion-audit', 'Website conversion audit'],
-                  ['/nl/website-health-check', 'Website health check'],
-                ]
-              : [
-                  ['/en/free-website-audit', 'Free website audit'],
-                  ['/en/ai-website-audit', 'AI website audit'],
-                  ['/en/website-seo-checker', 'Website SEO checker'],
-                  ['/en/website-performance-check', 'Website performance check'],
-                  ['/en/website-conversion-audit', 'Website conversion audit'],
-                  ['/en/website-health-check', 'Website health check'],
-                ]
+            {(
+              locale === 'nl'
+                ? [
+                    ['/nl/free-website-audit', 'Gratis website audit'],
+                    ['/nl/ai-website-audit', 'AI website audit'],
+                    ['/nl/website-seo-checker', 'Website SEO checker'],
+                    ['/nl/website-performance-check', 'Website performance check'],
+                    ['/nl/website-conversion-audit', 'Website conversion audit'],
+                    ['/nl/website-health-check', 'Website health check'],
+                  ]
+                : locale === 'en'
+                  ? [
+                      ['/en/free-website-audit', 'Free website audit'],
+                      ['/en/ai-website-audit', 'AI website audit'],
+                      ['/en/website-seo-checker', 'Website SEO checker'],
+                      ['/en/website-performance-check', 'Website performance check'],
+                      ['/en/website-conversion-audit', 'Website conversion audit'],
+                      ['/en/website-health-check', 'Website health check'],
+                    ]
+                  : locale === 'de'
+                    ? [
+                        ['/de/free-website-audit', 'Kostenloser Website-Audit'],
+                        ['/de/ai-website-audit', 'KI-Website-Audit'],
+                        ['/de/website-seo-checker', 'Website-SEO-Checker'],
+                        ['/de/website-performance-check', 'Website-Performance-Check'],
+                        ['/de/website-conversion-audit', 'Website-Conversion-Audit'],
+                        ['/de/website-health-check', 'Website-Health-Check'],
+                      ]
+                    : locale === 'fr'
+                      ? [
+                          ['/fr/free-website-audit', 'Audit de site web gratuit'],
+                          ['/fr/ai-website-audit', 'Audit de site web avec IA'],
+                          ['/fr/website-seo-checker', 'Vérificateur SEO de site web'],
+                          ['/fr/website-performance-check', 'Vérification des performances'],
+                          ['/fr/website-conversion-audit', 'Audit de conversion'],
+                          ['/fr/website-health-check', 'Bilan de santé du site'],
+                        ]
+                      : [
+                          ['/es/free-website-audit', 'Auditoría web gratuita'],
+                          ['/es/ai-website-audit', 'Auditoría web con IA'],
+                          ['/es/website-seo-checker', 'Comprobador SEO'],
+                          ['/es/website-performance-check', 'Comprobación de rendimiento'],
+                          ['/es/website-conversion-audit', 'Auditoría de conversión'],
+                          ['/es/website-health-check', 'Estado del sitio web'],
+                        ]
             ).map(([href, label]) => (
               <a className="check-card" key={href} href={href}>
                 <div className="check-icon"><ClipboardCheck /></div>
@@ -1055,6 +1083,11 @@ function Router() {
         <Route path="/en/cookies" component={() => <LegalPage type="cookies" />} />
         <Route path="/nl/herroepen" component={() => <LegalPage type="withdraw" />} />
         <Route path="/en/withdraw" component={() => <LegalPage type="withdraw" />} />
+        <Route path="/nl" component={Home} />
+        <Route path="/en" component={Home} />
+        <Route path="/de" component={Home} />
+        <Route path="/fr" component={Home} />
+        <Route path="/es" component={Home} />
         <Route path="/nl/:slug" component={SeoLandingPage} />
         <Route path="/en/:slug" component={SeoLandingPage} />
         <Route path="/de/:slug" component={SeoLandingPage} />
