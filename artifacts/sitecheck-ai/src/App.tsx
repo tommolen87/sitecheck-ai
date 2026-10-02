@@ -1274,6 +1274,37 @@ function RoutedErrorBoundary({ children }: { children: ReactNode }) {
   return <ErrorBoundary resetKey={location}>{children}</ErrorBoundary>;
 }
 
+function VisitorTracker() {
+  const { locale } = useLanguage();
+
+  useEffect(() => {
+    const key = "sitecheck-visitor-alert";
+    const now = Date.now();
+    const previous = Number(localStorage.getItem(key) ?? "0");
+
+    if (Number.isFinite(previous) && now - previous < 30 * 60 * 1000) {
+      return;
+    }
+
+    localStorage.setItem(key, String(now));
+
+    void fetch("/api/visitor", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        path: window.location.pathname,
+        referrer: document.referrer,
+        language: locale,
+      }),
+      keepalive: true,
+    }).catch(() => {
+      // Visitor alerts are non-critical and must never affect the site.
+    });
+  }, [locale]);
+
+  return null;
+}
+
 function App() {
   return (
     <LanguageProvider>
