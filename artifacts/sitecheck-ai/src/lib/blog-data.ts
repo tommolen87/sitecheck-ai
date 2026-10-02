@@ -324,7 +324,95 @@ export const blogArticles: BlogArticle[] = [
       ],
       cta: "Run this checklist automatically with a free SiteCheck AI scan."
     }
+  },
+  {
+    slug: "website-controleren-voor-livegang",
+    nl: {
+      title: "Website controleren voor livegang: praktische checklist",
+      description: "Controleer je website voor livegang op SEO, mobiel, techniek, formulieren, vertrouwen en conversie met deze praktische checklist.",
+      intro: "Een website kan er klaar uitzien en toch belangrijke fouten bevatten. Controleer vóór livegang de onderdelen die bezoekers, zoekmachines en nieuwe aanvragen direct raken.",
+      sections: [
+        { heading: "Controleer eerst de belangrijkste pagina's", paragraphs: ["Open de homepage, dienstenpagina's, contactpagina en andere pagina's die bezoekers nodig hebben om een beslissing te nemen.", "Controleer of navigatie en interne links logisch werken en nergens naar een oude of verkeerde URL verwijzen."] },
+        { heading: "Test formulieren en contact", paragraphs: ["Verstuur ieder belangrijk formulier zelf en controleer of de bevestiging en opvolging werken. Test ook telefoonnummer, e-mailadres en eventuele afspraaklinks.", "Een technisch kleine fout kan een directe aanvraag kosten."] },
+        { heading: "Controleer SEO-basis", paragraphs: ["Controleer paginatitels, metabeschrijvingen, hoofdkoppen, canonicals, robots.txt, sitemap en indexeerbaarheid.", "Zorg dat belangrijke pagina's via normale links bereikbaar zijn en niet per ongeluk op noindex staan."] },
+        { heading: "Test mobiel en snelheid", paragraphs: ["Bekijk de belangrijkste routes op een echte telefoon. Let op knoppen, formulieren, menu's, afbeeldingen en tekstgrootte.", "Gebruik aanvullende performance-tools wanneer je diepgaand wilt meten; een snelle scan is vooral een eerste controle."] },
+        { heading: "Laat een onafhankelijke scan meekijken", paragraphs: ["Een tweede paar ogen kan patronen vinden die je als maker niet meer ziet. SiteCheck AI kan meetbare signalen automatisch controleren en vertalen naar praktische verbeterpunten.", "Gebruik de uitkomst als laatste controle vóór je de website actief gaat promoten."] }
+      ],
+      cta: "Controleer je website gratis vóór livegang."
+    },
+    en: {
+      title: "Website launch checklist: what to check before going live",
+      description: "Check your website before launch for SEO, mobile usability, technical issues, forms, trust and conversion.",
+      intro: "A website can look ready while still containing important issues. Before launch, check the areas that directly affect visitors, search engines and new leads.",
+      sections: [
+        { heading: "Check the key pages first", paragraphs: ["Open the homepage, service pages, contact page and the pages visitors need to make a decision.", "Make sure navigation and internal links work and do not point to old or incorrect URLs."] },
+        { heading: "Test forms and contact paths", paragraphs: ["Submit every important form yourself and verify confirmation and follow-up. Also test phone numbers, email addresses and booking links.", "A small technical error can cost a real enquiry."] },
+        { heading: "Review the SEO foundation", paragraphs: ["Check page titles, meta descriptions, headings, canonicals, robots.txt, sitemap and indexability.", "Make sure important pages are reachable through normal links and are not accidentally marked noindex."] },
+        { heading: "Test mobile and performance", paragraphs: ["Review the main journeys on a real phone. Check buttons, forms, menus, images and text size.", "Use specialized performance tools when you need deeper measurement; a quick scan is useful as a first check."] },
+        { heading: "Use an independent scan", paragraphs: ["A second set of eyes can find patterns the site owner no longer notices. SiteCheck AI checks measurable signals and turns them into practical improvements.", "Use the result as a final quality check before promoting the new site."] }
+      ],
+      cta: "Run a free website check before launch."
+    }
+  },
+  {
+    slug: "website-krijgt-bezoekers-maar-geen-aanvragen",
+    nl: {
+      title: "Website krijgt bezoekers maar geen aanvragen: waar kijk je naar?",
+      description: "Krijgt je website bezoekers maar weinig aanvragen? Controleer waardepropositie, CTA's, vertrouwen, contact en gebruikservaring.",
+      intro: "Meer verkeer lost niet automatisch een conversieprobleem op. Als bezoekers komen maar weinig actie ondernemen, kijk dan eerst naar duidelijkheid, vertrouwen en de volgende stap.",
+      sections: [
+        { heading: "Is direct duidelijk wat je aanbiedt?", paragraphs: ["Een bezoeker moet snel begrijpen wat je doet, voor wie het bedoeld is en waarom het relevant is.", "Een sterke eerste boodschap is concreter dan algemene termen als kwaliteit, service of maatwerk."] },
+        { heading: "Is de volgende stap zichtbaar?", paragraphs: ["Gebruik duidelijke actieknoppen zoals offerte aanvragen, afspraak maken of contact opnemen wanneer dat past bij je bedrijfsdoel.", "Laat bezoekers niet zelf zoeken naar de route die jij uiteindelijk wilt dat ze nemen."] },
+        { heading: "Is er voldoende vertrouwen?", paragraphs: ["Laat relevante ervaring, reviews, cases, keurmerken, garanties of andere geloofwaardige signalen zien wanneer je die hebt.", "Zorg dat bewijs aansluit op de twijfel die een potentiële klant waarschijnlijk heeft."] },
+        { heading: "Zitten er onnodige drempels?", paragraphs: ["Lange formulieren, onduidelijke prijzen, verplichte accounts of ingewikkelde navigatie kunnen actie moeilijker maken.", "Vraag alleen wat nodig is voor de volgende stap en maak duidelijk wat er na een aanvraag gebeurt."] },
+        { heading: "Meet voordat je grote wijzigingen doet", paragraphs: ["Een scan kan mogelijke problemen signaleren, maar echte analytics en experimenten laten zien wat bezoekers daadwerkelijk doen.", "Gebruik SiteCheck AI als snelle diagnose en combineer de bevindingen met je eigen conversiedata."] }
+      ],
+      cta: "Laat gratis controleren welke conversiesignalen je website laat zien."
+    },
+    en: {
+      title: "Your website gets visitors but no enquiries: what should you check?",
+      description: "If your website gets traffic but few enquiries, review your value proposition, calls to action, trust signals, contact paths and user experience.",
+      intro: "More traffic does not automatically solve a conversion problem. If visitors arrive but rarely take action, start with clarity, trust and the next step.",
+      sections: [
+        { heading: "Is the offer clear immediately?", paragraphs: ["Visitors should quickly understand what you do, who it is for and why it matters.", "A concrete value proposition is usually clearer than generic claims about quality, service or expertise."] },
+        { heading: "Is the next step obvious?", paragraphs: ["Use clear calls to action such as request a quote, book an appointment or get in touch when they fit your business goal.", "Do not make visitors search for the action you ultimately want them to take."] },
+        { heading: "Is there enough trust?", paragraphs: ["Show relevant experience, reviews, cases, certifications, guarantees or other credible signals when available.", "Match the proof to the doubts a potential customer is likely to have."] },
+        { heading: "Are there unnecessary barriers?", paragraphs: ["Long forms, unclear pricing, mandatory accounts or complicated navigation can make action harder.", "Ask only for what is needed for the next step and explain what happens after an enquiry."] },
+        { heading: "Measure before making major changes", paragraphs: ["A scan can flag possible issues, but analytics and experiments show what visitors actually do.", "Use SiteCheck AI as a quick diagnosis and combine its findings with your own conversion data."] }
+      ],
+      cta: "Check your website's conversion signals for free."
+    }
+  },
+  {
+    slug: "ai-website-audit-wat-heb-je-eraan",
+    nl: {
+      title: "AI website audit: wat heb je eraan?",
+      description: "Wat kan een AI website audit wel en niet? Ontdek hoe automatische website-analyse helpt bij SEO, techniek, content en conversie.",
+      intro: "AI kan een website snel analyseren, maar een goede AI-audit moet duidelijk zijn over wat daadwerkelijk is gecontroleerd. Gebruik automatisering vooral om sneller van signalen naar actie te gaan.",
+      sections: [
+        { heading: "Waar AI goed in kan zijn", paragraphs: ["AI kan veel meetgegevens en tekstuele signalen snel samenvatten, patronen herkennen en technische bevindingen begrijpelijk uitleggen.", "Dat is vooral nuttig wanneer je snel een eerste diagnose wilt zonder zelf tientallen controles uit te voeren."] },
+        { heading: "Waar automatische analyse grenzen heeft", paragraphs: ["Een tool ziet niet automatisch iedere pagina, gebruikerssituatie of bedrijfsdoelstelling. Een analyse van één opgehaalde pagina is geen volledige crawl.", "Goede software maakt daarom duidelijk wat wel en niet is gecontroleerd."] },
+        { heading: "Van score naar concrete actie", paragraphs: ["Een cijfer alleen vertelt je niet wat je moet doen. Nuttige aanbevelingen koppelen een gevonden signaal aan het belang ervan en een concrete volgende stap.", "Dat maakt een rapport bruikbaarder voor ondernemers en voor gesprekken met een webbouwer."] },
+        { heading: "Gebruik AI als versneller", paragraphs: ["Voor strategie, merkpositionering en complexe technische keuzes blijft menselijke beoordeling belangrijk.", "AI is het meest nuttig wanneer het de eerste analyse versnelt en mensen helpt om sneller de juiste vervolgvragen te stellen."] },
+        { heading: "Probeer het met je eigen website", paragraphs: ["Een echte websitecheck maakt duidelijk welke signalen op jouw pagina zichtbaar zijn. SiteCheck AI is ontworpen als praktische eerste analyse met meetresultaten en AI-verbeterpunten.", "Gebruik de gratis scan om te bepalen of een uitgebreider rapport nuttig is."] }
+      ],
+      cta: "Probeer een gratis AI website audit."
+    },
+    en: {
+      title: "AI website audit: what is it useful for?",
+      description: "Learn what an AI website audit can and cannot do and how automated analysis helps with SEO, technical quality, content and conversion.",
+      intro: "AI can analyze a website quickly, but a useful AI audit should be clear about what was actually checked. Automation is most valuable when it turns signals into action faster.",
+      sections: [
+        { heading: "Where AI can help", paragraphs: ["AI can summarize measurements and text signals, identify patterns and explain technical findings in plain language.", "This is useful when you want a first diagnosis without running dozens of checks yourself."] },
+        { heading: "Where automated analysis has limits", paragraphs: ["A tool does not automatically see every page, user situation or business objective. An analysis of one fetched page is not a full crawl.", "Good software therefore makes its scope clear."] },
+        { heading: "Turn scores into actions", paragraphs: ["A number alone does not tell you what to do. Useful recommendations connect a finding to its relevance and a concrete next step.", "That makes a report more useful for business owners and for discussions with developers."] },
+        { heading: "Use AI as an accelerator", paragraphs: ["Human judgment remains important for strategy, positioning and complex technical decisions.", "AI is most useful when it speeds up the first analysis and helps people ask better follow-up questions."] },
+        { heading: "Try it on your own website", paragraphs: ["A real website check shows which signals are visible on your page. SiteCheck AI is designed as a practical first analysis with measurements and AI improvement points.", "Start with the free scan and decide whether a fuller report is useful."] }
+      ],
+      cta: "Try a free AI website audit."
+    }
   }
+
 ];
 
 export function getBlogArticle(slug: string): BlogArticle | undefined {
