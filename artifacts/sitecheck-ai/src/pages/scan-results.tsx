@@ -791,7 +791,14 @@ export default function ScanResults() {
     validScanId
       ? new URLSearchParams(window.location.search).get("access")
       : null;
-  const [emailAccessToken, setEmailAccessToken] = useState<string | null>(null);
+  // Read the email access token synchronously so the first API request
+  // already contains the authorization header. Previously the query could
+  // fire once before useEffect copied the token from the URL into state.
+  const initialAccessToken =
+    accessTokenFromUrl || (validScanId ? getScanAccessToken(scanId) : null);
+  const [emailAccessToken, setEmailAccessToken] = useState<string | null>(
+    initialAccessToken,
+  );
 
   useEffect(() => {
     if (!validScanId || !accessTokenFromUrl) return;
@@ -809,7 +816,7 @@ export default function ScanResults() {
   const scanQuery = useGetScan(validScanId ? scanId : 0, {
     request: accessToken ? { headers: { 'x-scan-access-token': accessToken } } : undefined,
     query: {
-      enabled: validScanId,
+      enabled: validScanId && Boolean(accessToken),
       queryKey: [...getGetScanQueryKey(validScanId ? scanId : 0), accessToken ?? 'no-access-token'],
       refetchInterval: (query) =>
         query.state.data?.status === 'analyzing'
