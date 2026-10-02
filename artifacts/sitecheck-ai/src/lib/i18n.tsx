@@ -245,41 +245,80 @@ const translations: Record<string, string> = {
   "Reviews of testimonials gevonden": "Reviews or testimonials found",
 };
 
+
+const internationalTranslations: Record<"de" | "fr" | "es", Record<string, string>> = {
+  de: {
+    "Volledig verbeterplan":"Vollständiger Verbesserungsplan","Van inzicht naar":"Von Erkenntnis zu"," concrete actie.":" konkreter Aktion.","Je gratis scan laat zien waar kansen liggen. Voor €29 krijg je het volledige verbeterplan: concrete verbeterpunten, duidelijke prioriteiten, AI-voorstellen en een praktisch plan om je website stap voor stap te verbeteren.":"Dein kostenloser Scan zeigt, wo Chancen liegen. Für 29 € erhältst du den vollständigen Verbesserungsplan: konkrete Verbesserungspunkte, klare Prioritäten, KI-Vorschläge und einen praktischen Plan zur schrittweisen Verbesserung deiner Website.",
+    "eenmalig · geen abonnement":"einmalig · kein Abonnement","10 belangrijkste verbeterpunten":"10 wichtigste Verbesserungspunkte","Concrete AI-voorstellen per punt":"Konkrete KI-Vorschläge für jeden Punkt","Prioriteit, impact en moeilijkheid per punt":"Priorität, Auswirkung und Aufwand für jeden Punkt","Een duidelijk actieplan voor de komende 30 dagen":"Ein klarer Aktionsplan für die nächsten 30 Tage","Volledig rapport als PDF":"Vollständiger Bericht als PDF","Bekijk mijn verbeterplan — €29":"Meinen Verbesserungsplan ansehen — 29 €","Terug naar mijn scan":"Zurück zu meinem Scan",
+    "Scan afgerond":"Scan abgeschlossen","Gescand op":"Gescannt am","Totale score":"Gesamtscore","Gemeten kwaliteit":"Gemessene Qualität","Totale meetdekking":"Gesamte Messabdeckung","Sterke punten":"Stärken","Wat gaat er al goed?":"Was läuft bereits gut?","Volledig rapport":"Vollständiger Bericht","Download je volledige rapport":"Vollständigen Bericht herunterladen","PDF downloaden":"PDF herunterladen","Praktisch actieplan":"Praktischer Aktionsplan","Impact":"Auswirkung","Moeilijkheid":"Aufwand","Vertrouwen":"Vertrauen","Hoog":"Hoch","Middel":"Mittel","Laag":"Niedrig","Makkelijk":"Einfach","Gemiddeld":"Mittel","Moeilijk":"Schwierig",
+    "Conversie":"Konversion","Vindbaarheid in Google":"Sichtbarkeit bei Google","Mobiel":"Mobil","Techniek & snelheid":"Technik & Geschwindigkeit","Content":"Inhalt","Lokale vindbaarheid":"Lokale Sichtbarkeit","Wat we zagen":"Was wir festgestellt haben","Waarom dit belangrijk is":"Warum das wichtig ist","Wat je concreet kunt verbeteren":"Was du konkret verbessern kannst","Concreet voorstel":"Konkreter Vorschlag","Aanbeveling":"Empfehlung","Verbeterpunt":"Verbesserungspunkt","Contactsignalen":"Kontaktsignale","Technische signalen":"Technische Signale",
+    "Paginatitel":"Seitentitel","Lengte paginatitel":"Länge des Seitentitels","Korte omschrijving voor Google":"Kurze Beschreibung für Google","Lengte omschrijving voor Google":"Länge der Beschreibung für Google","Hoofdtitels van de pagina":"Hauptüberschriften der Seite","Alle koppen":"Alle Überschriften","Zichtbare tekens":"Sichtbare Zeichen","Interne links":"Interne Links","Externe links":"Externe Links","Afbeeldingen":"Bilder","Afbeeldingen met alt-tekst":"Bilder mit Alternativtext","Actieknoppen":"Aktionsschaltflächen","Belangrijkste actieknop":"Wichtigste Aktionsschaltfläche","Voorkeursadres van de pagina":"Bevorzugte Seitenadresse","Instructies voor zoekmachines":"Anweisungen für Suchmaschinen","Pagina-overzicht voor zoekmachines":"Seitenübersicht für Suchmaschinen","Voorvertoning bij delen":"Vorschau beim Teilen","Serverantwoord":"Serverantwort","Responstijd":"Antwortzeit","Paginagrootte":"Seitengröße","Gegevenscompressie":"Datenkomprimierung",
+    "Niet aangetroffen":"Nicht gefunden","Aangetroffen":"Gefunden","Bereikbaar":"Erreichbar","Niet gevonden":"Nicht gefunden","Ja":"Ja","Nee":"Nein","Niet vastgesteld":"Nicht festgestellt","Uitstekend":"Ausgezeichnet","Goed":"Gut","Redelijk":"Ordentlich","Verbetering nodig":"Verbesserung erforderlich","Veel verbetering nodig":"Deutlich verbesserungsbedürftig","Geen contactsignalen gerapporteerd.":"Keine Kontaktsignale gemeldet.","Geen technische signalen gerapporteerd.":"Keine technischen Signale gemeldet."
+  },
+  fr: {
+    "Volledig verbeterplan":"Plan d'amélioration complet","Van inzicht naar":"Des constats à"," concrete actie.":" l'action concrète.","Je gratis scan laat zien waar kansen liggen. Voor €29 krijg je het volledige verbeterplan: concrete verbeterpunten, duidelijke prioriteiten, AI-voorstellen en een praktisch plan om je website stap voor stap te verbeteren.":"Votre analyse gratuite montre où se trouvent les opportunités. Pour 29 €, vous recevez le plan d'amélioration complet : points d'amélioration concrets, priorités claires, propositions d'IA et plan pratique pour améliorer votre site étape par étape.",
+    "eenmalig · geen abonnement":"paiement unique · sans abonnement","10 belangrijkste verbeterpunten":"10 principaux points d'amélioration","Concrete AI-voorstellen per punt":"Propositions concrètes d'IA pour chaque point","Prioriteit, impact en moeilijkheid per punt":"Priorité, impact et effort pour chaque point","Een duidelijk actieplan voor de komende 30 dagen":"Un plan d'action clair pour les 30 prochains jours","Volledig rapport als PDF":"Rapport complet au format PDF","Bekijk mijn verbeterplan — €29":"Voir mon plan d'amélioration — 29 €","Terug naar mijn scan":"Retour à mon analyse",
+    "Scan afgerond":"Analyse terminée","Gescand op":"Analysé le","Totale score":"Score global","Gemeten kwaliteit":"Qualité mesurée","Totale meetdekking":"Couverture totale des mesures","Sterke punten":"Points forts","Wat gaat er al goed?":"Ce qui fonctionne déjà bien","Volledig rapport":"Rapport complet","Download je volledige rapport":"Télécharger votre rapport complet","PDF downloaden":"Télécharger le PDF","Praktisch actieplan":"Plan d'action pratique","Impact":"Impact","Moeilijkheid":"Difficulté","Vertrouwen":"Confiance","Hoog":"Élevé","Middel":"Moyen","Laag":"Faible","Makkelijk":"Facile","Gemiddeld":"Moyen","Moeilijk":"Difficile",
+    "Conversie":"Conversion","Vindbaarheid in Google":"Visibilité sur Google","Mobiel":"Mobile","Techniek & snelheid":"Technique et vitesse","Content":"Contenu","Lokale vindbaarheid":"Visibilité locale","Wat we zagen":"Ce que nous avons constaté","Waarom dit belangrijk is":"Pourquoi c'est important","Wat je concreet kunt verbeteren":"Ce que vous pouvez améliorer concrètement","Concreet voorstel":"Proposition concrète","Aanbeveling":"Recommandation","Verbeterpunt":"Point d'amélioration","Contactsignalen":"Signaux de contact","Technische signalen":"Signaux techniques",
+    "Paginatitel":"Titre de la page","Lengte paginatitel":"Longueur du titre","Korte omschrijving voor Google":"Courte description pour Google","Lengte omschrijving voor Google":"Longueur de la description","Hoofdtitels van de pagina":"Titres principaux de la page","Alle koppen":"Tous les titres","Zichtbare tekens":"Caractères visibles","Interne links":"Liens internes","Externe links":"Liens externes","Afbeeldingen":"Images","Afbeeldingen met alt-tekst":"Images avec texte alternatif","Actieknoppen":"Boutons d'action","Belangrijkste actieknop":"Bouton d'action principal","Voorkeursadres van de pagina":"Adresse préférée de la page","Instructies voor zoekmachines":"Instructions pour les moteurs de recherche","Pagina-overzicht voor zoekmachines":"Plan du site pour les moteurs de recherche","Voorvertoning bij delen":"Aperçu lors du partage","Serverantwoord":"Réponse du serveur","Responstijd":"Temps de réponse","Paginagrootte":"Taille de la page","Gegevenscompressie":"Compression des données",
+    "Niet aangetroffen":"Non trouvé","Aangetroffen":"Trouvé","Bereikbaar":"Accessible","Niet gevonden":"Non trouvé","Ja":"Oui","Nee":"Non","Niet vastgesteld":"Non déterminé","Uitstekend":"Excellent","Goed":"Bon","Redelijk":"Correct","Verbetering nodig":"Amélioration nécessaire","Veel verbetering nodig":"Amélioration importante nécessaire","Geen contactsignalen gerapporteerd.":"Aucun signal de contact signalé.","Geen technische signalen gerapporteerd.":"Aucun signal technique signalé."
+  },
+  es: {
+    "Volledig verbeterplan":"Plan de mejora completo","Van inzicht naar":"De los hallazgos a la"," concrete actie.":" acción concreta.","Je gratis scan laat zien waar kansen liggen. Voor €29 krijg je het volledige verbeterplan: concrete verbeterpunten, duidelijke prioriteiten, AI-voorstellen en een praktisch plan om je website stap voor stap te verbeteren.":"Tu análisis gratuito muestra dónde hay oportunidades. Por 29 €, recibes el plan de mejora completo: puntos de mejora concretos, prioridades claras, propuestas de IA y un plan práctico para mejorar tu sitio paso a paso.",
+    "eenmalig · geen abonnement":"pago único · sin suscripción","10 belangrijkste verbeterpunten":"10 puntos de mejora principales","Concrete AI-voorstellen per punt":"Propuestas concretas de IA para cada punto","Prioriteit, impact en moeilijkheid per punt":"Prioridad, impacto y dificultad de cada punto","Een duidelijk actieplan voor de komende 30 dagen":"Un plan de acción claro para los próximos 30 días","Volledig rapport als PDF":"Informe completo en PDF","Bekijk mijn verbeterplan — €29":"Ver mi plan de mejora — 29 €","Terug naar mijn scan":"Volver a mi análisis",
+    "Scan afgerond":"Análisis completado","Gescand op":"Analizado el","Totale score":"Puntuación global","Gemeten kwaliteit":"Calidad medida","Totale meetdekking":"Cobertura total de medición","Sterke punten":"Puntos fuertes","Wat gaat er al goed?":"Lo que ya funciona bien","Volledig rapport":"Informe completo","Download je volledige rapport":"Descargar tu informe completo","PDF downloaden":"Descargar PDF","Praktisch actieplan":"Plan de acción práctico","Impact":"Impacto","Moeilijkheid":"Dificultad","Vertrouwen":"Confianza","Hoog":"Alto","Middel":"Medio","Laag":"Bajo","Makkelijk":"Fácil","Gemiddeld":"Medio","Moeilijk":"Difícil",
+    "Conversie":"Conversión","Vindbaarheid in Google":"Visibilidad en Google","Mobiel":"Móvil","Techniek & snelheid":"Técnica y velocidad","Content":"Contenido","Lokale vindbaarheid":"Visibilidad local","Wat we zagen":"Lo que hemos detectado","Waarom dit belangrijk is":"Por qué es importante","Wat je concreet kunt verbeteren":"Lo que puedes mejorar concretamente","Concreet voorstel":"Propuesta concreta","Aanbeveling":"Recomendación","Verbeterpunt":"Punto de mejora","Contactsignalen":"Señales de contacto","Technische signalen":"Señales técnicas",
+    "Paginatitel":"Título de la página","Lengte paginatitel":"Longitud del título","Korte omschrijving voor Google":"Descripción breve para Google","Lengte omschrijving voor Google":"Longitud de la descripción","Hoofdtitels van de pagina":"Encabezados principales de la página","Alle koppen":"Todos los encabezados","Zichtbare tekens":"Caracteres visibles","Interne links":"Enlaces internos","Externe links":"Enlaces externos","Afbeeldingen":"Imágenes","Afbeeldingen met alt-tekst":"Imágenes con texto alternativo","Actieknoppen":"Botones de acción","Belangrijkste actieknop":"Botón de acción principal","Voorkeursadres van de pagina":"Dirección preferida de la página","Instructies voor zoekmachines":"Instrucciones para buscadores","Pagina-overzicht voor zoekmachines":"Mapa del sitio para buscadores","Voorvertoning bij delen":"Vista previa al compartir","Serverantwoord":"Respuesta del servidor","Responstijd":"Tiempo de respuesta","Paginagrootte":"Tamaño de la página","Gegevenscompressie":"Compresión de datos",
+    "Niet aangetroffen":"No encontrado","Aangetroffen":"Encontrado","Bereikbaar":"Disponible","Niet gevonden":"No encontrado","Ja":"Sí","Nee":"No","Niet vastgesteld":"No determinado","Uitstekend":"Excelente","Goed":"Bueno","Redelijk":"Aceptable","Verbetering nodig":"Necesita mejoras","Veel verbetering nodig":"Necesita muchas mejoras","Geen contactsignalen gerapporteerd.":"No se han informado señales de contacto.","Geen technische signalen gerapporteerd.":"No se han informado señales técnicas."
+  },
+};
 function normalize(value: string): string {
   return value.replace(/\s+/g, " ").trim();
 }
 
 export function translateText(value: string, locale: Locale): string {
   if (locale === "nl") return value;
-  const exact = translations[normalize(value)];
-  if (exact) {
-    if (value.trim() === value) return exact;
-    return value.replace(normalize(value), exact);
+  const normalized = normalize(value);
+
+  if (locale === "en") {
+    const exact = translations[normalized];
+    if (exact) return value.trim() === value ? exact : value.replace(normalized, exact);
+    return value
+      .replace(/\bGeslaagd\b/g, "Passed")
+      .replace(/\bNiet geslaagd\b/g, "Not passed")
+      .replace(/\bOnbekend\b/g, "Unknown")
+      .replace(/\bHoog\b/g, "High")
+      .replace(/\bMiddel\b/g, "Medium")
+      .replace(/\bLaag\b/g, "Low")
+      .replace(/\bMakkelijk\b/g, "Easy")
+      .replace(/\bGemiddeld\b/g, "Medium")
+      .replace(/\bMoeilijk\b/g, "Hard")
+      .replace(/\bImpact\b/g, "Impact")
+      .replace(/\bMoeilijkheid\b/g, "Difficulty")
+      .replace(/\bVertrouwen\b/g, "Confidence")
+      .replace(/\bWeging\b/g, "Weight")
+      .replace(/\bvan\b/g, "of")
+      .replace(/\buitgevoerd\b/g, "executed")
+      .replace(/\bscoremeting(en)?\b/g, "score measurement$1")
+      .replace(/\bNiet gemeten\b/g, "Not measured")
+      .replace(/\bniet gecheckt\b/g, "not checked")
+      .replace(/\bSterke punten\b/g, "Strengths")
+      .replace(/\bVerbeterpunt\b/g, "Improvement point")
+      .replace(/\bGebaseerd op:\b/g, "Based on:")
+      .replace(/\bGescand op\b/g, "Scanned on");
   }
 
-  return value
-    .replace(/\bGeslaagd\b/g, "Passed")
-    .replace(/\bNiet geslaagd\b/g, "Not passed")
-    .replace(/\bOnbekend\b/g, "Unknown")
-    .replace(/\bHoog\b/g, "High")
-    .replace(/\bMiddel\b/g, "Medium")
-    .replace(/\bLaag\b/g, "Low")
-    .replace(/\bMakkelijk\b/g, "Easy")
-    .replace(/\bGemiddeld\b/g, "Medium")
-    .replace(/\bMoeilijk\b/g, "Hard")
-    .replace(/\bImpact\b/g, "Impact")
-    .replace(/\bMoeilijkheid\b/g, "Difficulty")
-    .replace(/\bVertrouwen\b/g, "Confidence")
-    .replace(/\bWeging\b/g, "Weight")
-    .replace(/\bvan\b/g, "of")
-    .replace(/\buitgevoerd\b/g, "executed")
-    .replace(/\bscoremeting(en)?\b/g, "score measurement$1")
-    .replace(/\bNiet gemeten\b/g, "Not measured")
-    .replace(/\bniet gecheckt\b/g, "not checked")
-    .replace(/\bSterke punten\b/g, "Strengths")
-    .replace(/\bVerbeterpunt\b/g, "Improvement point")
-    .replace(/\bGebaseerd op:\b/g, "Based on:")
-    .replace(/\bGescand op\b/g, "Scanned on");
+  const intl = internationalTranslations[locale];
+  if (intl[normalized]) {
+    return value.trim() === value ? intl[normalized] : value.replace(normalized, intl[normalized]);
+  }
+
+  const english = translations[normalized];
+  if (english && intl[english]) {
+    return value.trim() === value ? intl[english] : value.replace(normalized, intl[english]);
+  }
+
+  return value;
 }
 
 function detectInitialLocale(): Locale {
