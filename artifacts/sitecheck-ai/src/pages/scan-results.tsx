@@ -728,6 +728,7 @@ function ResultsContent({
 }
 
 function LoadingResults() {
+  const { locale } = useLanguage();
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
 
   useEffect(() => {
@@ -764,6 +765,7 @@ function LoadingResults() {
   );
 }
 function ScanProblem({ title, message, url }: { title: string; message: string; url?: string }) {
+  const { locale } = useLanguage();
   return (
     <Localized><main className="site-shell results-shell">
       <nav className="nav-wrap"><div className="page-frame"><Link href={`/${locale}`} className="brand-mark" data-testid="link-home-problem"><span className="brand-symbol" aria-hidden="true"><RadarIcon /></span><span className="brand-name">SiteCheck <span>AI</span></span></Link></div></nav>
