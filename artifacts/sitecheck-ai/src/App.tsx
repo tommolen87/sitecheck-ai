@@ -234,13 +234,13 @@ function SeoHead() {
   const blogSlug = (pathParts[0] === 'nl' || pathParts[0] === 'en') && pathParts[1] === 'blog' ? pathParts[2] : undefined;
   const blogArticle = blogSlug ? getBlogArticle(blogSlug)?.[locale as 'nl' | 'en'] : undefined;
   const page = seoPages[slug]?.[locale as 'nl' | 'en'] ?? internationalSeoPages[slug]?.[locale as GlobalLocale];
-  const legalTitles: Record<string, { nl: string; en: string }> = {
-    privacy: { nl: 'Privacyverklaring | SiteCheck AI', en: 'Privacy Policy | SiteCheck AI' },
-    voorwaarden: { nl: 'Algemene voorwaarden | SiteCheck AI', en: 'Terms and Conditions | SiteCheck AI' },
-    terms: { nl: 'Terms and Conditions | SiteCheck AI', en: 'Terms and Conditions | SiteCheck AI' },
-    cookies: { nl: 'Cookiebeleid | SiteCheck AI', en: 'Cookie Policy | SiteCheck AI' },
-    herroepen: { nl: 'Aankoop herroepen | SiteCheck AI', en: 'Withdraw a Purchase | SiteCheck AI' },
-    withdraw: { nl: 'Aankoop herroepen | SiteCheck AI', en: 'Withdraw a Purchase | SiteCheck AI' },
+  const legalTitles: Record<string, Record<GlobalLocale, string>> = {
+    privacy: { nl: 'Privacyverklaring | SiteCheck AI', en: 'Privacy Policy | SiteCheck AI', de: 'Datenschutzerklärung | SiteCheck AI', fr: 'Politique de confidentialité | SiteCheck AI', es: 'Política de privacidad | SiteCheck AI' },
+    voorwaarden: { nl: 'Algemene voorwaarden | SiteCheck AI', en: 'Terms and Conditions | SiteCheck AI', de: 'Allgemeine Geschäftsbedingungen | SiteCheck AI', fr: 'Conditions générales | SiteCheck AI', es: 'Términos y condiciones | SiteCheck AI' },
+    terms: { nl: 'Algemene voorwaarden | SiteCheck AI', en: 'Terms and Conditions | SiteCheck AI', de: 'Allgemeine Geschäftsbedingungen | SiteCheck AI', fr: 'Conditions générales | SiteCheck AI', es: 'Términos y condiciones | SiteCheck AI' },
+    cookies: { nl: 'Cookiebeleid | SiteCheck AI', en: 'Cookie Policy | SiteCheck AI', de: 'Cookie-Richtlinie | SiteCheck AI', fr: 'Politique relative aux cookies | SiteCheck AI', es: 'Política de cookies | SiteCheck AI' },
+    herroepen: { nl: 'Aankoop herroepen | SiteCheck AI', en: 'Withdraw a Purchase | SiteCheck AI', de: 'Kauf widerrufen | SiteCheck AI', fr: 'Rétracter un achat | SiteCheck AI', es: 'Desistir de una compra | SiteCheck AI' },
+    withdraw: { nl: 'Aankoop herroepen | SiteCheck AI', en: 'Withdraw a Purchase | SiteCheck AI', de: 'Kauf widerrufen | SiteCheck AI', fr: 'Rétracter un achat | SiteCheck AI', es: 'Desistir de una compra | SiteCheck AI' },
   };
   const isBlogIndex = pathParts[1] === 'blog' && !blogSlug;
   const title = legalPath
@@ -253,7 +253,13 @@ function SeoHead() {
         ? 'Website laten controleren? | SiteCheck AI'
         : 'Website Audit & Website Checker | SiteCheck AI');
   const description = legalPath
-    ? (locale === 'nl' ? 'Juridische informatie van SiteCheck AI, waaronder privacy, voorwaarden, cookies en herroeping.' : 'Legal information for SiteCheck AI, including privacy, terms, cookies and withdrawal.')
+    ? ({
+        nl: 'Juridische informatie van SiteCheck AI, waaronder privacy, voorwaarden, cookies en herroeping.',
+        en: 'Legal information for SiteCheck AI, including privacy, terms, cookies and withdrawal.',
+        de: 'Rechtliche Informationen zu SiteCheck AI, einschließlich Datenschutz, Bedingungen, Cookies und Widerruf.',
+        fr: 'Informations juridiques sur SiteCheck AI, notamment confidentialité, conditions, cookies et rétractation.',
+        es: 'Información legal de SiteCheck AI, incluida privacidad, condiciones, cookies y desistimiento.',
+      }[locale])
     : blogArticle?.description
     ?? (isBlogIndex
       ? (locale === 'nl'
@@ -268,7 +274,16 @@ function SeoHead() {
     : pathname;
   const canonical = new URL(legalPath ? legalBase! : basePath, window.location.origin).href;
   const seoSlug = blogSlug ? 'blog/' + blogSlug : (isBlogIndex ? 'blog' : (seoPages[slug] || internationalSeoPages[slug] ? slug : ''));
-  const legalBase = legalPath ? (locale === 'nl' ? `/nl/${legalType}` : `/en/${legalType === 'voorwaarden' ? 'terms' : legalType === 'herroepen' ? 'withdraw' : legalType}`) : null;
+  const legalBase = legalPath
+    ? (locale === 'nl'
+      ? '/nl/' + (legalType === 'terms' ? 'voorwaarden' : legalType === 'withdraw' ? 'herroepen' : legalType)
+      : locale === 'en'
+        ? '/en/' + (legalType === 'voorwaarden' ? 'terms' : legalType === 'herroepen' ? 'withdraw' : legalType)
+        : locale === 'fr'
+          ? '/fr/' + (legalType === 'voorwaarden' ? 'conditions' : legalType === 'herroepen' ? 'retractation' : legalType)
+          : locale === 'es'
+            ? '/es/' + (legalType === 'voorwaarden' ? 'terminos' : legalType === 'herroepen' ? 'desistimiento' : legalType)
+            : '/de/' + (legalType === 'voorwaarden' ? 'terms' : legalType));
   const nlLegal = legalType === 'terms' || legalType === 'withdraw' ? `/nl/${legalType === 'terms' ? 'voorwaarden' : 'herroepen'}` : `/nl/${legalType}`;
   const enLegal = `/en/${legalType === 'voorwaarden' ? 'terms' : legalType === 'herroepen' ? 'withdraw' : legalType}`;
   const nlUrl = new URL(legalPath ? nlLegal : (seoSlug ? `/nl/${seoSlug}` : '/nl'), window.location.origin).href;
@@ -928,7 +943,26 @@ function SeoLandingPage() {
   const { locale } = useLanguage();
   const [location] = useLocation();
   const slug = location.split('/').filter(Boolean)[1] || '';
-  const page = seoPages[slug]?.[locale as 'nl' | 'en'] ?? internationalSeoPages[slug]?.[locale as GlobalLocale] ?? seoPages['website-scan'][locale === 'nl' ? 'nl' : 'en'];
+  const internationalSlugAliases: Record<string, string> = {
+  'website-scan': 'free-website-audit',
+  'seo-check': 'website-seo-checker',
+  'website-analyse': 'ai-website-audit',
+  'website-audit': 'small-business-website-audit',
+  'website-analyzer': 'ai-website-audit',
+  'gratis-website-scan': 'free-website-audit',
+  'website-check': 'website-ux-check',
+  'website-snelheid-test': 'website-performance-check',
+  'website-conversie-check': 'website-conversion-audit',
+  'seo-website-check': 'website-seo-checker',
+  'seo-audit': 'website-seo-checker',
+  'website-vindbaarheid-google': 'website-seo-checker',
+  'website-seo-verbeteren': 'website-seo-checker',
+};
+const page = seoPages[slug]?.[locale as 'nl' | 'en']
+  ?? internationalSeoPages[slug]?.[locale as GlobalLocale]
+  ?? (locale !== 'nl' && locale !== 'en'
+    ? internationalSeoPages[internationalSlugAliases[slug] ?? 'free-website-audit']?.[locale as GlobalLocale]
+    : seoPages['website-scan'][locale === 'nl' ? 'nl' : 'en']);
   const homePath = `/${locale}`;
 
   return (
@@ -1013,10 +1047,10 @@ function SeoLandingPage() {
         </section>
         <footer className="footer">
           <div className="page-frame footer-inner"><span>© {new Date().getFullYear()} SiteCheck AI</span><span className="legal-links">
-            <a href={locale === 'nl' ? '/nl/privacy' : '/en/privacy'}>Privacy</a>
-            <a href={locale === 'nl' ? '/nl/voorwaarden' : '/en/terms'}>{locale === 'nl' ? 'Voorwaarden' : 'Terms'}</a>
-            <a href={locale === 'nl' ? '/nl/cookies' : '/en/cookies'}>Cookies</a>
-            <a href={locale === 'nl' ? '/nl/herroepen' : '/en/withdraw'}>{locale === 'nl' ? 'Herroepen' : 'Withdraw'}</a>
+            <a href={locale === 'nl' ? '/nl/privacy' : '/' + locale + '/privacy'}>{locale === 'nl' ? 'Privacy' : locale === 'de' ? 'Datenschutz' : locale === 'fr' ? 'Confidentialité' : locale === 'es' ? 'Privacidad' : 'Privacy'}</a>
+            <a href={locale === 'nl' ? '/nl/voorwaarden' : locale === 'en' ? '/en/terms' : locale === 'de' ? '/de/terms' : locale === 'fr' ? '/fr/conditions' : '/es/terminos'}>{locale === 'nl' ? 'Voorwaarden' : locale === 'de' ? 'Bedingungen' : locale === 'fr' ? 'Conditions' : locale === 'es' ? 'Condiciones' : 'Terms'}</a>
+            <a href={locale === 'nl' ? '/nl/cookies' : '/' + locale + '/cookies'}>Cookies</a>
+            <a href={locale === 'nl' ? '/nl/herroepen' : locale === 'en' ? '/en/withdraw' : locale === 'de' ? '/de/withdraw' : locale === 'fr' ? '/fr/retractation' : '/es/desistimiento'}>{locale === 'nl' ? 'Herroepen' : locale === 'de' ? 'Widerruf' : locale === 'fr' ? 'Rétractation' : locale === 'es' ? 'Desistimiento' : 'Withdraw'}</a>
           </span></div>
         </footer>
       </main>
