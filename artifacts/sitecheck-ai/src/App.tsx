@@ -463,6 +463,14 @@ function Home() {
       closingTitle: 'Convierte tu sitio web en una mejor primera impresión.', closingText: 'Empieza con lo que ya tienes. SiteCheck AI te ayuda a decidir qué merece la pena mejorar después.'
     }
   } as const)[locale];
+  const extra = ({
+    nl: { freeInsight: 'krijg inzicht in je website.', popularTitle: 'Waar wil je je website op controleren?', popularIntro: 'Kies een onderwerp en ontdek welke signalen je kunt controleren.', viewCheck: 'Bekijk check', footerNote: 'Een rustige check voor ambitieuze ondernemers', terms: 'Voorwaarden', withdraw: 'Herroepen' },
+    en: { freeInsight: 'get insight into your website.', popularTitle: 'What do you want to check on your website?', popularIntro: 'Choose a topic and discover which website signals you can check.', viewCheck: 'View check', footerNote: 'A clear check for ambitious businesses', terms: 'Terms', withdraw: 'Withdraw' },
+    de: { freeInsight: 'erhalten Sie einen klaren Einblick in Ihre Website.', popularTitle: 'Was möchten Sie auf Ihrer Website prüfen?', popularIntro: 'Wählen Sie ein Thema und entdecken Sie, welche Signale Sie prüfen können.', viewCheck: 'Check ansehen', footerNote: 'Ein klarer Check für ambitionierte Unternehmen', terms: 'Bedingungen', withdraw: 'Widerruf' },
+    fr: { freeInsight: 'obtenez une vision claire de votre site.', popularTitle: 'Que souhaitez-vous vérifier sur votre site ?', popularIntro: 'Choisissez un sujet et découvrez quels signaux vous pouvez contrôler.', viewCheck: 'Voir le contrôle', footerNote: 'Un audit clair pour les entreprises ambitieuses', terms: 'Conditions', withdraw: 'Rétractation' },
+    es: { freeInsight: 'obtén una visión clara de tu sitio web.', popularTitle: '¿Qué quieres comprobar en tu sitio web?', popularIntro: 'Elige un tema y descubre qué señales puedes comprobar.', viewCheck: 'Ver comprobación', footerNote: 'Una revisión clara para empresas ambiciosas', terms: 'Condiciones', withdraw: 'Desistimiento' }
+  } as const)[locale];
+
   useEffect(() => {
     const controller = new AbortController();
     fetch("/api/scans/stats", { signal: controller.signal })
@@ -662,7 +670,7 @@ function Home() {
                   )}
                 </button>
               </div>
-              <p className="fine-print"><strong>{copy.fineFree}</strong> {locale === 'nl' ? 'krijg inzicht in je website.' : 'get insight into your website.'} <strong>{copy.finePaid}</strong> {copy.fineText}</p>
+              <p className="fine-print"><strong>{copy.fineFree}</strong> {extra.freeInsight} <strong>{copy.finePaid}</strong> {copy.fineText}</p>
             </form>
             {submitError && (
               <div className="api-error" role="alert" data-testid="error-scan-request">
@@ -703,18 +711,12 @@ function Home() {
             <h2 className="section-title">{copy.methodTitle}</h2>
             <p className="section-intro">{copy.methodIntro}</p>
             <div className="method-list">
-              <div className="method-step">
-                <span className="step-number">01</span>
-                <div><div className="step-title">Je deelt je URL</div><p className="step-copy">Geen account, vragenlijst of technische voorbereiding. Alleen het adres van je website.</p></div>
-              </div>
-              <div className="method-step">
-                <span className="step-number">02</span>
-                <div><div className="step-title">Wij nemen rustig de tijd</div><p className="step-copy">De scan wordt ingepland. We doen niet alsof een snelle blik hetzelfde is als goed kijken.</p></div>
-              </div>
-              <div className="method-step">
-                <span className="step-number">03</span>
-                <div><div className="step-title">Je krijgt richting</div><p className="step-copy">Praktische aanbevelingen waarmee je zelf, of samen met je webbouwer, verder kunt.</p></div>
-              </div>
+              {copy.steps.map(([title, description], index) => (
+                <div className="method-step" key={title}>
+                  <span className="step-number">{String(index + 1).padStart(2, '0')}</span>
+                  <div><div className="step-title">{title}</div><p className="step-copy">{description}</p></div>
+                </div>
+              ))}
             </div>
           </div>
           <div className="audit-paper reveal reveal-delay-1" aria-label="Voorbeeld van de aanpak">
@@ -761,12 +763,10 @@ function Home() {
         <div className="page-frame">
           <div className="checks-header">
             <div>
-              <div className="section-kicker">{locale === 'nl' ? 'Website checks' : 'Website checks'}</div>
-              <h2 id="popular-checks-heading" className="section-title">{locale === 'nl' ? 'Waar wil je je website op controleren?' : 'What do you want to check on your website?'}</h2>
+              <div className="section-kicker">Website checks</div>
+              <h2 id="popular-checks-heading" className="section-title">{extra.popularTitle}</h2>
             </div>
-            <p className="section-intro">{locale === 'nl'
-              ? 'Kies een onderwerp en ontdek welke signalen je kunt controleren.'
-              : 'Choose a topic and discover which website signals you can check.'}</p>
+            <p className="section-intro">{extra.popularIntro}</p>
           </div>
           <div className="check-grid">
             {(
@@ -818,7 +818,7 @@ function Home() {
               <a className="check-card" key={href} href={href}>
                 <div className="check-icon"><ClipboardCheck /></div>
                 <h3>{label}</h3>
-                <span className="text-link">{locale === 'nl' ? 'Bekijk check' : 'View check'} <ArrowRight /></span>
+                <span className="text-link">{extra.viewCheck} <ArrowRight /></span>
               </a>
             ))}
           </div>
@@ -835,12 +835,12 @@ function Home() {
       <footer className="footer">
         <div className="page-frame footer-inner">
           <span>© {new Date().getFullYear()} SiteCheck AI</span>
-          <span>{locale === 'nl' ? 'Een rustige check voor ambitieuze ondernemers' : 'A clear check for ambitious businesses'}</span>
+          <span>{extra.footerNote}</span>
           <span className="legal-links">
             <a href="/nl/privacy">{locale === 'nl' ? 'Privacy' : 'Privacy'}</a>
-            <a href={locale === 'nl' ? '/nl/voorwaarden' : '/en/terms'}>{locale === 'nl' ? 'Voorwaarden' : 'Terms'}</a>
+            <a href={locale === 'nl' ? '/nl/voorwaarden' : '/en/terms'}>{extra.terms}</a>
             <a href={locale === 'nl' ? '/nl/cookies' : '/en/cookies'}>{locale === 'nl' ? 'Cookies' : 'Cookies'}</a>
-            <a href={locale === 'nl' ? '/nl/herroepen' : '/en/withdraw'}>{locale === 'nl' ? 'Herroepen' : 'Withdraw'}</a>
+            <a href={locale === 'nl' ? '/nl/herroepen' : '/en/withdraw'}>{extra.withdraw}</a>
           </span>
         </div>
       </footer>
