@@ -1,6 +1,6 @@
 import { cloneElement, createContext, isValidElement, type ReactNode, useContext, useEffect, useMemo, useState } from "react";
 
-export type Locale = "nl" | "en";
+export type Locale = "nl" | "en" | "de" | "fr" | "es";
 
 const translations: Record<string, string> = {
   "Voor ondernemers met een helder verhaal": "For businesses with a clear story",
@@ -291,15 +291,18 @@ function detectInitialLocale(): Locale {
   const pathname = window.location.pathname;
   if (pathname === "/nl" || pathname.startsWith("/nl/")) return "nl";
   if (pathname === "/en" || pathname.startsWith("/en/")) return "en";
+  if (pathname === "/de" || pathname.startsWith("/de/")) return "de";
+  if (pathname === "/fr" || pathname.startsWith("/fr/")) return "fr";
+  if (pathname === "/es" || pathname.startsWith("/es/")) return "es";
 
   const queryLocale = new URLSearchParams(window.location.search).get("lang");
-  if (queryLocale === "nl" || queryLocale === "en") {
+  if (queryLocale === "nl" || queryLocale === "en" || queryLocale === "de" || queryLocale === "fr" || queryLocale === "es") {
     window.localStorage.setItem("sitecheck-language", queryLocale);
-    return queryLocale;
+    return queryLocale as Locale;
   }
 
   const saved = window.localStorage.getItem("sitecheck-language");
-  if (saved === "nl" || saved === "en") return saved;
+  if (saved === "nl" || saved === "en" || saved === "de" || saved === "fr" || saved === "es") return saved as Locale;
   const browserLanguage = navigator.language.toLowerCase();
   const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   if (browserLanguage.startsWith("nl") || timezone === "Europe/Amsterdam" || timezone === "Europe/Brussels") {
@@ -323,10 +326,12 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     if (typeof window !== "undefined") {
       window.localStorage.setItem("sitecheck-language", next);
       const path = window.location.pathname;
-      if (path === "/" || path === "/nl" || path === "/en" || path === "/nl/" || path === "/en/") {
-        window.history.pushState({}, "", next === "nl" ? "/nl" : "/en");
+      const supported = ["nl", "en", "de", "fr", "es"];
+      const first = path.split("/").filter(Boolean)[0];
+      if (path === "/" || supported.includes(first) && path.split("/").filter(Boolean).length === 1) {
+        window.history.pushState({}, "", `/${next}`);
         window.dispatchEvent(new PopStateEvent("popstate"));
-      } else if (path.startsWith("/nl/") || path.startsWith("/en/")) {
+      } else if (supported.includes(first)) {
         const slug = path.split("/").filter(Boolean).slice(1).join("/");
         window.history.pushState({}, "", `/${next}/${slug}`);
         window.dispatchEvent(new PopStateEvent("popstate"));
@@ -353,9 +358,12 @@ export function LanguageSwitcher() {
   const { locale, setLocale } = useLanguage();
   return (
     <div className="language-switcher" aria-label="Language">
-      <button type="button" className={locale === "nl" ? "active" : ""} onClick={() => setLocale("nl")}>NL</button>
-      <span aria-hidden="true">|</span>
-      <button type="button" className={locale === "en" ? "active" : ""} onClick={() => setLocale("en")}>EN</button>
+      {(["nl", "en", "de", "fr", "es"] as Locale[]).map((code, index) => (
+        <span key={code}>
+          {index > 0 && <span aria-hidden="true"> | </span>}
+          <button type="button" className={locale === code ? "active" : ""} onClick={() => setLocale(code)}>{code.toUpperCase()}</button>
+        </span>
+      ))}
     </div>
   );
 }
