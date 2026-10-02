@@ -15,6 +15,7 @@ import { generateAiRecommendations } from "../lib/ai-website-analysis";
 import Stripe from "stripe";
 import PDFDocument from "pdfkit";
 import { checkoutRateLimit, scanRateLimit } from "../lib/rate-limit";
+import { normalizeLocale, type Locale } from "../lib/locale";
 
 const router: IRouter = Router();
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY ?? "");
@@ -269,7 +270,7 @@ function isWebsiteUrl(value: string): boolean {
 async function processScan(
   scanId: number,
   url: string,
-  locale: "nl" | "en",
+  locale: Locale,
   log: { info: (...args: any[]) => void; warn: (...args: any[]) => void },
 ): Promise<void> {
   try {
@@ -319,8 +320,7 @@ router.post("/scans", scanRateLimit, async (req, res): Promise<void> => {
     return;
   }
 
-  const localeHeader = String(req.headers["x-sitecheck-language"] ?? "").toLowerCase();
-  const locale: "nl" | "en" = localeHeader === "en" ? "en" : "nl";
+  const locale = normalizeLocale(req.headers["x-sitecheck-language"]);
 
   const [scan] = await db
     .insert(scansTable)
@@ -444,10 +444,7 @@ router.post("/scans/:scanId/checkout", checkoutRateLimit, async (req, res): Prom
       cancel_url: `${frontendUrl}/scans/${scanId}/upgrade?payment=cancelled`,
       metadata: {
         scanId: String(scanId),
-        locale:
-          String(req.headers["x-sitecheck-language"] ?? "").toLowerCase() === "en"
-            ? "en"
-            : "nl",
+        locale: normalizeLocale(req.headers["x-sitecheck-language"]),
         termsAccepted: "true",
         serviceStartRequested: "true",
       },
@@ -527,7 +524,7 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
     const normalizedScan = normalizeScanAnalysis(scan);
     const analysis = normalizedScan.analysis as Record<string, any>;
     const url = scan.url ?? "Onbekende website";
-    const locale = String(req.query.lang ?? "").toLowerCase() === "en" ? "en" : "nl";
+    const locale = normalizeLocale(req.query.lang);
 
     const categories = Array.isArray(analysis.categoryScores)
       ? analysis.categoryScores
