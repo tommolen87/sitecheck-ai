@@ -1,0 +1,35 @@
+# SiteCheck AI
+
+SiteCheck AI is a web-based website analysis service for business owners. It analyzes measurable signals around SEO, technical quality, mobile experience, content, trust and conversion, then explains practical improvement opportunities.
+
+## Primary pages
+
+- https://www.sitecheckai.nl/nl
+- https://www.sitecheckai.nl/nl/website-scan
+- https://www.sitecheckai.nl/nl/seo-check
+- https://www.sitecheckai.nl/nl/website-audit
+- https://www.sitecheckai.nl/nl/gratis-website-scan
+- https://www.sitecheckai.nl/nl/website-vindbaarheid-google
+- https://www.sitecheckai.nl/nl/website-seo-verbeteren
+- https://www.sitecheckai.nl/nl/website-conversie-verbeteren
+
+## English
+
+- https://www.sitecheckai.nl/en
+- https://www.sitecheckai.nl/en/website-scan
+- https://www.sitecheckai.nl/en/seo-check
+- https://www.sitecheckai.nl/en/website-audit
+- https://www.sitecheckai.nl/en/gratis-website-scan
+
+## Knowledge base
+
+- https://www.sitecheckai.nl/nl/blog
+- https://www.sitecheckai.nl/en/blog
+
+## Scope
+
+SiteCheck AI is an automated first analysis, not a guarantee of rankings or conversions and not a substitute for every specialist audit. It only claims to assess signals that were actually measured or retrieved during a scan.
+
+## Languages
+
+Dutch, English, German, French and Spanish landing pages are available. Blog content is currently available in Dutch and English.
