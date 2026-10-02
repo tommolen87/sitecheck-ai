@@ -1602,7 +1602,7 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
       .fontSize(9)
       .fillColor("#94A3B8")
       .text(
-        `${t("Gegenereerd op")} ${new Date().toLocaleDateString(locale === "en" ? "en-GB" : "nl-NL")}`,
+        `${t("Gegenereerd op")} ${new Date().toLocaleDateString(({ nl: "nl-NL", en: "en-GB", de: "de-DE", fr: "fr-FR", es: "es-ES" } as const)[locale])}`,
         PAGE.left,
         274,
       );
