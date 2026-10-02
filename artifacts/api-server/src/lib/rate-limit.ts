@@ -65,6 +65,12 @@ export const scanRateLimit = rateLimit({
   message: "Te veel scans aangevraagd. Probeer het later opnieuw.",
 });
 
+export const visitorAlertRateLimit = rateLimit({
+  windowMs: 10 * 60 * 1000,
+  max: 3,
+  message: "Te veel bezoekmeldingen. Probeer het later opnieuw.",
+});
+
 export const checkoutRateLimit = rateLimit({
   windowMs: 60 * 60 * 1000,
   max: 20,
