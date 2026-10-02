@@ -315,7 +315,11 @@ function SeoHead() {
     upsertMeta('meta[property="og:url"]', canonical);
     upsertMeta('meta[property="og:site_name"]', 'SiteCheck AI');
     upsertMeta('meta[property="og:locale"]', ({ nl: 'nl_NL', en: 'en_US', de: 'de_DE', fr: 'fr_FR', es: 'es_ES' } as Record<Locale, string>)[locale]);
-    upsertMeta('meta[name="twitter:card"]', 'summary');
+    upsertMeta('meta[property="og:image"]', new URL('/social-card.svg', window.location.origin).href);
+    upsertMeta('meta[property="og:image:width"]', '1200');
+    upsertMeta('meta[property="og:image:height"]', '630');
+    upsertMeta('meta[name="twitter:card"]', 'summary_large_image');
+    upsertMeta('meta[name="twitter:image"]', new URL('/social-card.svg', window.location.origin).href);
     upsertMeta('meta[name="twitter:title"]', title);
     upsertMeta('meta[name="twitter:description"]', description);
 
@@ -360,6 +364,17 @@ function SeoHead() {
               description,
               url: canonical,
               inLanguage: locale,
+            },
+            {
+              '@type': 'WebApplication',
+              name: 'SiteCheck AI',
+              url: window.location.origin,
+              applicationCategory: 'BusinessApplication',
+              operatingSystem: 'Web',
+              offers: [
+                { '@type': 'Offer', price: '0', priceCurrency: 'EUR', description: locale === 'nl' ? 'Eerste website scan' : 'Initial website scan' },
+                { '@type': 'Offer', price: '29', priceCurrency: 'EUR', description: locale === 'nl' ? 'Volledig website rapport' : 'Full website report' },
+              ],
             },
             {
               '@type': 'FAQPage',
@@ -1156,6 +1171,15 @@ function BlogPage() {
           <section className="section"><div className="page-frame" style={{ maxWidth: '820px' }}>
             <div style={{ marginBottom: '32px', fontSize: '0.95rem', opacity: 0.72 }}><a href={homePath}>SiteCheck AI</a> / <a href={blogPath}>{locale === 'nl' ? 'Kennisbank' : 'Guides'}</a> / {article[locale].title}</div>
             {article[locale].sections.map((section) => <section key={section.heading} style={{ marginBottom: '38px' }}><h2 className="section-title" style={{ fontSize: '1.65rem', marginBottom: '14px' }}>{section.heading}</h2>{section.paragraphs.map((paragraph) => <p className="section-intro" key={paragraph} style={{ marginBottom: '12px' }}>{paragraph}</p>)}</section>)}
+            <div className="closing-box" style={{ marginTop: '38px', marginBottom: '38px' }}>
+              <div className="section-kicker">{locale === 'nl' ? 'Deel dit artikel' : 'Share this article'}</div>
+              <p>{locale === 'nl' ? 'Ken je iemand die hiermee bezig is? Deel de gids rechtstreeks.' : 'Know someone working on this? Share the guide directly.'}</p>
+              <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                <a className="text-link" target="_blank" rel="noreferrer" href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}`}>LinkedIn <ArrowRight /></a>
+                <a className="text-link" target="_blank" rel="noreferrer" href={`https://wa.me/?text=${encodeURIComponent(article[locale].title + ' — ' + window.location.href)}`}>WhatsApp <ArrowRight /></a>
+                <a className="text-link" href={`mailto:?subject=${encodeURIComponent(article[locale].title)}&body=${encodeURIComponent(window.location.href)}`}>{locale === 'nl' ? 'E-mail' : 'Email'} <ArrowRight /></a>
+              </div>
+            </div>
             <div className="section-kicker" style={{ marginTop: '48px' }}>{locale === 'nl' ? 'Verder lezen' : 'Read next'}</div>
             <div className="check-grid" style={{ marginBottom: '48px' }}>
               {(locale === 'nl'
