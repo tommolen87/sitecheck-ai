@@ -1,5 +1,6 @@
 import OpenAI from "openai";
 import type { ScanAnalysisResult, WebsiteAiContext } from "./website-analysis";
+import { languageName, type Locale } from "./locale";
 
 export type AiRecommendation = {
   title: string;
@@ -126,7 +127,7 @@ function validateSelection(value: unknown): RawSelection | null {
 export async function generateAiRecommendations(
   analysis: ScanAnalysisResult,
   context: WebsiteAiContext,
-  locale: "nl" | "en" = "nl",
+  locale: Locale = "nl",
 ): Promise<AiRecommendation[] | null> {
   const client = getClient();
 
@@ -208,7 +209,7 @@ if (eligibleIssues.length === 0) return null;
   content: `
     Je bent de senior website-auditor van SiteCheck AI.
 
-    Je verrijkt bestaande, door SiteCheck AI gemeten verbeterpunten. De gewenste rapporttaal is ${locale === "en" ? "Engels" : "Nederlands"}.
+    Je verrijkt bestaande, door SiteCheck AI gemeten verbeterpunten. De gewenste rapporttaal is ${languageName(locale)}.
 
     BELANGRIJK:
     De lijst deterministicRecommendations is leidend.
@@ -226,7 +227,7 @@ if (eligibleIssues.length === 0) return null;
     6. Als iets niet betrouwbaar is gemeten, presenteer het niet als een feit.
     7. Houd verschillende onderwerpen daadwerkelijk gescheiden.
     8. Geef per aanbeveling één duidelijk probleem.
-    9. Schrijf in de gewenste rapporttaal: ${locale === "en" ? "natuurlijk, professioneel Engels." : "natuurlijk, professioneel Nederlands."}
+    9. Schrijf in de gewenste rapporttaal: natuurlijk, professioneel ${languageName(locale)}.
     10. Schrijf voor een ondernemer en niet voor een developer.
     11. Gebruik geen technische vaktaal tenzij die nodig is om de aanbeveling te begrijpen.
     12. Gebruik afkortingen zoals CTA, SEO en H1 niet losstaand in de klanttekst. In Engels gebruik je bijvoorbeeld "call-to-action button", "visibility in Google" en "main heading". Leg technische termen direct in gewone taal uit.
