@@ -868,6 +868,43 @@ function Home() {
 
 
 function faqAnswer(question: string, locale: Locale): string {
+  if (locale === 'de') {
+    if (question.includes('wirklich kostenlos')) return 'Ja. Der erste Scan ist kostenlos und zeigt messbare Signale und wichtige Bereiche Ihrer Website.';
+    if (question.includes('Was wird geprüft')) return 'Der Scan prüft messbare Signale rund um SEO, Technik, Mobilgeräte, Inhalte, Vertrauen und Conversion.';
+    if (question.includes('vollständigen Bericht')) return 'Ja. Nach dem kostenlosen Scan können Sie den vollständigen Bericht einmalig für 29 € kaufen.';
+    if (question.includes('vollständiger SEO-Audit')) return 'Nein. SiteCheck AI konzentriert sich auf messbare Signale der abgerufenen Seite und ersetzt keine vollständige menschliche SEO-Prüfung.';
+    if (question.includes('ganze Website')) return 'Der Scan analysiert die von Ihnen angegebene Seite und behauptet nicht, Seiten geprüft zu haben, die nicht abgerufen wurden.';
+    if (question.includes('konkrete Empfehlungen') || question.includes('verbessern')) return 'Sie erhalten praktische Verbesserungspunkte auf Grundlage der während des Scans gefundenen Signale.';
+    if (question.includes('technisches Wissen')) return 'Nein. Die Ergebnisse erklären technische Signale in verständlicher Sprache.';
+    if (question.includes('Geschwindigkeit')) return 'Der Scan prüft messbare technische Signale wie Antwortzeit, Seitengröße und Kompression. Er ersetzt keinen vollständigen Lighthouse- oder Core-Web-Vitals-Test.';
+    if (question.includes('Kontakt')) return 'Ja. Der Scan prüft sichtbare Kontaktsignale und Handlungsaufforderungen auf der abgerufenen Seite.';
+    return 'Der Scan macht messbare Website-Signale verständlich und übersetzt sie in praktische Verbesserungspunkte.';
+  }
+  if (locale === 'fr') {
+    if (question.includes('vraiment gratuit')) return 'Oui. La première analyse est gratuite et présente les signaux mesurables ainsi que les principaux points d’attention de votre site.';
+    if (question.includes('Que vérifiez-vous') || question.includes('Que vérifie')) return 'L’analyse vérifie des signaux mesurables liés au SEO, à la technique, au mobile, au contenu, à la confiance et à la conversion.';
+    if (question.includes('rapport complet')) return 'Oui. Après l’analyse gratuite, vous pouvez acheter le rapport complet pour 29 € en paiement unique.';
+    if (question.includes('audit SEO complet')) return 'Non. SiteCheck AI se concentre sur les signaux mesurables de la page récupérée et ne remplace pas un audit SEO humain complet.';
+    if (question.includes('tout le site') || question.includes('toutes les pages')) return 'L’analyse porte sur la page fournie et ne prétend pas avoir vérifié des pages qui n’ont pas été récupérées.';
+    if (question.includes('recommandations concrètes') || question.includes('amélior')) return 'Vous recevez des points d’amélioration pratiques fondés sur les signaux détectés pendant l’analyse.';
+    if (question.includes('connaissances techniques')) return 'Non. Les résultats expliquent les signaux techniques avec des mots simples.';
+    if (question.includes('vitesse') || question.includes('performances')) return 'L’analyse vérifie des signaux mesurables comme le temps de réponse, la taille de page et la compression. Elle ne remplace pas un test Lighthouse ou Core Web Vitals complet.';
+    if (question.includes('contact')) return 'Oui. L’analyse vérifie les signaux de contact visibles et les appels à l’action présents sur la page récupérée.';
+    return 'L’analyse rend les signaux mesurables du site plus faciles à comprendre et les transforme en points d’amélioration pratiques.';
+  }
+  if (locale === 'es') {
+    if (question.includes('realmente gratuita')) return 'Sí. El primer análisis es gratuito y muestra señales medibles y los principales puntos de mejora de tu sitio.';
+    if (question.includes('Qué se comprueba') || question.includes('Qué analiza')) return 'El análisis comprueba señales medibles de SEO, tecnología, móvil, contenido, confianza y conversión.';
+    if (question.includes('informe completo')) return 'Sí. Después del análisis gratuito puedes comprar el informe completo por 29 € en un único pago.';
+    if (question.includes('auditoría SEO completa')) return 'No. SiteCheck AI se centra en señales medibles de la página obtenida y no sustituye una auditoría SEO humana completa.';
+    if (question.includes('todo el sitio') || question.includes('todas las páginas')) return 'El análisis revisa la página que proporcionas y no afirma haber comprobado páginas que no se hayan obtenido.';
+    if (question.includes('recomendaciones concretas') || question.includes('mejorar')) return 'Recibes puntos de mejora prácticos basados en las señales encontradas durante el análisis.';
+    if (question.includes('conocimientos técnicos')) return 'No. Los resultados explican las señales técnicas con un lenguaje sencillo.';
+    if (question.includes('velocidad') || question.includes('rendimiento')) return 'El análisis comprueba señales técnicas medibles como el tiempo de respuesta, el tamaño de la página y la compresión. No sustituye una prueba completa de Lighthouse o Core Web Vitals.';
+    if (question.includes('contacto')) return 'Sí. El análisis comprueba señales visibles de contacto y llamadas a la acción presentes en la página obtenida.';
+    return 'El análisis hace más comprensibles las señales medibles del sitio y las convierte en puntos de mejora prácticos.';
+  }
+
   if (locale === 'nl') {
     if (question.includes('echt gratis')) return 'Ja. De eerste scan is gratis en laat meetbare signalen en belangrijke aandachtspunten van je website zien.';
     if (question.includes('Wat krijg ik na de gratis scan')) return 'Je krijgt een overzicht van de onderdelen die de scan daadwerkelijk kon beoordelen, inclusief de belangrijkste bevindingen.';
