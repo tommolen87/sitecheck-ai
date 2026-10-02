@@ -226,7 +226,7 @@ const internationalSeoPages: Record<string, Record<GlobalLocale, SeoPageContent>
 };
 
 function SeoHead() {
-  const legalPath = /^\/(nl|en|de|fr|es)\/(privacy|voorwaarden|terms|cookies|herroepen|withdraw)$/.test(window.location.pathname);
+  const legalPath = /^\/(nl|en|de|fr|es)\/(privacy|voorwaarden|terms|conditions|terminos|cookies|herroepen|withdraw|retractation|desistimiento)$/.test(window.location.pathname);
   const { locale } = useLanguage();
   const pathParts = window.location.pathname.split('/').filter(Boolean);
   const slug = pathParts[1] || '';
