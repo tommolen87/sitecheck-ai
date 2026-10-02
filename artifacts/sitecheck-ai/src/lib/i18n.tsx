@@ -308,6 +308,9 @@ function detectInitialLocale(): Locale {
   if (browserLanguage.startsWith("nl") || timezone === "Europe/Amsterdam" || timezone === "Europe/Brussels") {
     return "nl";
   }
+  if (browserLanguage.startsWith("de")) return "de";
+  if (browserLanguage.startsWith("fr")) return "fr";
+  if (browserLanguage.startsWith("es")) return "es";
   return "en";
 }
 
