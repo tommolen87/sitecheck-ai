@@ -232,7 +232,7 @@ function SeoHead() {
   const slug = pathParts[1] || '';
   const legalType = pathParts[1];
   const blogSlug = (pathParts[0] === 'nl' || pathParts[0] === 'en') && pathParts[1] === 'blog' ? pathParts[2] : undefined;
-  const blogArticle = blogSlug ? getBlogArticle(blogSlug)?.[locale] : undefined;
+  const blogArticle = blogSlug ? getBlogArticle(blogSlug)?.[locale as 'nl' | 'en'] : undefined;
   const page = seoPages[slug]?.[locale as 'nl' | 'en'] ?? internationalSeoPages[slug]?.[locale as GlobalLocale];
   const legalTitles: Record<string, { nl: string; en: string }> = {
     privacy: { nl: 'Privacyverklaring | SiteCheck AI', en: 'Privacy Policy | SiteCheck AI' },
@@ -244,7 +244,7 @@ function SeoHead() {
   };
   const isBlogIndex = pathParts[1] === 'blog' && !blogSlug;
   const title = legalPath
-    ? (legalTitles[legalType]?.[locale] ?? 'SiteCheck AI')
+    ? (legalTitles[legalType]?.[locale as 'nl' | 'en'] ?? 'SiteCheck AI')
     : blogArticle
     ? blogArticle.title + ' | SiteCheck AI'
     : isBlogIndex
