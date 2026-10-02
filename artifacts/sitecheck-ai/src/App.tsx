@@ -385,6 +385,7 @@ function Home() {
   const createScan = useCreateScan({ request: { headers: { 'x-sitecheck-language': locale } } });
   const [, setLocation] = useLocation();
   const [queueCount, setQueueCount] = useState<number | null>(null);
+  const homePath = `/${locale}`;
   const copy = locale === 'nl' ? {
     knowledge: 'Kennisbank', navNote: 'Voor ondernemers met een helder verhaal', eyebrow: 'Een nuchtere blik op je website',
     title: <>Hoe goed presteert <em>jouw website?</em></>, lede: 'SiteCheck AI analyseert je website en geeft praktische verbeteradviezen. Geen technisch rapport waar je doorheen moet ploegen, maar duidelijke handvatten voor de volgende stap.',
