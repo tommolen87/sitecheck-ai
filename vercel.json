@@ -1,0 +1,14 @@
+{
+  "buildCommand": "pnpm install --frozen-lockfile && pnpm --filter @workspace/sitecheck-ai build",
+  "outputDirectory": "artifacts/sitecheck-ai/dist/public",
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://sitecheck-ai-xvaf.onrender.com/api/:path*"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
