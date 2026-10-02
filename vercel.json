@@ -1,5 +1,5 @@
 {
-  "buildCommand": "pnpm install --frozen-lockfile && pnpm --filter @workspace/sitecheck-ai build",
+  "buildCommand": "pnpm --filter @workspace/sitecheck-ai build",
   "outputDirectory": "artifacts/sitecheck-ai/dist/public",
   "rewrites": [
     {
