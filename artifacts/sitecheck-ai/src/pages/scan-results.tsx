@@ -3,7 +3,7 @@ import { ArrowLeft, Check, CheckCircle2, CircleAlert, CircleHelp, Clock3, Extern
 import { Link, useLocation, useParams } from 'wouter';
 import { getGetScanQueryKey, useGetScan, type AiRecommendation, type ScanAnalysis, type ScanIssue } from '@workspace/api-client-react';
 import { LanguageSwitcher, Localized, useLanguage } from '@/lib/i18n';
-import { getScanAccessToken } from '@/lib/scan-access';
+import { getScanAccessToken, setScanAccessToken } from '@/lib/scan-access';
 
 const categoryOrder = [
   { key: 'conversie', label: 'Conversie' },
