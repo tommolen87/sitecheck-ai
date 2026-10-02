@@ -140,6 +140,16 @@ const translations: Record<string, string> = {
   "Wat gaat er al goed?": "What is already working well?",
   "Deze onderdelen van je website kwamen goed uit de scan.": "These areas of your website performed well in the scan.",
   "Volledig rapport": "Full report",
+  "Wil je weten wat je écht kunt verbeteren?": "Want to know what you can really improve?",
+  "Maak van je scan een concreet verbeterplan.": "Turn your scan into a concrete improvement plan.",
+  "10 concrete verbeterpunten, duidelijke prioriteiten, AI-voorstellen, een 30-dagen actieplan en het volledige rapport als PDF.": "10 concrete improvement points, clear priorities, AI suggestions, a 30-day action plan and the full report as a PDF.",
+  "Uitleg waarom elk punt belangrijk is": "Explanation of why each point matters",
+  "Impact en moeilijkheid per verbetering": "Impact and difficulty for each improvement",
+  "Praktisch actieplan voor de komende 30 dagen": "Practical action plan for the next 30 days",
+  "Eenmalige betaling · geen abonnement": "One-time payment · no subscription",
+  "Je hebt {issues.length} van de {totalAvailable} belangrijkste verbeterpunten gezien.": "You have seen {issues.length} of the {totalAvailable} most important improvement points.",
+  "Er staan nog {remaining} verbeterpunten klaar. Je krijgt daarnaast concrete voorstellen, prioriteiten, impact, moeilijkheid, een 30-dagen actieplan en het volledige rapport als PDF.": "There are {remaining} more improvement points available. You also get concrete suggestions, priorities, impact, difficulty, a 30-day action plan and the full report as a PDF.",
+
   "Download je volledige rapport": "Download your full report",
   "Alle scores, sterke punten, verbeterpunten en het actieplan gebundeld in één PDF.": "All scores, strengths, improvement points and the action plan bundled into one PDF.",
   "PDF downloaden": "Download PDF",
@@ -275,6 +285,16 @@ const internationalTranslations: Record<"de" | "fr" | "es", Record<string, strin
 
 const additionalInternationalTranslations: Record<"de" | "fr" | "es", Record<string, string>> = {
   "de": {
+    "Wil je weten wat je écht kunt verbeteren?":"Möchten Sie wissen, was Sie wirklich verbessern können?",
+    "Maak van je scan een concreet verbeterplan.":"Machen Sie aus Ihrem Scan einen konkreten Verbesserungsplan.",
+    "10 concrete verbeterpunten, duidelijke prioriteiten, AI-voorstellen, een 30-dagen actieplan en het volledige rapport als PDF.":"10 konkrete Verbesserungspunkte, klare Prioritäten, KI-Vorschläge, ein 30-Tage-Aktionsplan und der vollständige Bericht als PDF.",
+    "Uitleg waarom elk punt belangrijk is":"Erklärung, warum jeder Punkt wichtig ist",
+    "Impact en moeilijkheid per verbetering":"Auswirkung und Aufwand für jede Verbesserung",
+    "Praktisch actieplan voor de komende 30 dagen":"Praktischer Aktionsplan für die nächsten 30 Tage",
+    "Eenmalige betaling · geen abonnement":"Einmalige Zahlung · kein Abonnement",
+    "Je hebt {issues.length} van de {totalAvailable} belangrijkste verbeterpunten gezien.":"Sie haben {issues.length} der {totalAvailable} wichtigsten Verbesserungspunkte gesehen.",
+    "Er staan nog {remaining} verbeterpunten klaar. Je krijgt daarnaast concrete voorstellen, prioriteiten, impact, moeilijkheid, een 30-dagen actieplan en het volledige rapport als PDF.":"Es sind noch {remaining} Verbesserungspunkte verfügbar. Außerdem erhalten Sie konkrete Vorschläge, Prioritäten, Auswirkungen, Aufwand, einen 30-Tage-Aktionsplan und den vollständigen Bericht als PDF.",
+
     "Gebruik een volledig webadres, bijvoorbeeld https://jouwbedrijf.nl": "Geben Sie eine vollständige Webadresse ein, z. B. https://ihrunternehmen.de",
     "Start gratis scan": "Kostenlosen Scan starten",
     "Volledig rapport — €29": "Vollständiger Bericht — 29 €",
@@ -395,6 +415,16 @@ const additionalInternationalTranslations: Record<"de" | "fr" | "es", Record<str
 
   },
   "fr": {
+    "Wil je weten wat je écht kunt verbeteren?":"Vous voulez savoir ce que vous pouvez vraiment améliorer ?",
+    "Maak van je scan een concreet verbeterplan.":"Transformez votre analyse en plan d’amélioration concret.",
+    "10 concrete verbeterpunten, duidelijke prioriteiten, AI-voorstellen, een 30-dagen actieplan en het volledige rapport als PDF.":"10 points d’amélioration concrets, des priorités claires, des suggestions IA, un plan d’action de 30 jours et le rapport complet en PDF.",
+    "Uitleg waarom elk punt belangrijk is":"Explication de l’importance de chaque point",
+    "Impact en moeilijkheid per verbetering":"Impact et difficulté de chaque amélioration",
+    "Praktisch actieplan voor de komende 30 dagen":"Plan d’action pratique pour les 30 prochains jours",
+    "Eenmalige betaling · geen abonnement":"Paiement unique · sans abonnement",
+    "Je hebt {issues.length} van de {totalAvailable} belangrijkste verbeterpunten gezien.":"Vous avez vu {issues.length} des {totalAvailable} points d’amélioration les plus importants.",
+    "Er staan nog {remaining} verbeterpunten klaar. Je krijgt daarnaast concrete voorstellen, prioriteiten, impact, moeilijkheid, een 30-dagen actieplan en het volledige rapport als PDF.":"Il reste {remaining} points d’amélioration disponibles. Vous bénéficiez également de propositions concrètes, de priorités, de l’impact, de la difficulté, d’un plan d’action de 30 jours et du rapport complet en PDF.",
+
     "Gebruik een volledig webadres, bijvoorbeeld https://jouwbedrijf.nl": "Saisissez une adresse web complète, par exemple https://votreentreprise.fr",
     "Start gratis scan": "Lancer l’analyse gratuite",
     "Volledig rapport — €29": "Rapport complet — 29 €",
@@ -515,6 +545,16 @@ const additionalInternationalTranslations: Record<"de" | "fr" | "es", Record<str
 
   },
   "es": {
+    "Wil je weten wat je écht kunt verbeteren?":"¿Quieres saber qué puedes mejorar realmente?",
+    "Maak van je scan een concreet verbeterplan.":"Convierte tu análisis en un plan de mejora concreto.",
+    "10 concrete verbeterpunten, duidelijke prioriteiten, AI-voorstellen, een 30-dagen actieplan en het volledige rapport als PDF.":"10 puntos de mejora concretos, prioridades claras, sugerencias de IA, un plan de acción de 30 días y el informe completo en PDF.",
+    "Uitleg waarom elk punt belangrijk is":"Explicación de por qué cada punto es importante",
+    "Impact en moeilijkheid per verbetering":"Impacto y dificultad de cada mejora",
+    "Praktisch actieplan voor de komende 30 dagen":"Plan de acción práctico para los próximos 30 días",
+    "Eenmalige betaling · geen abonnement":"Pago único · sin suscripción",
+    "Je hebt {issues.length} van de {totalAvailable} belangrijkste verbeterpunten gezien.":"Has visto {issues.length} de los {totalAvailable} puntos de mejora más importantes.",
+    "Er staan nog {remaining} verbeterpunten klaar. Je krijgt daarnaast concrete voorstellen, prioriteiten, impact, moeilijkheid, een 30-dagen actieplan en het volledige rapport als PDF.":"Quedan {remaining} puntos de mejora disponibles. Además, obtienes propuestas concretas, prioridades, impacto, dificultad, un plan de acción de 30 días y el informe completo en PDF.",
+
     "Gebruik een volledig webadres, bijvoorbeeld https://jouwbedrijf.nl": "Introduce una dirección web completa, por ejemplo https://tuempresa.es",
     "Start gratis scan": "Iniciar análisis gratuito",
     "Volledig rapport — €29": "Informe completo — 29 €",
