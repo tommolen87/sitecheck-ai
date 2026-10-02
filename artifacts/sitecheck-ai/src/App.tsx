@@ -1035,7 +1035,15 @@ const page = seoPages[slug]?.[locale as 'nl' | 'en']
                 <article className="check-card" key={point}>
                   <div className="check-icon"><ClipboardCheck /></div>
                   <h2>{point}</h2>
-                  <p>{locale === 'nl' ? 'SiteCheck AI controleert dit onderdeel op concrete signalen en maakt duidelijk wat je ermee kunt doen.' : 'SiteCheck AI checks this area for concrete signals and explains what you can do with the result.'}</p>
+                  <p>{locale === 'nl'
+                    ? 'SiteCheck AI controleert dit onderdeel op concrete signalen en maakt duidelijk wat je ermee kunt doen.'
+                    : locale === 'en'
+                      ? 'SiteCheck AI checks this area for concrete signals and explains what you can do with the result.'
+                      : locale === 'de'
+                        ? 'SiteCheck AI prüft diesen Bereich auf konkrete Signale und erklärt, was Sie mit dem Ergebnis tun können.'
+                        : locale === 'fr'
+                          ? 'SiteCheck AI vérifie ce domaine à partir de signaux concrets et explique ce que vous pouvez faire avec le résultat.'
+                          : 'SiteCheck AI comprueba esta área mediante señales concretas y explica qué puedes hacer con el resultado.'}</p>
                 </article>
               ))}
             </div>
@@ -1043,7 +1051,7 @@ const page = seoPages[slug]?.[locale as 'nl' | 'en']
         </section>
         <section className="section">
           <div className="page-frame" style={{ maxWidth: '900px' }}>
-            <div className="section-kicker">{locale === 'nl' ? 'Ook interessant' : 'Related checks'}</div>
+            <div className="section-kicker">{locale === 'nl' ? 'Ook interessant' : locale === 'en' ? 'Related checks' : locale === 'de' ? 'Weitere Checks' : locale === 'fr' ? 'Vérifications associées' : 'Comprobaciones relacionadas'}</div>
             <div className="check-grid" style={{ marginBottom: '48px' }}>
               {(seoInternalLinks[slug]?.[locale as 'nl' | 'en'] ?? (locale === 'de' || locale === 'fr' || locale === 'es'
                 ? Object.keys(internationalSeoPages).filter((s) => s !== slug).slice(0, 5).map((s) => [`/${locale}/${s}`, internationalSeoPages[s][locale as GlobalLocale].heading] as [string, string])
@@ -1051,7 +1059,7 @@ const page = seoPages[slug]?.[locale as 'nl' | 'en']
                 <a className="check-card" key={href} href={href}><h2>{label}</h2><span className="text-link">{locale === 'nl' ? 'Bekijk onderwerp' : 'Explore topic'} <ArrowRight /></span></a>
               ))}
             </div>
-            <div className="section-kicker" style={{ marginTop: '10px' }}>{locale === 'nl' ? 'Voor jouw type bedrijf' : 'For your type of business'}</div>
+            <div className="section-kicker" style={{ marginTop: '10px' }}>{locale === 'nl' ? 'Voor jouw type bedrijf' : locale === 'en' ? 'For your type of business' : locale === 'de' ? 'Für Ihre Branche' : locale === 'fr' ? 'Pour votre secteur' : 'Para tu sector'}</div>
             <div className="check-grid" style={{ marginBottom: '48px' }}>
               {(locale === 'nl'
                 ? [
