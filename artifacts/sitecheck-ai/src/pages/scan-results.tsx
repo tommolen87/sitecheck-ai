@@ -772,8 +772,8 @@ function ScanProblem({ title, message, url }: { title: string; message: string; 
       <div className="page-frame scan-problem" role="alert" data-testid="status-scan-problem">
         <div className="problem-icon"><CircleAlert /></div>
         <div className="eyebrow">Scan niet beschikbaar</div>
-        <h1>{title}</h1>
-        <p>{message}</p>
+        <h1>{translateText(title, locale)}</h1>
+        <p>{translateText(message, locale)}</p>
         {url && <span className="problem-url">{url}</span>}
         <Link href={`/${locale}`} className="scan-button problem-button" data-testid="link-start-new-scan"><ArrowLeft /> Terug naar een nieuwe scan</Link>
       </div>
