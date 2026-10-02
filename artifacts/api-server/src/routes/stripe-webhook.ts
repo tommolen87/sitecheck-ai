@@ -117,8 +117,7 @@ router.post("/stripe/webhook", async (req, res): Promise<void> => {
           session.customer_email ??
           null;
 
-        const locale =
-          session.metadata?.locale === "en" ? "en" : "nl";
+        const locale = normalizeLocale(session.metadata?.locale);
 
         if (customerEmail) {
           try {
