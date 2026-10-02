@@ -158,15 +158,82 @@ const seoPages: Record<string, { nl: { title: string; description: string; headi
 
 };
 
+
+// International SEO pages (DE / FR / ES). These are intentionally focused on high-intent search queries.
+type SeoPageContent = { title: string; description: string; heading: string; intro: string; points: string[]; questions: string[] };
+type GlobalLocale = "de" | "fr" | "es";
+const internationalSeoPages: Record<string, Record<GlobalLocale, SeoPageContent>> = {
+  "free-website-audit": {
+    de: { title:"Kostenloser Website-Audit | SiteCheck AI", description:"Kostenlosen Website-Audit durchführen und SEO, Technik, Mobile, Inhalte und Conversion prüfen.", heading:"Kostenloser Website-Audit", intro:"Prüfe deine Website kostenlos und entdecke konkrete Bereiche, in denen du SEO, Technik, Inhalte und Conversion verbessern kannst.", points:["SEO und Sichtbarkeit","Technik und Geschwindigkeit","Inhalte, Vertrauen und Conversion"], questions:["Ist der Website-Audit wirklich kostenlos?","Was wird geprüft?","Kann ich danach einen vollständigen Bericht kaufen?"] },
+    fr: { title:"Audit de site web gratuit | SiteCheck AI", description:"Effectuez un audit gratuit de votre site et identifiez les améliorations SEO, techniques, mobiles et de conversion.", heading:"Audit de site web gratuit", intro:"Analysez gratuitement votre site et découvrez les points concrets à améliorer en SEO, technique, contenu et conversion.", points:["SEO et visibilité","Technique et performance","Contenu, confiance et conversion"], questions:["L’audit est-il vraiment gratuit ?","Que vérifiez-vous ?","Puis-je acheter un rapport complet ensuite ?"] },
+    es: { title:"Auditoría web gratuita | SiteCheck AI", description:"Haz una auditoría web gratuita y descubre mejoras de SEO, técnica, móvil, contenido y conversión.", heading:"Auditoría web gratuita", intro:"Analiza tu sitio gratis y descubre áreas concretas para mejorar SEO, tecnología, contenido y conversión.", points:["SEO y visibilidad","Tecnología y velocidad","Contenido, confianza y conversión"], questions:["¿La auditoría es realmente gratuita?","¿Qué se comprueba?","¿Puedo comprar después un informe completo?"] }
+  },
+  "ai-website-audit": {
+    de: { title:"KI-Website-Audit | SiteCheck AI", description:"Website mit KI analysieren und konkrete Verbesserungen für SEO, Technik und Conversion finden.", heading:"KI-Website-Audit", intro:"SiteCheck AI verbindet messbare Website-Daten mit KI-Empfehlungen, damit du weißt, was du als Nächstes verbessern kannst.", points:["KI-gestützte Empfehlungen","SEO und technische Signale","Conversion und Vertrauen"], questions:["Was analysiert der KI-Audit?","Sind die Empfehlungen konkret?","Ersetzt das eine menschliche Prüfung?"] },
+    fr: { title:"Audit de site par IA | SiteCheck AI", description:"Analysez votre site avec l’IA et trouvez des améliorations concrètes pour le SEO, la technique et la conversion.", heading:"Audit de site par IA", intro:"SiteCheck AI combine des données mesurables avec des recommandations IA pour vous aider à choisir les prochaines améliorations.", points:["Recommandations par IA","SEO et signaux techniques","Conversion et confiance"], questions:["Que vérifie l’audit IA ?","Les recommandations sont-elles concrètes ?","L’IA remplace-t-elle un audit humain ?"] },
+    es: { title:"Auditoría web con IA | SiteCheck AI", description:"Analiza tu sitio con IA y encuentra mejoras concretas de SEO, tecnología y conversión.", heading:"Auditoría web con IA", intro:"SiteCheck AI combina datos medibles con recomendaciones de IA para ayudarte a decidir qué mejorar después.", points:["Recomendaciones con IA","SEO y señales técnicas","Conversión y confianza"], questions:["¿Qué analiza la auditoría con IA?","¿Las recomendaciones son concretas?","¿Sustituye a una auditoría humana?"] }
+  },
+  "website-seo-checker": {
+    de: { title:"SEO Website Checker | SiteCheck AI", description:"SEO deiner Website prüfen: Titel, Beschreibungen, Überschriften, Links und wichtige SEO-Signale.", heading:"SEO Website Checker", intro:"Prüfe die wichtigsten sichtbaren SEO-Signale deiner Website und erhalte verständliche Hinweise für bessere Auffindbarkeit.", points:["Seitentitel und Meta-Beschreibung","Überschriften und Inhalte","Interne und externe Links"], questions:["Welche SEO-Signale werden geprüft?","Ist das ein vollständiger SEO-Audit?","Bekomme ich konkrete Empfehlungen?"] },
+    fr: { title:"SEO Website Checker | SiteCheck AI", description:"Vérifiez le SEO de votre site : titres, descriptions, balises, liens et signaux SEO essentiels.", heading:"SEO Website Checker", intro:"Vérifiez les principaux signaux SEO visibles de votre site et obtenez des pistes claires pour améliorer sa visibilité.", points:["Titres et méta-descriptions","Titres et contenu","Liens internes et externes"], questions:["Quels signaux SEO sont vérifiés ?","Est-ce un audit SEO complet ?","Recevrai-je des recommandations concrètes ?"] },
+    es: { title:"SEO Website Checker | SiteCheck AI", description:"Comprueba el SEO de tu web: títulos, descripciones, encabezados, enlaces y señales SEO importantes.", heading:"SEO Website Checker", intro:"Comprueba las señales SEO visibles más importantes de tu web y recibe indicaciones claras para mejorar su visibilidad.", points:["Títulos y meta descripciones","Encabezados y contenido","Enlaces internos y externos"], questions:["¿Qué señales SEO se comprueban?","¿Es una auditoría SEO completa?","¿Recibiré recomendaciones concretas?"] }
+  },
+  "website-performance-check": {
+    de: { title:"Website Performance Check | SiteCheck AI", description:"Website-Leistung prüfen und technische Signale wie Antwortzeit, Seitengröße und Kompression verstehen.", heading:"Website Performance Check", intro:"Prüfe messbare technische Signale deiner Website und erkenne Bereiche, die Geschwindigkeit und Nutzererlebnis beeinflussen können.", points:["Server-Antwortzeit","Seitengröße und Kompression","Mobile und technische Signale"], questions:["Wie wird die Performance geprüft?","Ist das ein vollständiger Lighthouse-Test?","Was kann ich bei einer langsamen Website verbessern?"] },
+    fr: { title:"Test de performance du site | SiteCheck AI", description:"Testez les performances de votre site et identifiez les signaux techniques liés à la vitesse.", heading:"Test de performance du site", intro:"Vérifiez les signaux techniques mesurables de votre site et identifiez les points qui peuvent affecter la vitesse et l’expérience.", points:["Temps de réponse du serveur","Taille et compression des pages","Signaux mobiles et techniques"], questions:["Comment les performances sont-elles vérifiées ?","Est-ce un test Lighthouse complet ?","Que faire si mon site est lent ?"] },
+    es: { title:"Comprobación del rendimiento web | SiteCheck AI", description:"Comprueba el rendimiento de tu web y detecta señales técnicas relacionadas con la velocidad.", heading:"Comprobación del rendimiento web", intro:"Comprueba señales técnicas medibles y detecta áreas que pueden afectar a la velocidad y la experiencia del usuario.", points:["Tiempo de respuesta del servidor","Tamaño y compresión","Señales móviles y técnicas"], questions:["¿Cómo se comprueba el rendimiento?","¿Es una prueba completa de Lighthouse?","¿Qué puedo mejorar si mi web es lenta?"] }
+  },
+  "website-ux-check": {
+    de: { title:"Website UX Check | SiteCheck AI", description:"Nutzererlebnis deiner Website prüfen: Klarheit, Navigation, Kontakt und Conversion.", heading:"Website UX Check", intro:"Prüfe, ob Besucher schnell verstehen, was du anbietest und welchen nächsten Schritt sie machen können.", points:["Erster Eindruck","Navigation und nächste Schritte","Kontakt und Conversion"], questions:["Was wird beim UX-Check geprüft?","Brauche ich technisches Wissen?","Kann der Check Conversion-Probleme finden?"] },
+    fr: { title:"Test UX de site web | SiteCheck AI", description:"Vérifiez l’expérience utilisateur de votre site : clarté, navigation, contact et conversion.", heading:"Test UX de site web", intro:"Vérifiez si vos visiteurs comprennent rapidement votre offre et savent quelle action effectuer ensuite.", points:["Première impression","Navigation et prochaines étapes","Contact et conversion"], questions:["Que vérifie le test UX ?","Faut-il des connaissances techniques ?","Le test peut-il détecter des problèmes de conversion ?"] },
+    es: { title:"Comprobación UX de una web | SiteCheck AI", description:"Comprueba la experiencia de usuario de tu web: claridad, navegación, contacto y conversión.", heading:"Comprobación UX de una web", intro:"Comprueba si tus visitantes entienden rápidamente tu oferta y saben qué hacer a continuación.", points:["Primera impresión","Navegación y siguientes pasos","Contacto y conversión"], questions:["¿Qué comprueba el análisis UX?","¿Necesito conocimientos técnicos?","¿Puede detectar problemas de conversión?"] }
+  },
+  "website-mobile-check": {
+    de: { title:"Mobile Website Check | SiteCheck AI", description:"Mobile Darstellung deiner Website prüfen und wichtige Signale für Nutzer auf Smartphones erkennen.", heading:"Mobile Website Check", intro:"Prüfe sichtbare mobile und technische Signale und erkenne Bereiche, die auf Smartphones verbessert werden können.", points:["Mobile Darstellung","Geschwindigkeit und Technik","Lesbarkeit und Interaktion"], questions:["Was wird auf Mobilgeräten geprüft?","Warum ist Mobile wichtig?","Welche Verbesserungen kann ich umsetzen?"] },
+    fr: { title:"Test mobile de site web | SiteCheck AI", description:"Vérifiez votre site sur mobile et identifiez les signaux importants pour les utilisateurs de smartphone.", heading:"Test mobile de site web", intro:"Vérifiez les signaux mobiles et techniques visibles et identifiez les points à améliorer sur smartphone.", points:["Affichage mobile","Vitesse et technique","Lisibilité et interaction"], questions:["Que vérifiez-vous sur mobile ?","Pourquoi le mobile est-il important ?","Quelles améliorations puis-je mettre en place ?"] },
+    es: { title:"Comprobación web móvil | SiteCheck AI", description:"Comprueba tu web en móvil y detecta señales importantes para usuarios de smartphones.", heading:"Comprobación web móvil", intro:"Comprueba señales móviles y técnicas visibles y detecta qué puedes mejorar en smartphones.", points:["Diseño móvil","Velocidad y tecnología","Legibilidad e interacción"], questions:["¿Qué se comprueba en móvil?","¿Por qué es importante el móvil?","¿Qué puedo mejorar?"] }
+  },
+  "website-accessibility-check": {
+    de: { title:"Website Accessibility Check | SiteCheck AI", description:"Website auf sichtbare Zugänglichkeits- und Nutzerfreundlichkeitssignale prüfen.", heading:"Website Accessibility Check", intro:"Prüfe sichtbare Signale, die beeinflussen können, wie verständlich und nutzbar deine Website für Besucher ist.", points:["Struktur und Überschriften","Bilder und Alternativtexte","Mobile Nutzung und Klarheit"], questions:["Was prüft der Accessibility Check?","Ist das eine vollständige Barrierefreiheitsprüfung?","Was kann ich verbessern?"] },
+    fr: { title:"Test d’accessibilité web | SiteCheck AI", description:"Vérifiez les signaux visibles d’accessibilité et d’utilisabilité de votre site.", heading:"Test d’accessibilité web", intro:"Vérifiez les signaux visibles qui peuvent influencer la compréhension et l’utilisation de votre site.", points:["Structure et titres","Images et textes alternatifs","Usage mobile et clarté"], questions:["Que vérifie le test d’accessibilité ?","Est-ce un audit complet d’accessibilité ?","Que puis-je améliorer ?"] },
+    es: { title:"Comprobación de accesibilidad web | SiteCheck AI", description:"Comprueba señales visibles de accesibilidad y facilidad de uso de tu web.", heading:"Comprobación de accesibilidad web", intro:"Comprueba señales visibles que pueden influir en la comprensión y el uso de tu sitio web.", points:["Estructura y encabezados","Imágenes y textos alternativos","Uso móvil y claridad"], questions:["¿Qué comprueba la accesibilidad?","¿Es una auditoría completa de accesibilidad?","¿Qué puedo mejorar?"] }
+  },
+  "website-trust-check": {
+    de: { title:"Website Trust Check | SiteCheck AI", description:"Vertrauenssignale deiner Website prüfen: Kontakt, Klarheit, Nachweise und erster Eindruck.", heading:"Website Trust Check", intro:"Prüfe, ob deine Website genügend sichtbare Signale vermittelt, damit Besucher deinem Unternehmen vertrauen können.", points:["Vertrauen und Glaubwürdigkeit","Kontaktmöglichkeiten","Erster Eindruck"], questions:["Welche Vertrauenssignale werden geprüft?","Warum ist Vertrauen wichtig?","Kann der Check fehlende Informationen erkennen?"] },
+    fr: { title:"Test de confiance du site | SiteCheck AI", description:"Vérifiez les signaux de confiance de votre site : contact, clarté, preuves et première impression.", heading:"Test de confiance du site", intro:"Vérifiez si votre site présente suffisamment de signaux visibles pour rassurer les visiteurs.", points:["Confiance et crédibilité","Moyens de contact","Première impression"], questions:["Quels signaux de confiance sont vérifiés ?","Pourquoi la confiance est-elle importante ?","Le test peut-il détecter des informations manquantes ?"] },
+    es: { title:"Comprobación de confianza web | SiteCheck AI", description:"Comprueba las señales de confianza de tu web: contacto, claridad, pruebas y primera impresión.", heading:"Comprobación de confianza web", intro:"Comprueba si tu web muestra suficientes señales visibles para generar confianza en los visitantes.", points:["Confianza y credibilidad","Formas de contacto","Primera impresión"], questions:["¿Qué señales de confianza se comprueban?","¿Por qué es importante la confianza?","¿Puede detectar información que falta?"] }
+  },
+  "website-conversion-audit": {
+    de: { title:"Website Conversion Audit | SiteCheck AI", description:"Conversion deiner Website prüfen: CTAs, Kontaktwege, Vertrauen und nächste Schritte.", heading:"Website Conversion Audit", intro:"Prüfe, ob Besucher leicht verstehen, was sie als Nächstes tun sollen, und ob wichtige Kontaktwege sichtbar sind.", points:["Klare Call-to-Actions","Kontaktwege","Vertrauen und Wertversprechen"], questions:["Was wird beim Conversion-Audit geprüft?","Kann der Check mehr Leads garantieren?","Welche Verbesserungen sind möglich?"] },
+    fr: { title:"Audit de conversion du site | SiteCheck AI", description:"Analysez la conversion de votre site : CTA, contact, confiance et prochaines étapes.", heading:"Audit de conversion du site", intro:"Vérifiez si les visiteurs comprennent facilement l’action suivante et trouvent les moyens de contact importants.", points:["Appels à l’action clairs","Moyens de contact","Confiance et proposition de valeur"], questions:["Que vérifie l’audit de conversion ?","Le test garantit-il plus de prospects ?","Quelles améliorations sont possibles ?"] },
+    es: { title:"Auditoría de conversión web | SiteCheck AI", description:"Comprueba la conversión de tu web: CTA, contacto, confianza y siguientes pasos.", heading:"Auditoría de conversión web", intro:"Comprueba si los visitantes entienden fácilmente qué hacer después y encuentran los canales de contacto importantes.", points:["Llamadas a la acción claras","Formas de contacto","Confianza y propuesta de valor"], questions:["¿Qué comprueba la auditoría de conversión?","¿Garantiza más clientes potenciales?","¿Qué mejoras son posibles?"] }
+  },
+  "small-business-website-audit": {
+    de: { title:"Website-Audit für kleine Unternehmen | SiteCheck AI", description:"Website kleiner Unternehmen prüfen und konkrete Verbesserungen für SEO, Vertrauen und Conversion finden.", heading:"Website-Audit für kleine Unternehmen", intro:"Ein klarer Website-Audit hilft kleinen Unternehmen zu erkennen, welche Verbesserungen zuerst sinnvoll sind.", points:["SEO und Auffindbarkeit","Vertrauen und Klarheit","Kontakt und Conversion"], questions:["Ist der Audit für kleine Unternehmen geeignet?","Was wird tatsächlich gemessen?","Kann ich mit dem kostenlosen Check starten?"] },
+    fr: { title:"Audit de site pour petites entreprises | SiteCheck AI", description:"Analysez le site d’une petite entreprise et trouvez des améliorations concrètes en SEO, confiance et conversion.", heading:"Audit de site pour petites entreprises", intro:"Un audit clair aide les petites entreprises à identifier les améliorations les plus utiles à traiter en premier.", points:["SEO et visibilité","Confiance et clarté","Contact et conversion"], questions:["L’audit convient-il aux petites entreprises ?","Que mesurez-vous réellement ?","Puis-je commencer gratuitement ?"] },
+    es: { title:"Auditoría web para pequeñas empresas | SiteCheck AI", description:"Analiza la web de una pequeña empresa y encuentra mejoras concretas de SEO, confianza y conversión.", heading:"Auditoría web para pequeñas empresas", intro:"Una auditoría clara ayuda a las pequeñas empresas a identificar qué mejoras conviene abordar primero.", points:["SEO y visibilidad","Confianza y claridad","Contacto y conversión"], questions:["¿Es adecuada para pequeñas empresas?","¿Qué se mide realmente?","¿Puedo empezar gratis?"] }
+  },
+  "ecommerce-website-audit": {
+    de: { title:"E-Commerce Website Audit | SiteCheck AI", description:"Online-Shop prüfen: SEO, Vertrauen, Nutzerführung, Produktseiten und Conversion-Signale.", heading:"E-Commerce Website Audit", intro:"Prüfe wichtige Signale deines Online-Shops und erkenne sichtbare Bereiche, die Vertrauen und Conversion beeinflussen können.", points:["Produktseiten und SEO","Vertrauen und Klarheit","Conversion und nächste Schritte"], questions:["Was wird bei einem Shop geprüft?","Prüft der Audit den gesamten Shop?","Kann ich danach einen vollständigen Bericht kaufen?"] },
+    fr: { title:"Audit de site e-commerce | SiteCheck AI", description:"Analysez votre boutique en ligne : SEO, confiance, parcours utilisateur et signaux de conversion.", heading:"Audit de site e-commerce", intro:"Vérifiez les signaux importants de votre boutique et identifiez les points visibles qui peuvent influencer confiance et conversion.", points:["Pages produits et SEO","Confiance et clarté","Conversion et prochaines étapes"], questions:["Que vérifiez-vous sur une boutique ?","Analysez-vous toute la boutique ?","Puis-je acheter un rapport complet ensuite ?"] },
+    es: { title:"Auditoría web para e-commerce | SiteCheck AI", description:"Analiza tu tienda online: SEO, confianza, experiencia de usuario y señales de conversión.", heading:"Auditoría web para e-commerce", intro:"Comprueba señales importantes de tu tienda y detecta áreas visibles que pueden influir en la confianza y la conversión.", points:["Páginas de producto y SEO","Confianza y claridad","Conversión y siguientes pasos"], questions:["¿Qué se comprueba en una tienda?","¿Se analiza toda la tienda?","¿Puedo comprar después un informe completo?"] }
+  },
+  "website-health-check": {
+    de: { title:"Website Health Check | SiteCheck AI", description:"Gesundheitscheck für deine Website: SEO, Technik, Mobile, Inhalte, Vertrauen und Conversion.", heading:"Website Health Check", intro:"Erhalte einen schnellen Gesamtüberblick über wichtige messbare Signale deiner Website und erkenne die nächsten Verbesserungen.", points:["SEO und Auffindbarkeit","Technik und Mobile","Inhalte, Vertrauen und Conversion"], questions:["Was umfasst der Website Health Check?","Ist der Check kostenlos?","Was mache ich mit den Ergebnissen?"] },
+    fr: { title:"Health Check de site web | SiteCheck AI", description:"Faites un bilan de votre site : SEO, technique, mobile, contenu, confiance et conversion.", heading:"Health Check de site web", intro:"Obtenez une vue d’ensemble rapide des principaux signaux mesurables de votre site et identifiez les prochaines améliorations.", points:["SEO et visibilité","Technique et mobile","Contenu, confiance et conversion"], questions:["Que comprend le Health Check ?","Le test est-il gratuit ?","Que faire avec les résultats ?"] },
+    es: { title:"Health Check de sitio web | SiteCheck AI", description:"Haz un chequeo completo de tu web: SEO, tecnología, móvil, contenido, confianza y conversión.", heading:"Health Check de sitio web", intro:"Obtén una visión rápida de las principales señales medibles de tu web y descubre las siguientes mejoras.", points:["SEO y visibilidad","Tecnología y móvil","Contenido, confianza y conversión"], questions:["¿Qué incluye el Health Check?","¿Es gratuito?","¿Qué hago con los resultados?"] }
+  }
+};
+
 function SeoHead() {
-  const legalPath = /^\/(nl|en)\/(privacy|voorwaarden|terms|cookies|herroepen|withdraw)$/.test(window.location.pathname);
+  const legalPath = /^\/(nl|en|de|fr|es)\/(privacy|voorwaarden|terms|cookies|herroepen|withdraw)$/.test(window.location.pathname);
   const { locale } = useLanguage();
   const pathParts = window.location.pathname.split('/').filter(Boolean);
   const slug = pathParts[1] || '';
   const legalType = pathParts[1];
   const blogSlug = (pathParts[0] === 'nl' || pathParts[0] === 'en') && pathParts[1] === 'blog' ? pathParts[2] : undefined;
   const blogArticle = blogSlug ? getBlogArticle(blogSlug)?.[locale] : undefined;
-  const page = seoPages[slug]?.[locale];
+  const page = seoPages[slug]?.[locale as 'nl' | 'en'] ?? internationalSeoPages[slug]?.[locale as GlobalLocale];
   const legalTitles: Record<string, { nl: string; en: string }> = {
     privacy: { nl: 'Privacyverklaring | SiteCheck AI', en: 'Privacy Policy | SiteCheck AI' },
     voorwaarden: { nl: 'Algemene voorwaarden | SiteCheck AI', en: 'Terms and Conditions | SiteCheck AI' },
@@ -196,16 +263,19 @@ function SeoHead() {
         ? 'Laat je website controleren met SiteCheck AI. Ontdek SEO-, content-, techniek-, mobiel- en conversieproblemen en krijg praktische verbeteradviezen.'
         : 'Check your website with SiteCheck AI. Find SEO, content, technical, mobile and conversion issues with practical improvement advice.'));
   const pathname = window.location.pathname;
-  const basePath = pathname === '/' || pathname === '/nl' || pathname === '/nl/' || pathname === '/en' || pathname === '/en/'
-    ? (locale === 'nl' ? '/nl' : '/en')
+  const basePath = pathname === '/' || /^\/(nl|en|de|fr|es)\/?$/.test(pathname)
+    ? `/${locale}`
     : pathname;
   const canonical = new URL(legalPath ? legalBase! : basePath, window.location.origin).href;
-  const seoSlug = blogSlug ? 'blog/' + blogSlug : (isBlogIndex ? 'blog' : (seoPages[slug] ? slug : ''));
+  const seoSlug = blogSlug ? 'blog/' + blogSlug : (isBlogIndex ? 'blog' : (seoPages[slug] || internationalSeoPages[slug] ? slug : ''));
   const legalBase = legalPath ? (locale === 'nl' ? `/nl/${legalType}` : `/en/${legalType === 'voorwaarden' ? 'terms' : legalType === 'herroepen' ? 'withdraw' : legalType}`) : null;
   const nlLegal = legalType === 'terms' || legalType === 'withdraw' ? `/nl/${legalType === 'terms' ? 'voorwaarden' : 'herroepen'}` : `/nl/${legalType}`;
   const enLegal = `/en/${legalType === 'voorwaarden' ? 'terms' : legalType === 'herroepen' ? 'withdraw' : legalType}`;
   const nlUrl = new URL(legalPath ? nlLegal : (seoSlug ? `/nl/${seoSlug}` : '/nl'), window.location.origin).href;
   const enUrl = new URL(legalPath ? enLegal : (seoSlug ? `/en/${seoSlug}` : '/en'), window.location.origin).href;
+  const deUrl = new URL(seoSlug ? `/de/${seoSlug}` : '/de', window.location.origin).href;
+  const frUrl = new URL(seoSlug ? `/fr/${seoSlug}` : '/fr', window.location.origin).href;
+  const esUrl = new URL(seoSlug ? `/es/${seoSlug}` : '/es', window.location.origin).href;
 
   useEffect(() => {
     document.title = title;
@@ -245,6 +315,9 @@ function SeoHead() {
     setLink('canonical', canonical);
     setLink('alternate', nlUrl, { hreflang: 'nl' });
     setLink('alternate', enUrl, { hreflang: 'en' });
+    setLink('alternate', deUrl, { hreflang: 'de' });
+    setLink('alternate', frUrl, { hreflang: 'fr' });
+    setLink('alternate', esUrl, { hreflang: 'es' });
     setLink('alternate', nlUrl, { hreflang: 'x-default' });
 
     const structuredData = blogArticle
@@ -296,7 +369,7 @@ function SeoHead() {
       document.head.appendChild(script);
     }
     script.textContent = JSON.stringify(structuredData);
-  }, [canonical, description, enUrl, locale, nlUrl, title]);
+  }, [canonical, description, enUrl, deUrl, esUrl, frUrl, locale, nlUrl, title]);
 
   return null;
 }
@@ -468,7 +541,7 @@ function Home() {
             <span className="brand-symbol" aria-hidden="true"><Radar /></span>
             <span className="brand-name">SiteCheck <span>AI</span></span>
           </a>
-          <div className="nav-actions"><a className="nav-note" href={(locale === 'nl' ? '/nl' : '/en') + '/blog'}>{copy.knowledge}</a><span className="nav-note">{copy.navNote}</span><LanguageSwitcher /></div>
+          <div className="nav-actions"><a className="nav-note" href={homePath + '/blog'}>{copy.knowledge}</a><span className="nav-note">{copy.navNote}</span><LanguageSwitcher /></div>
         </div>
       </nav>
 
@@ -699,7 +772,7 @@ function Home() {
 }
 
 
-function faqAnswer(question: string, locale: 'nl' | 'en'): string {
+function faqAnswer(question: string, locale: Locale): string {
   if (locale === 'nl') {
     if (question.includes('echt gratis')) return 'Ja. De eerste scan is gratis en laat meetbare signalen en belangrijke aandachtspunten van je website zien.';
     if (question.includes('Wat krijg ik na de gratis scan')) return 'Je krijgt een overzicht van de onderdelen die de scan daadwerkelijk kon beoordelen, inclusief de belangrijkste bevindingen.';
@@ -778,14 +851,15 @@ function SeoLandingPage() {
   const { locale } = useLanguage();
   const [location] = useLocation();
   const slug = location.split('/').filter(Boolean)[1] || '';
-  const page = seoPages[slug]?.[locale] ?? seoPages['website-scan'][locale];
+  const page = seoPages[slug]?.[locale as 'nl' | 'en'] ?? internationalSeoPages[slug]?.[locale as GlobalLocale] ?? seoPages['website-scan'][locale === 'nl' ? 'nl' : 'en'];
+  const homePath = `/${locale}`;
 
   return (
     <Localized>
       <main className="site-shell min-h-[100dvh]">
         <nav className="nav-wrap">
           <div className="page-frame flex items-center justify-between">
-            <a className="brand-mark" href={locale === 'nl' ? '/nl' : '/en'}>
+            <a className="brand-mark" href={homePath}>
               <span className="brand-name">SiteCheck <span>AI</span></span>
             </a>
             <div className="nav-actions"><a className="nav-note" href={(locale === 'nl' ? '/nl' : '/en') + '/blog'}>{locale === 'nl' ? 'Kennisbank' : 'Guides'}</a><LanguageSwitcher /></div>
@@ -798,7 +872,7 @@ function SeoLandingPage() {
               <h1>{page.heading}</h1>
               <p className="hero-lede">{page.intro}</p>
               <div className="scan-actions">
-                <a className="scan-button" href={locale === 'nl' ? '/nl' : '/en'}>Start gratis scan <ArrowRight /></a>
+                <a className="scan-button" href={homePath}>{locale === 'nl' ? 'Start gratis scan' : locale === 'en' ? 'Start free scan' : locale === 'de' ? 'Kostenlosen Scan starten' : locale === 'fr' ? 'Lancer l’analyse gratuite' : 'Iniciar análisis gratuito'} <ArrowRight /></a>
               </div>
             </div>
           </div>
@@ -820,7 +894,9 @@ function SeoLandingPage() {
           <div className="page-frame" style={{ maxWidth: '900px' }}>
             <div className="section-kicker">{locale === 'nl' ? 'Ook interessant' : 'Related checks'}</div>
             <div className="check-grid" style={{ marginBottom: '48px' }}>
-              {(seoInternalLinks[slug]?.[locale] ?? seoInternalLinks['website-scan'][locale]).filter(([href]) => href !== location).slice(0, 5).map(([href, label]) => (
+              {(seoInternalLinks[slug]?.[locale as 'nl' | 'en'] ?? (locale === 'de' || locale === 'fr' || locale === 'es'
+                ? Object.keys(internationalSeoPages).filter((s) => s !== slug).slice(0, 5).map((s) => [`/${locale}/${s}`, internationalSeoPages[s][locale as GlobalLocale].heading] as [string, string])
+                : seoInternalLinks['website-scan'][locale as 'nl' | 'en'])).filter(([href]) => href !== location).slice(0, 5).map(([href, label]) => (
                 <a className="check-card" key={href} href={href}><h2>{label}</h2><span className="text-link">{locale === 'nl' ? 'Bekijk onderwerp' : 'Explore topic'} <ArrowRight /></span></a>
               ))}
             </div>
@@ -833,12 +909,18 @@ function SeoLandingPage() {
                     ['/nl/website-check-installatiebedrijf', 'Installatiebedrijven'],
                     ['/nl/website-check-restaurant', 'Restaurants'],
                   ]
-                : [
+                : locale === 'en'
+                ? [
                     ['/en/website-check-makelaar', 'Real estate agents'],
                     ['/en/website-check-hovenier', 'Landscapers'],
                     ['/en/website-check-installatiebedrijf', 'Installation companies'],
                     ['/en/website-check-restaurant', 'Restaurants'],
                   ]
+                : locale === 'de'
+                  ? [['/en/website-check-makelaar', 'Branchen-Checks'],['/en/website-check-hovenier', 'Website prüfen'],['/en/website-check-installatiebedrijf', 'Website-Audit'],['/en/website-check-restaurant', 'Website-Check']]
+                  : locale === 'fr'
+                    ? [['/en/website-check-makelaar', 'Checks par secteur'],['/en/website-check-hovenier', 'Audit de site'],['/en/website-check-installatiebedrijf', 'Audit web'],['/en/website-check-restaurant', 'Test de site']]
+                    : [['/en/website-check-makelaar', 'Checks por sector'],['/en/website-check-hovenier', 'Auditoría web'],['/en/website-check-installatiebedrijf', 'Auditoría de sitio'],['/en/website-check-restaurant', 'Comprobación web']]
               ).filter(([href]) => href !== location).map(([href, label]) => (
                 <a className="check-card" key={href} href={href}><h2>{label}</h2><span className="text-link">{locale === 'nl' ? 'Bekijk check' : 'View check'} <ArrowRight /></span></a>
               ))}
@@ -958,6 +1040,9 @@ function Router() {
       <Switch>
         <Route path="/nl" component={Home} />
         <Route path="/en" component={Home} />
+        <Route path="/de" component={Home} />
+        <Route path="/fr" component={Home} />
+        <Route path="/es" component={Home} />
         <Route path="/nl/blog" component={BlogPage} />
         <Route path="/en/blog" component={BlogPage} />
         <Route path="/nl/blog/:slug" component={BlogPage} />
@@ -972,6 +1057,9 @@ function Router() {
         <Route path="/en/withdraw" component={() => <LegalPage type="withdraw" />} />
         <Route path="/nl/:slug" component={SeoLandingPage} />
         <Route path="/en/:slug" component={SeoLandingPage} />
+        <Route path="/de/:slug" component={SeoLandingPage} />
+        <Route path="/fr/:slug" component={SeoLandingPage} />
+        <Route path="/es/:slug" component={SeoLandingPage} />
         <Route path="/" component={Home} />
         <Route path="/scans/:scanId" component={ScanResults} />
         <Route path="/scans/:scanId/upgrade" component={Upgrade} />
