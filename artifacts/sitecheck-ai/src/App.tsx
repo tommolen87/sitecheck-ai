@@ -4,7 +4,7 @@ import { ErrorBoundary } from '@/components/error-boundary';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import NotFound from '@/pages/not-found';
-import { LanguageProvider, LanguageSwitcher, Localized, translateText, useLanguage } from '@/lib/i18n';
+import { LanguageProvider, LanguageSwitcher, Localized, useLanguage } from '@/lib/i18n';
 import { getScanAccessToken, setScanAccessToken } from '@/lib/scan-access';
 import ScanResults from '@/pages/scan-results';
 import Upgrade from '@/pages/upgrade';
