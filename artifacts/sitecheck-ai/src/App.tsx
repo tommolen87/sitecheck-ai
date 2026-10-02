@@ -312,6 +312,35 @@ function Home() {
   const createScan = useCreateScan({ request: { headers: { 'x-sitecheck-language': locale } } });
   const [, setLocation] = useLocation();
   const [queueCount, setQueueCount] = useState<number | null>(null);
+  const copy = locale === 'nl' ? {
+    knowledge: 'Kennisbank', navNote: 'Voor ondernemers met een helder verhaal', eyebrow: 'Een nuchtere blik op je website',
+    title: <>Hoe goed presteert <em>jouw website?</em></>, lede: 'SiteCheck AI analyseert je website en geeft praktische verbeteradviezen. Geen technisch rapport waar je doorheen moet ploegen, maar duidelijke handvatten voor de volgende stap.',
+    honest: 'Eerlijk over wat we weten', private: 'Je gegevens blijven privé', startTitle: 'Start met je website', freePill: 'Gratis eerste scan', urlLabel: 'Website-adres', placeholder: 'https://jouwbedrijf.nl',
+    freeButton: 'Start gratis scan', paidButton: 'Volledig rapport — €29', paidPending: 'Volledig rapport voorbereiden...', analyzing: 'SiteCheck AI analyseert...',
+    fineFree: 'Gratis scan:', finePaid: 'Volledig rapport:', fineText: 'krijg alle verbeterpunten en concrete AI-voorstellen voor €29, eenmalig.',
+    queuedTitle: 'Je scan staat klaar', queuedAnalyzing: 'SiteCheck AI analyseert je website', queuedText: 'We hebben je aanvraag ontvangen. De analyse wordt op de achtergrond voorbereid.', queuedAnalyzingText: 'We halen de homepage op en controleren alleen wat we daadwerkelijk kunnen meten.',
+    noJargon: 'Geen vakjargon.', signal: 'Wel zicht op wat je website voor je bedrijf kan doen.', onlyUrl: 'Alleen je URL is nodig', processing: 'Aanvragen worden verwerkt',
+    methodKicker: 'Zo werkt het', methodTitle: 'Van twijfel naar een volgende stap.', methodIntro: 'Een website hoeft niet perfect te zijn. Je wilt vooral weten waar een kleine verbetering het meeste oplevert.',
+    steps: [['Je deelt je URL','Geen account, vragenlijst of technische voorbereiding. Alleen het adres van je website.'],['Wij nemen rustig de tijd','De scan wordt ingepland. We doen niet alsof een snelle blik hetzelfde is als goed kijken.'],['Je krijgt richting','Praktische aanbevelingen waarmee je zelf, of samen met je webbouwer, verder kunt.']],
+    broadKicker: 'Een brede blik', broadTitle: 'Niet alleen de buitenkant.', broadIntro: 'Een goede website voelt vanzelfsprekend voor je bezoeker. Daarom kijken we naar de samenhang, niet naar één los vinkje.',
+    cards: [['De eerste indruk','Is in één oogopslag duidelijk wat je doet, voor wie en waarom iemand verder zou kijken?'],['De route naar contact','Kan een geïnteresseerde zonder zoeken de juiste volgende stap zetten?'],['Vertrouwen in details','Klopt het verhaal ook in de kleine dingen die bepalen of een bezoeker blijft?']],
+    paperLabel: 'Waar we op letten', paperBig: 'Helder.', paperNote: 'De beste aanbeveling is er één die je morgen begrijpt én kunt uitvoeren.',
+    closingTitle: 'Maak van je website een betere eerste kennismaking.', closingText: 'Begin met wat je al hebt. SiteCheck AI helpt je kiezen wat daarna de moeite waard is.'
+  } : {
+    knowledge: 'Guides', navNote: 'For business owners who value clarity', eyebrow: 'A clear look at your website',
+    title: <>How well does <em>your website perform?</em></>, lede: 'SiteCheck AI analyzes your website and gives you practical improvement advice. No technical report to dig through — just clear guidance for what to do next.',
+    honest: 'Honest about what we know', private: 'Your data stays private', startTitle: 'Start with your website', freePill: 'Free first scan', urlLabel: 'Website address', placeholder: 'https://yourwebsite.com',
+    freeButton: 'Start free scan', paidButton: 'Full report — €29', paidPending: 'Preparing full report...', analyzing: 'SiteCheck AI is analyzing...',
+    fineFree: 'Free scan:', finePaid: 'Full report:', fineText: 'get all improvement points and concrete AI recommendations for €29, one-time.',
+    queuedTitle: 'Your scan is ready', queuedAnalyzing: 'SiteCheck AI is analyzing your website', queuedText: 'We received your request. The analysis is being prepared in the background.', queuedAnalyzingText: 'We are fetching the homepage and checking only what we can actually measure.',
+    noJargon: 'No jargon.', signal: 'Just a clear view of what your website could do better for your business.', onlyUrl: 'Only your URL is needed', processing: 'Requests are being processed',
+    methodKicker: 'How it works', methodTitle: 'From uncertainty to a next step.', methodIntro: 'Your website does not need to be perfect. You mainly need to know where a small improvement could make the biggest difference.',
+    steps: [['Share your URL','No account, questionnaire or technical preparation. Just your website address.'],['We take a closer look','The scan is processed carefully. We do not pretend a quick glance is the same as a proper review.'],['Get clear direction','Practical recommendations you can act on yourself or with your web developer.']],
+    broadKicker: 'A broader view', broadTitle: 'More than the surface.', broadIntro: 'A good website feels intuitive to visitors. That is why we look at how the different signals work together, not at isolated checkboxes.',
+    cards: [['The first impression','Is it immediately clear what you do, who it is for and why someone should continue?'],['The path to contact','Can an interested visitor find the right next step without searching?'],['Trust in the details','Does the story also hold together in the small details that influence whether a visitor stays?']],
+    paperLabel: 'What we look at', paperBig: 'Clear.', paperNote: 'The best recommendation is one you understand today and can act on tomorrow.',
+    closingTitle: 'Turn your website into a better first introduction.', closingText: 'Start with what you already have. SiteCheck AI helps you decide what is worth improving next.'
+  };
   useEffect(() => {
     const controller = new AbortController();
     fetch("/api/scans/stats", { signal: controller.signal })
@@ -439,32 +468,31 @@ function Home() {
             <span className="brand-symbol" aria-hidden="true"><Radar /></span>
             <span className="brand-name">SiteCheck <span>AI</span></span>
           </a>
-          <div className="nav-actions"><a className="nav-note" href={(locale === 'nl' ? '/nl' : '/en') + '/blog'}>Kennisbank</a><span className="nav-note">Voor ondernemers met een helder verhaal</span><LanguageSwitcher /></div>
+          <div className="nav-actions"><a className="nav-note" href={(locale === 'nl' ? '/nl' : '/en') + '/blog'}>{copy.knowledge}</a><span className="nav-note">{copy.navNote}</span><LanguageSwitcher /></div>
         </div>
       </nav>
 
       <section className="hero">
         <div className="page-frame hero-grid">
           <div className="reveal">
-            <div className="eyebrow">Een nuchtere blik op je website</div>
-            <h1>Hoe goed presteert <em>jouw website?</em></h1>
+            <div className="eyebrow">{copy.eyebrow}</div>
+            <h1>{copy.title}</h1>
             <p className="hero-lede">
-              SiteCheck AI analyseert je website en geeft praktische verbeteradviezen.
-              Geen technisch rapport waar je doorheen moet ploegen, maar duidelijke handvatten voor de volgende stap.
+              {copy.lede}
             </p>
             <div className="hero-meta">
-              <span className="meta-item"><ShieldCheck /> Eerlijk over wat we weten</span>
-              <span className="meta-item"><LockKeyhole /> Je gegevens blijven privé</span>
+              <span className="meta-item"><ShieldCheck /> {copy.honest}</span>
+              <span className="meta-item"><LockKeyhole /> {copy.private}</span>
             </div>
           </div>
 
           <div className="scan-card reveal reveal-delay-2">
             <div className="scan-card-label">
-              <strong>Start met je website</strong>
-              <span className="free-pill">Gratis eerste scan</span>
+              <strong>{copy.startTitle}</strong>
+              <span className="free-pill">{copy.freePill}</span>
             </div>
             <form onSubmit={submitScan} noValidate>
-              <label className="form-label" htmlFor="website-url">Website-adres</label>
+              <label className="form-label" htmlFor="website-url">{copy.urlLabel}</label>
               <div className="url-field">
                 <Globe2 aria-hidden="true" />
                 <input
@@ -473,7 +501,7 @@ function Home() {
                   type="url"
                   inputMode="url"
                   autoComplete="url"
-                  placeholder="https://jouwbedrijf.nl"
+                  placeholder={copy.placeholder}
                   value={url}
                   onChange={(event) => {
                     setUrl(event.target.value);
@@ -493,9 +521,9 @@ function Home() {
                   data-testid="button-start-scan"
                 >
                   {createScan.isPending && !paidScanPending ? (
-                    <>SiteCheck AI analyseert... <Timer className="animate-pulse" /></>
+                    <>{copy.analyzing} <Timer className="animate-pulse" /></>
                   ) : (
-                    <>Start gratis scan <ArrowRight /></>
+                    <>{copy.freeButton} <ArrowRight /></>
                   )}
                 </button>
                 <button
@@ -506,13 +534,13 @@ function Home() {
                   data-testid="button-start-paid-scan"
                 >
                   {paidScanPending ? (
-                    <>Volledig rapport voorbereiden... <Timer className="animate-pulse" /></>
+                    <>{copy.paidPending} <Timer className="animate-pulse" /></>
                   ) : (
-                    <>Volledig rapport — €29 <ArrowRight /></>
+                    <>{copy.paidButton} <ArrowRight /></>
                   )}
                 </button>
               </div>
-              <p className="fine-print"><strong>Gratis scan:</strong> krijg inzicht in je website. <strong>Volledig rapport:</strong> krijg alle verbeterpunten en concrete AI-voorstellen voor €29, eenmalig.</p>
+              <p className="fine-print"><strong>{copy.fineFree}</strong> {locale === 'nl' ? 'krijg inzicht in je website.' : 'get insight into your website.'} <strong>{copy.finePaid}</strong> {copy.fineText}</p>
             </form>
             {submitError && (
               <div className="api-error" role="alert" data-testid="error-scan-request">
@@ -524,8 +552,8 @@ function Home() {
                 <div className="queued-top">
                   <div className="queued-icon"><Timer /></div>
                   <div className="queued-copy">
-                    <strong>{createScan.isPending ? 'SiteCheck AI analyseert je website' : 'Je scan staat klaar'}</strong>
-                    <p>{createScan.isPending ? 'We halen de homepage op en controleren alleen wat we daadwerkelijk kunnen meten.' : 'We hebben je aanvraag ontvangen. De analyse wordt op de achtergrond voorbereid.'}</p>
+                    <strong>{createScan.isPending ? copy.queuedAnalyzing : copy.queuedTitle}</strong>
+                    <p>{createScan.isPending ? copy.queuedAnalyzingText : copy.queuedText}</p>
                   </div>
                 </div>
                 {activeScan.data && <span className="queued-url">{activeScan.data.url}</span>}
@@ -538,10 +566,10 @@ function Home() {
 
       <div className="signal-strip">
         <div className="page-frame signal-inner">
-          <p className="signal-copy"><strong>Geen vakjargon.</strong> Wel zicht op wat je website voor je bedrijf kan doen.</p>
+          <p className="signal-copy"><strong>{copy.noJargon}</strong> {copy.signal}</p>
           <div className="signal-stats">
-            <span><span className="stat-dot" />{queueCount === null ? 'Aanvragen worden verwerkt' : `${queueCount} scans in de afgelopen 7 dagen`}</span>
-            <span>Alleen je URL is nodig</span>
+            <span><span className="stat-dot" />{queueCount === null ? copy.processing : `${queueCount} scans in the last 7 days`}</span>
+            <span>{copy.onlyUrl}</span>
           </div>
         </div>
       </div>
@@ -549,9 +577,9 @@ function Home() {
       <section className="section">
         <div className="page-frame method-grid">
           <div>
-            <div className="section-kicker">Zo werkt het</div>
-            <h2 className="section-title">Van twijfel naar een volgende stap.</h2>
-            <p className="section-intro">Een website hoeft niet perfect te zijn. Je wilt vooral weten waar een kleine verbetering het meeste oplevert.</p>
+            <div className="section-kicker">{copy.methodKicker}</div>
+            <h2 className="section-title">{copy.methodTitle}</h2>
+            <p className="section-intro">{copy.methodIntro}</p>
             <div className="method-list">
               <div className="method-step">
                 <span className="step-number">01</span>
@@ -569,9 +597,9 @@ function Home() {
           </div>
           <div className="audit-paper reveal reveal-delay-1" aria-label="Voorbeeld van de aanpak">
             <div className="paper-line" />
-            <div className="paper-label">Waar we op letten</div>
-            <div className="paper-big">Helder.</div>
-            <p className="paper-note">De beste aanbeveling is er één die je morgen begrijpt én kunt uitvoeren.</p>
+            <div className="paper-label">{copy.paperLabel}</div>
+            <div className="paper-big">{copy.paperBig}</div>
+            <p className="paper-note">{copy.paperNote}</p>
             <div className="paper-line" />
             <div className="paper-label">SiteCheck AI / 2024</div>
           </div>
@@ -582,26 +610,26 @@ function Home() {
         <div className="page-frame">
           <div className="checks-header">
             <div>
-              <div className="section-kicker">Een brede blik</div>
-              <h2 className="section-title">Niet alleen de buitenkant.</h2>
+              <div className="section-kicker">{copy.broadKicker}</div>
+              <h2 className="section-title">{copy.broadTitle}</h2>
             </div>
-            <p className="section-intro">Een goede website voelt vanzelfsprekend voor je bezoeker. Daarom kijken we naar de samenhang, niet naar één los vinkje.</p>
+            <p className="section-intro">{copy.broadIntro}</p>
           </div>
           <div className="check-grid">
             <article className="check-card">
               <div className="check-icon"><LayoutDashboard /></div>
-              <h3>De eerste indruk</h3>
-              <p>Is in één oogopslag duidelijk wat je doet, voor wie en waarom iemand verder zou kijken?</p>
+              <h3>{copy.cards[0][0]}</h3>
+              <p>{copy.cards[0][1]}</p>
             </article>
             <article className="check-card">
               <div className="check-icon"><ClipboardCheck /></div>
-              <h3>De route naar contact</h3>
-              <p>Kan een geïnteresseerde zonder zoeken de juiste volgende stap zetten?</p>
+              <h3>{copy.cards[1][0]}</h3>
+              <p>{copy.cards[1][1]}</p>
             </article>
             <article className="check-card">
               <div className="check-icon"><Sparkles /></div>
-              <h3>Vertrouwen in details</h3>
-              <p>Klopt het verhaal ook in de kleine dingen die bepalen of een bezoeker blijft?</p>
+              <h3>{copy.cards[2][0]}</h3>
+              <p>{copy.cards[2][1]}</p>
             </article>
           </div>
         </div>
@@ -649,15 +677,15 @@ function Home() {
 
       <section className="closing">
         <div className="page-frame closing-box">
-          <h2>Maak van je website een betere eerste kennismaking.</h2>
-          <p>Begin met wat je al hebt. SiteCheck AI helpt je kiezen wat daarna de moeite waard is.</p>
+          <h2>{copy.closingTitle}</h2>
+          <p>{copy.closingText}</p>
         </div>
       </section>
 
       <footer className="footer">
         <div className="page-frame footer-inner">
           <span>© {new Date().getFullYear()} SiteCheck AI</span>
-          <span>Een rustige check voor ambitieuze ondernemers</span>
+          <span>{locale === 'nl' ? 'Een rustige check voor ambitieuze ondernemers' : 'A clear check for ambitious businesses'}</span>
           <span className="legal-links">
             <a href="/nl/privacy">{locale === 'nl' ? 'Privacy' : 'Privacy'}</a>
             <a href={locale === 'nl' ? '/nl/voorwaarden' : '/en/terms'}>{locale === 'nl' ? 'Voorwaarden' : 'Terms'}</a>
