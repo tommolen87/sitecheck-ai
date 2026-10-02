@@ -1,6 +1,6 @@
 import { useLanguage, LanguageSwitcher } from '@/lib/i18n';
 
-type Locale = 'nl' | 'en';
+type Locale = 'nl' | 'en' | 'de' | 'fr' | 'es';
 
 const legalContent = {
   nl: {
@@ -115,8 +115,8 @@ const legalContent = {
 
 export default function LegalPage({ type }: { type: 'privacy' | 'terms' | 'cookies' | 'withdraw' }) {
   const { locale } = useLanguage();
-  const content = legalContent[locale][type];
-  const home = locale === 'nl' ? '/nl' : '/en';
+  const content = legalContent[locale]?.[type] ?? legalContent.en[type];
+  const home = locale === 'nl' ? '/nl' : locale === 'en' ? '/en' : `/${locale}`;
 
   return (
     <main className="site-shell min-h-[100dvh]">
