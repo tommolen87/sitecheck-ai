@@ -4,7 +4,7 @@ import { ErrorBoundary } from '@/components/error-boundary';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import NotFound from '@/pages/not-found';
-import { LanguageProvider, LanguageSwitcher, Localized, useLanguage } from '@/lib/i18n';
+import { LanguageProvider, LanguageSwitcher, Localized, translateText, useLanguage } from '@/lib/i18n';
 import { getScanAccessToken, setScanAccessToken } from '@/lib/scan-access';
 import ScanResults from '@/pages/scan-results';
 import Upgrade from '@/pages/upgrade';
@@ -716,7 +716,7 @@ function Home() {
         <div className="page-frame signal-inner">
           <p className="signal-copy"><strong>{copy.noJargon}</strong> {copy.signal}</p>
           <div className="signal-stats">
-            <span><span className="stat-dot" />{queueCount === null ? copy.processing : `${queueCount} scans in the last 7 days`}</span>
+            <span><span className="stat-dot" />{queueCount === null ? copy.processing : `${queueCount} ${({ nl: 'scans in de afgelopen 7 dagen', en: 'scans in the last 7 days', de: 'Scans in den letzten 7 Tagen', fr: 'analyses au cours des 7 derniers jours', es: 'análisis en los últimos 7 días' } as const)[locale]}`}</span>
             <span>{copy.onlyUrl}</span>
           </div>
         </div>
@@ -855,10 +855,10 @@ function Home() {
           <span>© {new Date().getFullYear()} SiteCheck AI</span>
           <span>{extra.footerNote}</span>
           <span className="legal-links">
-            <a href="/nl/privacy">{locale === 'nl' ? 'Privacy' : 'Privacy'}</a>
-            <a href={locale === 'nl' ? '/nl/voorwaarden' : '/en/terms'}>{extra.terms}</a>
-            <a href={locale === 'nl' ? '/nl/cookies' : '/en/cookies'}>{locale === 'nl' ? 'Cookies' : 'Cookies'}</a>
-            <a href={locale === 'nl' ? '/nl/herroepen' : '/en/withdraw'}>{extra.withdraw}</a>
+            <a href={locale === 'nl' ? '/nl/privacy' : locale === 'en' ? '/en/privacy' : locale === 'de' ? '/de/privacy' : locale === 'fr' ? '/fr/privacy' : '/es/privacy'}>Privacy</a>
+            <a href={locale === 'nl' ? '/nl/voorwaarden' : locale === 'en' ? '/en/terms' : locale === 'de' ? '/de/terms' : locale === 'fr' ? '/fr/conditions' : '/es/terminos'}>{extra.terms}</a>
+            <a href={locale === 'nl' ? '/nl/cookies' : locale === 'en' ? '/en/cookies' : locale === 'de' ? '/de/cookies' : locale === 'fr' ? '/fr/cookies' : '/es/cookies'}>Cookies</a>
+            <a href={locale === 'nl' ? '/nl/herroepen' : locale === 'en' ? '/en/withdraw' : locale === 'de' ? '/de/withdraw' : locale === 'fr' ? '/fr/retractation' : '/es/desistimiento'}>{extra.withdraw}</a>
           </span>
         </div>
       </footer>
