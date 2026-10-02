@@ -884,7 +884,47 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
       "Moeilijk": "Difficult",
     };
 
-    const t = (value: string): string => locale === "en" ? (pdfTranslations[value] ?? value) : value;
+    const pdfInternationalTranslations: Record<"de" | "fr" | "es", Record<string, string>> = {
+      de: {
+        "Ja":"Ja","Nee":"Nein","Niet gemeten":"Nicht gemessen","Uitstekend":"Ausgezeichnet","Goed":"Gut","Redelijk":"Ordentlich","Verbetering nodig":"Verbesserung erforderlich","Veel verbetering nodig":"Deutlich verbesserungsbedürftig",
+        "SiteCheck AI • Website analyse":"SiteCheck AI • Websiteanalyse","Pagina":"Seite","Website":"Website","Gegenereerd op":"Erstellt am","TOTAALSCORE":"GESAMTSCORE","Gemeten kwaliteit":"Gemessene Qualität","Meetdekking":"Messabdeckung","Totaalscore":"Gesamtscore","kwaliteit":"Qualität","van de uitgevoerde controles":"der durchgeführten Prüfungen",
+        "Begrippen eenvoudig uitgelegd":"Begriffe einfach erklärt","2. Wat gaat er al goed?":"2. Was läuft bereits gut?","Sterke punten die tijdens de scan zijn aangetroffen.":"Stärken, die beim Scan festgestellt wurden.","Er zijn geen afzonderlijke sterke punten beschikbaar in de scanresultaten.":"Für die Scanergebnisse sind keine einzelnen Stärken verfügbar.",
+        "3. Belangrijkste verbeterpunten":"3. Wichtigste Verbesserungspunkte","Wat we zagen":"Was wir festgestellt haben","Waarom dit belangrijk is":"Warum das wichtig ist","Aanbeveling":"Empfehlung","Concreet voorstel":"Konkreter Vorschlag","Impact":"Auswirkung","Moeite":"Aufwand",
+        "Er zijn geen AI-verbeterpunten beschikbaar voor deze scan.":"Für diesen Scan sind keine KI-Verbesserungspunkte verfügbar.","4. Actieplan":"4. Aktionsplan","Actieplan voor de komende 30 dagen":"Aktionsplan für die nächsten 30 Tage","ACTIE":"AKTION","MOEITE":"AUFWAND",
+        "5. Wat we op je website hebben gemeten":"5. Was wir auf deiner Website gemessen haben","Er zijn geen afzonderlijke technische meetwaarden beschikbaar.":"Es sind keine einzelnen technischen Messwerte verfügbar.","6. Dit konden we niet betrouwbaar beoordelen":"6. Was wir nicht zuverlässig beurteilen konnten","Samengevat":"Zusammenfassung","Volledig website-rapport":"Vollständiger Websitebericht","Tekens":"Zeichen","Niet gevonden":"Nicht gefunden","tekens":"Zeichen",
+        "Totaalscore":"Gesamtscore","Hoog":"Hoch","Gemiddeld":"Mittel","Laag":"Niedrig","Makkelijk":"Einfach","Gemiddeld moeilijk":"Mittlerer Aufwand","Moeilijk":"Schwierig",
+        "Conversie":"Konversion","Vindbaarheid in Google":"Sichtbarkeit bei Google","Mobiel":"Mobil","Techniek & snelheid":"Technik & Geschwindigkeit","Content":"Inhalt","Vertrouwen":"Vertrauen","Lokale vindbaarheid":"Lokale Sichtbarkeit",
+        "Sterke punten":"Stärken","Verbeterpunt":"Verbesserungspunkt","Niet beschikbaar":"Nicht verfügbar","Niet aangegeven":"Nicht angegeben","Niet vastgesteld":"Nicht festgestellt"
+      },
+      fr: {
+        "Ja":"Oui","Nee":"Non","Niet gemeten":"Non mesuré","Uitstekend":"Excellent","Goed":"Bon","Redelijk":"Correct","Verbetering nodig":"Amélioration nécessaire","Veel verbetering nodig":"Amélioration importante nécessaire",
+        "SiteCheck AI • Website analyse":"SiteCheck AI • Analyse de site web","Pagina":"Page","Website":"Site web","Gegenereerd op":"Généré le","TOTAALSCORE":"SCORE GLOBAL","Gemeten kwaliteit":"Qualité mesurée","Meetdekking":"Couverture des mesures","Totaalscore":"Score global","kwaliteit":"qualité","van de uitgevoerde controles":"des contrôles effectués",
+        "Begrippen eenvoudig uitgelegd":"Les termes expliqués simplement","2. Wat gaat er al goed?":"2. Ce qui fonctionne déjà bien","Sterke punten die tijdens de scan zijn aangetroffen.":"Points forts constatés lors de l'analyse.","Er zijn geen afzonderlijke sterke punten beschikbaar in de scanresultaten.":"Aucun point fort individuel n'est disponible dans les résultats de l'analyse.",
+        "3. Belangrijkste verbeterpunten":"3. Principaux points d'amélioration","Wat we zagen":"Ce que nous avons constaté","Waarom dit belangrijk is":"Pourquoi c'est important","Aanbeveling":"Recommandation","Concreet voorstel":"Proposition concrète","Impact":"Impact","Moeite":"Effort",
+        "Er zijn geen AI-verbeterpunten beschikbaar voor deze scan.":"Aucun point d'amélioration généré par l'IA n'est disponible pour cette analyse.","4. Actieplan":"4. Plan d'action","Actieplan voor de komende 30 dagen":"Plan d'action pour les 30 prochains jours","ACTIE":"ACTION","MOEITE":"EFFORT",
+        "5. Wat we op je website hebben gemeten":"5. Ce que nous avons mesuré sur votre site","Er zijn geen afzonderlijke technische meetwaarden beschikbaar.":"Aucune mesure technique individuelle n'est disponible.","6. Dit konden we niet betrouwbaar beoordelen":"6. Ce que nous n'avons pas pu évaluer de manière fiable","Samengevat":"Résumé","Volledig website-rapport":"Rapport complet du site web","Tekens":"caractères","Niet gevonden":"Non trouvé","tekens":"caractères",
+        "Hoog":"Élevé","Gemiddeld":"Moyen","Laag":"Faible","Makkelijk":"Facile","Gemiddeld moeilijk":"Moyen","Moeilijk":"Difficile",
+        "Conversie":"Conversion","Vindbaarheid in Google":"Visibilité sur Google","Mobiel":"Mobile","Techniek & snelheid":"Technique et vitesse","Content":"Contenu","Vertrouwen":"Confiance","Lokale vindbaarheid":"Visibilité locale",
+        "Sterke punten":"Points forts","Verbeterpunt":"Point d'amélioration","Niet beschikbaar":"Non disponible","Niet aangegeven":"Non précisé","Niet vastgesteld":"Non déterminé"
+      },
+      es: {
+        "Ja":"Sí","Nee":"No","Niet gemeten":"No medido","Uitstekend":"Excelente","Goed":"Bueno","Redelijk":"Aceptable","Verbetering nodig":"Necesita mejoras","Veel verbetering nodig":"Necesita muchas mejoras",
+        "SiteCheck AI • Website analyse":"SiteCheck AI • Análisis del sitio web","Pagina":"Página","Website":"Sitio web","Gegenereerd op":"Generado el","TOTAALSCORE":"PUNTUACIÓN GLOBAL","Gemeten kwaliteit":"Calidad medida","Meetdekking":"Cobertura de medición","Totaalscore":"Puntuación global","kwaliteit":"calidad","van de uitgevoerde controles":"de las comprobaciones realizadas",
+        "Begrippen eenvoudig uitgelegd":"Términos explicados de forma sencilla","2. Wat gaat er al goed?":"2. Lo que ya funciona bien","Sterke punten die tijdens de scan zijn aangetroffen.":"Puntos fuertes encontrados durante el análisis.","Er zijn geen afzonderlijke sterke punten beschikbaar in de scanresultaten.":"No hay puntos fuertes individuales disponibles en los resultados del análisis.",
+        "3. Belangrijkste verbeterpunten":"3. Principales puntos de mejora","Wat we zagen":"Lo que hemos detectado","Waarom dit belangrijk is":"Por qué es importante","Aanbeveling":"Recomendación","Concreet voorstel":"Propuesta concreta","Impact":"Impacto","Moeite":"Esfuerzo",
+        "Er zijn geen AI-verbeterpunten beschikbaar voor deze scan.":"No hay puntos de mejora de IA disponibles para este análisis.","4. Actieplan":"4. Plan de acción","Actieplan voor de komende 30 dagen":"Plan de acción para los próximos 30 días","ACTIE":"ACCIÓN","MOEITE":"ESFUERZO",
+        "5. Wat we op je website hebben gemeten":"5. Lo que hemos medido en tu sitio web","Er zijn geen afzonderlijke technische meetwaarden beschikbaar.":"No hay mediciones técnicas individuales disponibles.","6. Dit konden we niet betrouwbaar beoordelen":"6. Lo que no pudimos evaluar de forma fiable","Samengevat":"Resumen","Volledig website-rapport":"Informe completo del sitio web","Tekens":"caracteres","Niet gevonden":"No encontrado","tekens":"caracteres",
+        "Hoog":"Alto","Gemiddeld":"Medio","Laag":"Bajo","Makkelijk":"Fácil","Gemiddeld moeilijk":"Dificultad media","Moeilijk":"Difícil",
+        "Conversie":"Conversión","Vindbaarheid in Google":"Visibilidad en Google","Mobiel":"Móvil","Techniek & snelheid":"Técnica y velocidad","Content":"Contenido","Vertrouwen":"Confianza","Lokale vindbaarheid":"Visibilidad local",
+        "Sterke punten":"Puntos fuertes","Verbeterpunt":"Punto de mejora","Niet beschikbaar":"No disponible","Niet aangegeven":"No especificado","Niet vastgesteld":"No determinado"
+      },
+    };
+
+    const t = (value: string): string => {
+      if (locale === "nl") return value;
+      if (locale === "en") return pdfTranslations[value] ?? value;
+      return pdfInternationalTranslations[locale][value] ?? pdfTranslations[value] ?? value;
+    };
 
     const safe = (value: unknown, fallback = "Niet beschikbaar") => {
       if (value === null || value === undefined || value === "") {
@@ -917,7 +957,7 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
       }>;
       notChecked: string[];
     }) => {
-      if (locale !== "en") return payload;
+      if (locale === "nl") return payload;
 
       const apiKey =
         process.env.AI_INTEGRATIONS_OPENAI_API_KEY ??
@@ -986,7 +1026,7 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
             {
               role: "system",
               content:
-                "Translate the supplied SiteCheck AI report text into natural, professional English. Preserve URLs, numbers, names, quoted website text and factual meaning exactly. Do not add or remove facts. Return exactly the same array lengths and order.",
+                "Translate the supplied SiteCheck AI report text into natural, professional ${locale === "en" ? "English" : locale === "de" ? "German" : locale === "fr" ? "French" : "Spanish"}. Preserve URLs, numbers, names, quoted website text and factual meaning exactly. Do not add or remove facts. Return exactly the same array lengths and order.",
             },
             { role: "user", content: JSON.stringify(payload) },
           ],
