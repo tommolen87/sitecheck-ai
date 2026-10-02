@@ -541,7 +541,7 @@ function Home() {
             <span className="brand-symbol" aria-hidden="true"><Radar /></span>
             <span className="brand-name">SiteCheck <span>AI</span></span>
           </a>
-          <div className="nav-actions"><a className="nav-note" href={homePath + '/blog'}>{copy.knowledge}</a><span className="nav-note">{copy.navNote}</span><LanguageSwitcher /></div>
+          <div className="nav-actions"><a className="nav-note" href={locale === 'nl' || locale === 'en' ? homePath + '/blog' : '/en/blog'}>{copy.knowledge}</a><span className="nav-note">{copy.navNote}</span><LanguageSwitcher /></div>
         </div>
       </nav>
 
