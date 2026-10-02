@@ -5,6 +5,7 @@ import { eq } from "drizzle-orm";
 import { db, scansTable } from "@workspace/db";
 import { createHmac } from "node:crypto";
 import { sendPaymentConfirmationEmail } from "../lib/email";
+import { normalizeLocale } from "../lib/locale";
 
 const router = Router();
 
