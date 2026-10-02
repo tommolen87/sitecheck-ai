@@ -1278,6 +1278,10 @@ function VisitorTracker() {
   const { locale } = useLanguage();
 
   useEffect(() => {
+    if (localStorage.getItem("sitecheck-analytics-consent") !== "granted") {
+      return;
+    }
+
     const key = "sitecheck-visitor-alert";
     const now = Date.now();
     const previous = Number(localStorage.getItem(key) ?? "0");
@@ -1303,6 +1307,67 @@ function VisitorTracker() {
   }, [locale]);
 
   return null;
+}
+
+function VisitorConsentBanner() {
+  const { locale } = useLanguage();
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    setVisible(localStorage.getItem("sitecheck-analytics-consent") === null);
+  }, []);
+
+  if (!visible) return null;
+
+  const copy = {
+    nl: {
+      text: "We gebruiken noodzakelijke opslag en beperkte bezoekersmeting om SiteCheck AI veilig te laten werken en inzicht te krijgen in gebruik.",
+      accept: "Accepteren",
+      reject: "Alleen noodzakelijk",
+    },
+    en: {
+      text: "We use necessary storage and limited visitor measurement to keep SiteCheck AI working securely and understand how the site is used.",
+      accept: "Accept",
+      reject: "Necessary only",
+    },
+    de: {
+      text: "Wir verwenden notwendige Speicherung und eine begrenzte Besuchermessung, damit SiteCheck AI sicher funktioniert und wir die Nutzung verstehen.",
+      accept: "Akzeptieren",
+      reject: "Nur notwendig",
+    },
+    fr: {
+      text: "Nous utilisons le stockage nécessaire et une mesure limitée des visites pour assurer le fonctionnement sécurisé de SiteCheck AI et comprendre son utilisation.",
+      accept: "Accepter",
+      reject: "Nécessaire uniquement",
+    },
+    es: {
+      text: "Utilizamos almacenamiento necesario y una medición limitada de visitas para que SiteCheck AI funcione de forma segura y entender su uso.",
+      accept: "Aceptar",
+      reject: "Solo necesario",
+    },
+  }[locale];
+
+  const choose = (value: "granted" | "denied") => {
+    localStorage.setItem("sitecheck-analytics-consent", value);
+    setVisible(false);
+    if (value === "granted") window.location.reload();
+  };
+
+  return (
+    <div className="fixed inset-x-4 bottom-4 z-[100] mx-auto max-w-3xl rounded-2xl border border-slate-200 bg-white p-4 shadow-2xl">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <p className="text-sm leading-6 text-slate-600">{copy.text}</p>
+        <div className="flex shrink-0 gap-2">
+          <button type="button" onClick={() => choose("denied")} className="rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700">
+            {copy.reject}
+          </button>
+          <button type="button" onClick={() => choose("granted")} className="rounded-xl bg-teal-600 px-4 py-2 text-sm font-semibold text-white">
+            {copy.accept}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 function App() {
