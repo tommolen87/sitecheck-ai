@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { ArrowLeft, Check, CheckCircle2, CircleAlert, CircleHelp, Clock3, ExternalLink, FileWarning, Gauge, LockKeyhole, RefreshCw, ShieldCheck, XCircle } from 'lucide-react';
 import { Link, useLocation, useParams } from 'wouter';
 import { getGetScanQueryKey, useGetScan, type AiRecommendation, type ScanAnalysis, type ScanIssue } from '@workspace/api-client-react';
-import { LanguageSwitcher, Localized, useLanguage } from '@/lib/i18n';
+import { LanguageSwitcher, Localized, translateText, useLanguage } from '@/lib/i18n';
 import { getScanAccessToken, setScanAccessToken } from '@/lib/scan-access';
 
 const categoryOrder = [
@@ -67,10 +67,11 @@ function plainLanguage(value: string): string {
     .replace(/\bRobots-directives\b/gi, "instructies voor zoekmachines");
 }
 
-function formatDate(value: string, locale: 'nl' | 'en' = 'nl') {
+function formatDate(value: string, locale: 'nl' | 'en' | 'de' | 'fr' | 'es' = 'nl') {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return value;
-  return new Intl.DateTimeFormat(locale === 'en' ? 'en-US' : 'nl-NL', { dateStyle: 'long', timeStyle: 'short' }).format(date);
+  const dateLocale = { nl: 'nl-NL', en: 'en-US', de: 'de-DE', fr: 'fr-FR', es: 'es-ES' }[locale];
+  return new Intl.DateTimeFormat(dateLocale, { dateStyle: 'long', timeStyle: 'short' }).format(date);
 }
 
 function getErrorMessage(error: unknown) {
@@ -321,8 +322,9 @@ const dynamicEnglishTranslations: Record<string, string> = {
   'We hebben juridische teksten, reviews en bedrijfsgegevens niet inhoudelijk beoordeeld.': 'We did not assess legal texts, reviews or company information in detail.',
   'We hebben niet getest hoe de belangrijkste knop zichtbaar is voordat een bezoeker naar beneden scrollt.': 'We did not test how visible the main button is before a visitor scrolls down.',
 };
-function displayDynamicText(value: string, locale: 'nl' | 'en'): string {
-  return locale === 'en' ? dynamicEnglishTranslations[value] ?? value : value;
+function displayDynamicText(value: string, locale: 'nl' | 'en' | 'de' | 'fr' | 'es'): string {
+  if (locale === 'en') return dynamicEnglishTranslations[value] ?? translateText(value, locale);
+  return translateText(value, locale);
 }
 function DetectedFacts({ analysis }: { analysis: ScanAnalysis }) {
   const { detectedFacts } = analysis;
