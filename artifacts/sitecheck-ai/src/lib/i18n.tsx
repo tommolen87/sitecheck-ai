@@ -633,6 +633,45 @@ const additionalInternationalTranslations: Record<"de" | "fr" | "es", Record<str
   }
 };
 
+const finalInternationalTranslations: Record<"de" | "fr" | "es", Record<string, string>> = {
+  "de": {
+    "van 100": "von 100",
+    "Niet gemeten": "Nicht gemessen",
+    "Een stevige basis": "Eine solide Grundlage",
+    "Alleen onderdelen die de scan daadwerkelijk heeft beoordeeld krijgen een score.": "Nur Bereiche, die der Scan tatsächlich bewertet hat, erhalten eine Punktzahl.",
+    "Geen resultaat gevonden.": "Kein Ergebnis gefunden.",
+    "Voor deze scan zijn geen niet-gecontroleerde onderdelen gerapporteerd.": "Für diesen Scan wurden keine ungeprüften Bereiche gemeldet.",
+    "Waar we het vonden": "Wo wir es gefunden haben",
+    "Bekijk alle verbeterpunten — €29": "Alle Verbesserungspunkte ansehen — 29 €",
+    "Website adres": "Website-Adresse",
+    "Nieuwe scan": "Neuer Scan"
+  },
+  "fr": {
+    "van 100": "sur 100",
+    "Niet gemeten": "Non mesuré",
+    "Een stevige basis": "Une base solide",
+    "Alleen onderdelen die de scan daadwerkelijk heeft beoordeeld krijgen een score.": "Seuls les éléments réellement évalués par l’analyse reçoivent une note.",
+    "Geen resultaat gevonden.": "Aucun résultat trouvé.",
+    "Voor deze scan zijn geen niet-gecontroleerde onderdelen gerapporteerd.": "Aucun élément non vérifié n’a été signalé pour cette analyse.",
+    "Waar we het vonden": "Où nous l’avons trouvé",
+    "Bekijk alle verbeterpunten — €29": "Voir tous les points d’amélioration — 29 €",
+    "Website adres": "Adresse du site web",
+    "Nieuwe scan": "Nouvelle analyse"
+  },
+  "es": {
+    "van 100": "de 100",
+    "Niet gemeten": "No medido",
+    "Een stevige basis": "Una base sólida",
+    "Alleen onderdelen die de scan daadwerkelijk heeft beoordeeld krijgen een score.": "Solo las áreas que el análisis ha evaluado realmente reciben una puntuación.",
+    "Geen resultaat gevonden.": "No se ha encontrado ningún resultado.",
+    "Voor deze scan zijn geen niet-gecontroleerde onderdelen gerapporteerd.": "No se han informado elementos sin comprobar para este análisis.",
+    "Waar we het vonden": "Dónde lo encontramos",
+    "Bekijk alle verbeterpunten — €29": "Ver todos los puntos de mejora — 29 €",
+    "Website adres": "Dirección del sitio web",
+    "Nieuwe scan": "Nuevo análisis"
+  }
+};
+
 function normalize(value: string): string {
   return value.replace(/\s+/g, " ").trim();
 }
@@ -669,7 +708,7 @@ export function translateText(value: string, locale: Locale): string {
       .replace(/\bGescand op\b/g, "Scanned on");
   }
 
-  const intl = { ...internationalTranslations[locale], ...additionalInternationalTranslations[locale] };
+  const intl = { ...internationalTranslations[locale], ...additionalInternationalTranslations[locale], ...finalInternationalTranslations[locale] };
   if (intl[normalized]) {
     return value.trim() === value ? intl[normalized] : value.replace(normalized, intl[normalized]);
   }
