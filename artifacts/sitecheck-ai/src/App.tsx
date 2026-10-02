@@ -386,35 +386,83 @@ function Home() {
   const [, setLocation] = useLocation();
   const [queueCount, setQueueCount] = useState<number | null>(null);
   const homePath = `/${locale}`;
-  const copy = locale === 'nl' ? {
-    knowledge: 'Kennisbank', navNote: 'Voor ondernemers met een helder verhaal', eyebrow: 'Een nuchtere blik op je website',
-    title: <>Hoe goed presteert <em>jouw website?</em></>, lede: 'SiteCheck AI analyseert je website en geeft praktische verbeteradviezen. Geen technisch rapport waar je doorheen moet ploegen, maar duidelijke handvatten voor de volgende stap.',
-    honest: 'Eerlijk over wat we weten', private: 'Je gegevens blijven privé', startTitle: 'Start met je website', freePill: 'Gratis eerste scan', urlLabel: 'Website-adres', placeholder: 'https://jouwbedrijf.nl',
-    freeButton: 'Start gratis scan', paidButton: 'Volledig rapport — €29', paidPending: 'Volledig rapport voorbereiden...', analyzing: 'SiteCheck AI analyseert...',
-    fineFree: 'Gratis scan:', finePaid: 'Volledig rapport:', fineText: 'krijg alle verbeterpunten en concrete AI-voorstellen voor €29, eenmalig.',
-    queuedTitle: 'Je scan staat klaar', queuedAnalyzing: 'SiteCheck AI analyseert je website', queuedText: 'We hebben je aanvraag ontvangen. De analyse wordt op de achtergrond voorbereid.', queuedAnalyzingText: 'We halen de homepage op en controleren alleen wat we daadwerkelijk kunnen meten.',
-    noJargon: 'Geen vakjargon.', signal: 'Wel zicht op wat je website voor je bedrijf kan doen.', onlyUrl: 'Alleen je URL is nodig', processing: 'Aanvragen worden verwerkt',
-    methodKicker: 'Zo werkt het', methodTitle: 'Van twijfel naar een volgende stap.', methodIntro: 'Een website hoeft niet perfect te zijn. Je wilt vooral weten waar een kleine verbetering het meeste oplevert.',
-    steps: [['Je deelt je URL','Geen account, vragenlijst of technische voorbereiding. Alleen het adres van je website.'],['Wij nemen rustig de tijd','De scan wordt ingepland. We doen niet alsof een snelle blik hetzelfde is als goed kijken.'],['Je krijgt richting','Praktische aanbevelingen waarmee je zelf, of samen met je webbouwer, verder kunt.']],
-    broadKicker: 'Een brede blik', broadTitle: 'Niet alleen de buitenkant.', broadIntro: 'Een goede website voelt vanzelfsprekend voor je bezoeker. Daarom kijken we naar de samenhang, niet naar één los vinkje.',
-    cards: [['De eerste indruk','Is in één oogopslag duidelijk wat je doet, voor wie en waarom iemand verder zou kijken?'],['De route naar contact','Kan een geïnteresseerde zonder zoeken de juiste volgende stap zetten?'],['Vertrouwen in details','Klopt het verhaal ook in de kleine dingen die bepalen of een bezoeker blijft?']],
-    paperLabel: 'Waar we op letten', paperBig: 'Helder.', paperNote: 'De beste aanbeveling is er één die je morgen begrijpt én kunt uitvoeren.',
-    closingTitle: 'Maak van je website een betere eerste kennismaking.', closingText: 'Begin met wat je al hebt. SiteCheck AI helpt je kiezen wat daarna de moeite waard is.'
-  } : {
-    knowledge: 'Guides', navNote: 'For business owners who value clarity', eyebrow: 'A clear look at your website',
-    title: <>How well does <em>your website perform?</em></>, lede: 'SiteCheck AI analyzes your website and gives you practical improvement advice. No technical report to dig through — just clear guidance for what to do next.',
-    honest: 'Honest about what we know', private: 'Your data stays private', startTitle: 'Start with your website', freePill: 'Free first scan', urlLabel: 'Website address', placeholder: 'https://yourwebsite.com',
-    freeButton: 'Start free scan', paidButton: 'Full report — €29', paidPending: 'Preparing full report...', analyzing: 'SiteCheck AI is analyzing...',
-    fineFree: 'Free scan:', finePaid: 'Full report:', fineText: 'get all improvement points and concrete AI recommendations for €29, one-time.',
-    queuedTitle: 'Your scan is ready', queuedAnalyzing: 'SiteCheck AI is analyzing your website', queuedText: 'We received your request. The analysis is being prepared in the background.', queuedAnalyzingText: 'We are fetching the homepage and checking only what we can actually measure.',
-    noJargon: 'No jargon.', signal: 'Just a clear view of what your website could do better for your business.', onlyUrl: 'Only your URL is needed', processing: 'Requests are being processed',
-    methodKicker: 'How it works', methodTitle: 'From uncertainty to a next step.', methodIntro: 'Your website does not need to be perfect. You mainly need to know where a small improvement could make the biggest difference.',
-    steps: [['Share your URL','No account, questionnaire or technical preparation. Just your website address.'],['We take a closer look','The scan is processed carefully. We do not pretend a quick glance is the same as a proper review.'],['Get clear direction','Practical recommendations you can act on yourself or with your web developer.']],
-    broadKicker: 'A broader view', broadTitle: 'More than the surface.', broadIntro: 'A good website feels intuitive to visitors. That is why we look at how the different signals work together, not at isolated checkboxes.',
-    cards: [['The first impression','Is it immediately clear what you do, who it is for and why someone should continue?'],['The path to contact','Can an interested visitor find the right next step without searching?'],['Trust in the details','Does the story also hold together in the small details that influence whether a visitor stays?']],
-    paperLabel: 'What we look at', paperBig: 'Clear.', paperNote: 'The best recommendation is one you understand today and can act on tomorrow.',
-    closingTitle: 'Turn your website into a better first introduction.', closingText: 'Start with what you already have. SiteCheck AI helps you decide what is worth improving next.'
-  };
+  const copy = ({
+    nl: {
+      knowledge: 'Kennisbank', navNote: 'Voor ondernemers met een helder verhaal', eyebrow: 'Een nuchtere blik op je website',
+      title: <>Hoe goed presteert <em>jouw website?</em></>, lede: 'SiteCheck AI analyseert je website en geeft praktische verbeteradviezen. Geen technisch rapport waar je doorheen moet ploegen, maar duidelijke handvatten voor de volgende stap.',
+      honest: 'Eerlijk over wat we weten', private: 'Je gegevens blijven privé', startTitle: 'Start met je website', freePill: 'Gratis eerste scan', urlLabel: 'Website-adres', placeholder: 'https://jouwbedrijf.nl',
+      freeButton: 'Start gratis scan', paidButton: 'Volledig rapport — €29', paidPending: 'Volledig rapport voorbereiden...', analyzing: 'SiteCheck AI analyseert...',
+      fineFree: 'Gratis scan:', finePaid: 'Volledig rapport:', fineText: 'krijg alle verbeterpunten en concrete AI-voorstellen voor €29, eenmalig.',
+      queuedTitle: 'Je scan staat klaar', queuedAnalyzing: 'SiteCheck AI analyseert je website', queuedText: 'We hebben je aanvraag ontvangen. De analyse wordt op de achtergrond voorbereid.', queuedAnalyzingText: 'We halen de homepage op en controleren alleen wat we daadwerkelijk kunnen meten.',
+      noJargon: 'Geen vakjargon.', signal: 'Wel zicht op wat je website voor je bedrijf kan doen.', onlyUrl: 'Alleen je URL is nodig', processing: 'Aanvragen worden verwerkt',
+      methodKicker: 'Zo werkt het', methodTitle: 'Van twijfel naar een volgende stap.', methodIntro: 'Een website hoeft niet perfect te zijn. Je wilt vooral weten waar een kleine verbetering het meeste oplevert.',
+      steps: [['Je deelt je URL','Geen account, vragenlijst of technische voorbereiding. Alleen het adres van je website.'],['Wij nemen rustig de tijd','De scan wordt ingepland. We doen niet alsof een snelle blik hetzelfde is als goed kijken.'],['Je krijgt richting','Praktische aanbevelingen waarmee je zelf, of samen met je webbouwer, verder kunt.']],
+      broadKicker: 'Een brede blik', broadTitle: 'Niet alleen de buitenkant.', broadIntro: 'Een goede website voelt vanzelfsprekend voor je bezoeker. Daarom kijken we naar de samenhang, niet naar één los vinkje.',
+      cards: [['De eerste indruk','Is in één oogopslag duidelijk wat je doet, voor wie en waarom iemand verder zou kijken?'],['De route naar contact','Kan een geïnteresseerde zonder zoeken de juiste volgende stap zetten?'],['Vertrouwen in details','Klopt het verhaal ook in de kleine dingen die bepalen of een bezoeker blijft?']],
+      paperLabel: 'Waar we op letten', paperBig: 'Helder.', paperNote: 'De beste aanbeveling is er één die je morgen begrijpt én kunt uitvoeren.',
+      closingTitle: 'Maak van je website een betere eerste kennismaking.', closingText: 'Begin met wat je al hebt. SiteCheck AI helpt je kiezen wat daarna de moeite waard is.'
+    },
+    en: {
+      knowledge: 'Guides', navNote: 'For business owners who value clarity', eyebrow: 'A clear look at your website',
+      title: <>How well does <em>your website perform?</em></>, lede: 'SiteCheck AI analyzes your website and gives you practical improvement advice. No technical report to dig through — just clear guidance for what to do next.',
+      honest: 'Honest about what we know', private: 'Your data stays private', startTitle: 'Start with your website', freePill: 'Free first scan', urlLabel: 'Website address', placeholder: 'https://yourwebsite.com',
+      freeButton: 'Start free scan', paidButton: 'Full report — €29', paidPending: 'Preparing full report...', analyzing: 'SiteCheck AI is analyzing...',
+      fineFree: 'Free scan:', finePaid: 'Full report:', fineText: 'get all improvement points and concrete AI recommendations for €29, one-time.',
+      queuedTitle: 'Your scan is ready', queuedAnalyzing: 'SiteCheck AI is analyzing your website', queuedText: 'We received your request. The analysis is being prepared in the background.', queuedAnalyzingText: 'We are fetching the homepage and checking only what we can actually measure.',
+      noJargon: 'No jargon.', signal: 'Just a clear view of what your website could do better for your business.', onlyUrl: 'Only your URL is needed', processing: 'Requests are being processed',
+      methodKicker: 'How it works', methodTitle: 'From uncertainty to a next step.', methodIntro: 'Your website does not need to be perfect. You mainly need to know where a small improvement could make the biggest difference.',
+      steps: [['Share your URL','No account, questionnaire or technical preparation. Just your website address.'],['We take a closer look','The scan is processed carefully. We do not pretend a quick glance is the same as a proper review.'],['Get clear direction','Practical recommendations you can act on yourself or with your web developer.']],
+      broadKicker: 'A broader view', broadTitle: 'More than the surface.', broadIntro: 'A good website feels intuitive to visitors. That is why we look at how the different signals work together, not at isolated checkboxes.',
+      cards: [['The first impression','Is it immediately clear what you do, who it is for and why someone should continue?'],['The path to contact','Can an interested visitor find the right next step without searching?'],['Trust in the details','Does the story also hold together in the small details that influence whether a visitor stays?']],
+      paperLabel: 'What we look at', paperBig: 'Clear.', paperNote: 'The best recommendation is one you understand today and can act on tomorrow.',
+      closingTitle: 'Turn your website into a better first introduction.', closingText: 'Start with what you already have. SiteCheck AI helps you decide what is worth improving next.'
+    },
+    de: {
+      knowledge: 'Ratgeber', navNote: 'Für Unternehmen mit einer klaren Botschaft', eyebrow: 'Ein klarer Blick auf Ihre Website',
+      title: <>Wie gut <em>performt Ihre Website?</em></>, lede: 'SiteCheck AI analysiert Ihre Website und gibt Ihnen praktische Verbesserungsvorschläge. Kein technischer Bericht, durch den Sie sich arbeiten müssen – sondern klare Hinweise für den nächsten Schritt.',
+      honest: 'Ehrlich darüber, was wir wissen', private: 'Ihre Daten bleiben privat', startTitle: 'Starten Sie mit Ihrer Website', freePill: 'Kostenloser erster Scan', urlLabel: 'Website-Adresse', placeholder: 'https://ihrunternehmen.de',
+      freeButton: 'Kostenlosen Scan starten', paidButton: 'Vollständiger Bericht — 29 €', paidPending: 'Bericht wird vorbereitet...', analyzing: 'SiteCheck AI analysiert...',
+      fineFree: 'Kostenloser Scan:', finePaid: 'Vollständiger Bericht:', fineText: 'erhalten Sie alle Verbesserungspunkte und konkrete KI-Vorschläge für einmalig 29 €.',
+      queuedTitle: 'Ihr Scan ist bereit', queuedAnalyzing: 'SiteCheck AI analysiert Ihre Website', queuedText: 'Wir haben Ihre Anfrage erhalten. Die Analyse wird im Hintergrund vorbereitet.', queuedAnalyzingText: 'Wir rufen die Startseite ab und prüfen nur, was wir tatsächlich messen können.',
+      noJargon: 'Kein Fachjargon.', signal: 'Ein klarer Überblick darüber, was Ihre Website für Ihr Unternehmen leisten kann.', onlyUrl: 'Nur Ihre URL wird benötigt', processing: 'Anfragen werden verarbeitet',
+      methodKicker: 'So funktioniert es', methodTitle: 'Von Unsicherheit zum nächsten Schritt.', methodIntro: 'Ihre Website muss nicht perfekt sein. Wichtig ist vor allem zu wissen, wo eine kleine Verbesserung den größten Unterschied machen kann.',
+      steps: [['Sie teilen Ihre URL','Kein Konto, kein Fragebogen und keine technische Vorbereitung. Nur die Adresse Ihrer Website.'],['Wir schauen genau hin','Der Scan wird sorgfältig durchgeführt. Ein kurzer Blick ist nicht dasselbe wie eine gründliche Prüfung.'],['Sie bekommen klare Orientierung','Praktische Empfehlungen, die Sie selbst oder gemeinsam mit Ihrem Webentwickler umsetzen können.']],
+      broadKicker: 'Ein umfassender Blick', broadTitle: 'Mehr als nur die Oberfläche.', broadIntro: 'Eine gute Website fühlt sich für Besucher selbstverständlich an. Deshalb betrachten wir das Zusammenspiel der Signale und nicht nur einzelne Checklistenpunkte.',
+      cards: [['Der erste Eindruck','Ist sofort klar, was Sie anbieten, für wen es gedacht ist und warum man weiterlesen sollte?'],['Der Weg zum Kontakt','Kann ein interessierter Besucher ohne Suchen den richtigen nächsten Schritt finden?'],['Vertrauen in den Details','Stimmt die Geschichte auch bei den kleinen Details, die darüber entscheiden, ob ein Besucher bleibt?']],
+      paperLabel: 'Worauf wir achten', paperBig: 'Klar.', paperNote: 'Eine gute Empfehlung ist eine, die Sie morgen verstehen und umsetzen können.',
+      closingTitle: 'Machen Sie Ihre Website zu einem besseren ersten Eindruck.', closingText: 'Beginnen Sie mit dem, was Sie bereits haben. SiteCheck AI hilft Ihnen zu entscheiden, was als Nächstes verbessert werden sollte.'
+    },
+    fr: {
+      knowledge: 'Guides', navNote: 'Pour les entreprises qui privilégient la clarté', eyebrow: 'Un regard clair sur votre site',
+      title: <>Quelle est la performance de <em>votre site web&nbsp;?</em></>, lede: 'SiteCheck AI analyse votre site web et vous donne des conseils pratiques pour l’améliorer. Pas de rapport technique à parcourir — simplement des indications claires pour savoir quoi faire ensuite.',
+      honest: 'Honnête sur ce que nous savons', private: 'Vos données restent privées', startTitle: 'Commencez avec votre site', freePill: 'Premier audit gratuit', urlLabel: 'Adresse du site', placeholder: 'https://votreentreprise.fr',
+      freeButton: 'Lancer l’audit gratuit', paidButton: 'Rapport complet — 29 €', paidPending: 'Préparation du rapport...', analyzing: 'SiteCheck AI analyse...',
+      fineFree: 'Audit gratuit :', finePaid: 'Rapport complet :', fineText: 'obtenez tous les points d’amélioration et des propositions concrètes par IA pour 29 €, en une seule fois.',
+      queuedTitle: 'Votre audit est prêt', queuedAnalyzing: 'SiteCheck AI analyse votre site', queuedText: 'Nous avons reçu votre demande. L’analyse est préparée en arrière-plan.', queuedAnalyzingText: 'Nous récupérons la page d’accueil et vérifions uniquement ce que nous pouvons réellement mesurer.',
+      noJargon: 'Sans jargon.', signal: 'Une vision claire de ce que votre site peut mieux faire pour votre entreprise.', onlyUrl: 'Votre URL suffit', processing: 'Les demandes sont traitées',
+      methodKicker: 'Comment ça marche', methodTitle: 'Du doute à une prochaine étape.', methodIntro: 'Votre site n’a pas besoin d’être parfait. L’essentiel est de savoir où une petite amélioration peut avoir le plus d’impact.',
+      steps: [['Vous partagez votre URL','Aucun compte, questionnaire ou préparation technique. Seulement l’adresse de votre site.'],['Nous prenons le temps de regarder','L’audit est traité avec attention. Un coup d’œil rapide ne remplace pas une vraie analyse.'],['Vous obtenez une direction claire','Des recommandations pratiques à mettre en œuvre vous-même ou avec votre développeur web.']],
+      broadKicker: 'Une vision plus large', broadTitle: 'Plus que la surface.', broadIntro: 'Un bon site doit sembler naturel pour le visiteur. Nous regardons donc comment les différents signaux fonctionnent ensemble, pas seulement des cases isolées.',
+      cards: [['La première impression','Comprend-on immédiatement ce que vous faites, pour qui et pourquoi continuer ?'],['Le chemin vers le contact','Un visiteur intéressé peut-il trouver la bonne étape suivante sans chercher ?'],['La confiance dans les détails','Le message reste-t-il cohérent dans les petits détails qui influencent la décision de rester ?']],
+      paperLabel: 'Ce que nous examinons', paperBig: 'Clair.', paperNote: 'La meilleure recommandation est celle que vous comprenez aujourd’hui et pouvez appliquer demain.',
+      closingTitle: 'Faites de votre site une meilleure première rencontre.', closingText: 'Commencez avec ce que vous avez déjà. SiteCheck AI vous aide à choisir ce qui mérite d’être amélioré ensuite.'
+    },
+    es: {
+      knowledge: 'Guías', navNote: 'Para empresas que valoran la claridad', eyebrow: 'Una mirada clara a tu sitio web',
+      title: <>¿Qué tan bien funciona <em>tu sitio web?</em></>, lede: 'SiteCheck AI analiza tu sitio web y te ofrece consejos prácticos para mejorarlo. Sin informes técnicos interminables: solo indicaciones claras sobre qué hacer a continuación.',
+      honest: 'Honestos sobre lo que sabemos', private: 'Tus datos permanecen privados', startTitle: 'Empieza con tu sitio web', freePill: 'Primer análisis gratis', urlLabel: 'Dirección del sitio web', placeholder: 'https://tuempresa.es',
+      freeButton: 'Iniciar análisis gratis', paidButton: 'Informe completo — 29 €', paidPending: 'Preparando el informe...', analyzing: 'SiteCheck AI está analizando...',
+      fineFree: 'Análisis gratis:', finePaid: 'Informe completo:', fineText: 'obtén todos los puntos de mejora y propuestas concretas de IA por 29 €, pago único.',
+      queuedTitle: 'Tu análisis está listo', queuedAnalyzing: 'SiteCheck AI está analizando tu sitio web', queuedText: 'Hemos recibido tu solicitud. El análisis se está preparando en segundo plano.', queuedAnalyzingText: 'Estamos obteniendo la página de inicio y comprobando solo lo que realmente podemos medir.',
+      noJargon: 'Sin jerga técnica.', signal: 'Una visión clara de lo que tu sitio web puede hacer mejor por tu negocio.', onlyUrl: 'Solo necesitamos tu URL', processing: 'Se están procesando las solicitudes',
+      methodKicker: 'Cómo funciona', methodTitle: 'De la duda al siguiente paso.', methodIntro: 'Tu sitio web no tiene que ser perfecto. Lo importante es saber dónde una pequeña mejora puede marcar la mayor diferencia.',
+      steps: [['Compartes tu URL','Sin cuenta, cuestionario ni preparación técnica. Solo la dirección de tu sitio web.'],['Lo revisamos con atención','El análisis se realiza cuidadosamente. Una mirada rápida no sustituye una revisión adecuada.'],['Obtienes una dirección clara','Recomendaciones prácticas que puedes aplicar tú mismo o con tu desarrollador web.']],
+      broadKicker: 'Una visión más amplia', broadTitle: 'Más allá de la superficie.', broadIntro: 'Un buen sitio web debe resultar natural para el visitante. Por eso analizamos cómo funcionan juntos los distintos indicadores, no solo casillas aisladas.',
+      cards: [['La primera impresión','¿Queda claro de inmediato qué haces, para quién y por qué debería seguir mirando?'],['El camino al contacto','¿Puede un visitante interesado encontrar el siguiente paso correcto sin tener que buscar?'],['Confianza en los detalles','¿El mensaje también funciona en los pequeños detalles que influyen en que un visitante se quede?']],
+      paperLabel: 'En qué nos fijamos', paperBig: 'Claro.', paperNote: 'La mejor recomendación es la que entiendes hoy y puedes aplicar mañana.',
+      closingTitle: 'Convierte tu sitio web en una mejor primera impresión.', closingText: 'Empieza con lo que ya tienes. SiteCheck AI te ayuda a decidir qué merece la pena mejorar después.'
+    }
+  } as const)[locale];
   useEffect(() => {
     const controller = new AbortController();
     fetch("/api/scans/stats", { signal: controller.signal })
