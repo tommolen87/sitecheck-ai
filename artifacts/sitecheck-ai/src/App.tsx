@@ -231,6 +231,11 @@ function SeoHead() {
   const pathParts = window.location.pathname.split('/').filter(Boolean);
   const slug = pathParts[1] || '';
   const legalType = pathParts[1];
+  const legalKey = ['voorwaarden', 'terms', 'conditions', 'terminos'].includes(legalType)
+    ? 'terms'
+    : ['herroepen', 'withdraw', 'retractation', 'desistimiento'].includes(legalType)
+      ? 'withdraw'
+      : legalType;
   const blogSlug = (pathParts[0] === 'nl' || pathParts[0] === 'en') && pathParts[1] === 'blog' ? pathParts[2] : undefined;
   const blogArticle = blogSlug ? getBlogArticle(blogSlug)?.[locale as 'nl' | 'en'] : undefined;
   const page = seoPages[slug]?.[locale as 'nl' | 'en'] ?? internationalSeoPages[slug]?.[locale as GlobalLocale];
@@ -276,14 +281,14 @@ function SeoHead() {
   const seoSlug = blogSlug ? 'blog/' + blogSlug : (isBlogIndex ? 'blog' : (seoPages[slug] || internationalSeoPages[slug] ? slug : ''));
   const legalBase = legalPath
     ? (locale === 'nl'
-      ? '/nl/' + (legalType === 'terms' ? 'voorwaarden' : legalType === 'withdraw' ? 'herroepen' : legalType)
+      ? '/nl/' + (legalKey === 'terms' ? 'voorwaarden' : legalKey === 'withdraw' ? 'herroepen' : legalKey)
       : locale === 'en'
-        ? '/en/' + (legalType === 'voorwaarden' ? 'terms' : legalType === 'herroepen' ? 'withdraw' : legalType)
+        ? '/en/' + (legalKey === 'terms' ? 'terms' : legalKey === 'withdraw' ? 'withdraw' : legalKey)
         : locale === 'fr'
-          ? '/fr/' + (legalType === 'voorwaarden' ? 'conditions' : legalType === 'herroepen' ? 'retractation' : legalType)
+          ? '/fr/' + (legalKey === 'terms' ? 'conditions' : legalKey === 'withdraw' ? 'retractation' : legalKey)
           : locale === 'es'
-            ? '/es/' + (legalType === 'voorwaarden' ? 'terminos' : legalType === 'herroepen' ? 'desistimiento' : legalType)
-            : '/de/' + (legalType === 'voorwaarden' ? 'terms' : legalType));
+            ? '/es/' + (legalKey === 'terms' ? 'terminos' : legalKey === 'withdraw' ? 'desistimiento' : legalKey)
+            : '/de/' + (legalKey === 'terms' ? 'terms' : legalKey === 'withdraw' ? 'withdraw' : legalKey));
   const nlLegal = legalType === 'terms' || legalType === 'withdraw' ? `/nl/${legalType === 'terms' ? 'voorwaarden' : 'herroepen'}` : `/nl/${legalType}`;
   const enLegal = `/en/${legalType === 'voorwaarden' ? 'terms' : legalType === 'herroepen' ? 'withdraw' : legalType}`;
   const nlUrl = new URL(legalPath ? nlLegal : (seoSlug ? `/nl/${seoSlug}` : '/nl'), window.location.origin).href;
