@@ -289,8 +289,16 @@ function SeoHead() {
           : locale === 'es'
             ? '/es/' + (legalKey === 'terms' ? 'terminos' : legalKey === 'withdraw' ? 'desistimiento' : legalKey)
             : '/de/' + (legalKey === 'terms' ? 'terms' : legalKey === 'withdraw' ? 'withdraw' : legalKey));
-  const nlLegal = legalType === 'terms' || legalType === 'withdraw' ? `/nl/${legalType === 'terms' ? 'voorwaarden' : 'herroepen'}` : `/nl/${legalType}`;
-  const enLegal = `/en/${legalType === 'voorwaarden' ? 'terms' : legalType === 'herroepen' ? 'withdraw' : legalType}`;
+  const nlLegal = legalKey === 'terms'
+    ? '/nl/voorwaarden'
+    : legalKey === 'withdraw'
+      ? '/nl/herroepen'
+      : '/nl/' + legalKey;
+  const enLegal = legalKey === 'terms'
+    ? '/en/terms'
+    : legalKey === 'withdraw'
+      ? '/en/withdraw'
+      : '/en/' + legalKey;
   const nlUrl = new URL(legalPath ? nlLegal : (seoSlug ? `/nl/${seoSlug}` : '/nl'), window.location.origin).href;
   const enUrl = new URL(legalPath ? enLegal : (seoSlug ? `/en/${seoSlug}` : '/en'), window.location.origin).href;
   const deUrl = new URL(seoSlug ? `/de/${seoSlug}` : '/de', window.location.origin).href;
