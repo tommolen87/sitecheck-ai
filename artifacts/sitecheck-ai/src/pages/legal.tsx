@@ -303,11 +303,11 @@ export default function LegalPage({ type }: { type: 'privacy' | 'terms' | 'cooki
           ))}
           {type === 'withdraw' && (
             <form className="legal-withdraw-form" action="mailto:info@sjoom.ai" method="post" encType="text/plain">
-              <label>{locale === 'nl' ? 'Naam' : 'Name'}<input name="name" required /></label>
-              <label>{locale === 'nl' ? 'E-mailadres' : 'Email address'}<input name="email" type="email" required /></label>
-              <label>{locale === 'nl' ? 'Scan- of aankoopnummer (indien bekend)' : 'Scan or purchase reference (if known)'}<input name="reference" /></label>
-              <label>{locale === 'nl' ? 'Bericht' : 'Message'}<textarea name="message" rows={5} required /></label>
-              <button type="submit" className="upgrade-main-button">{locale === 'nl' ? 'Herroeping versturen' : 'Submit withdrawal'}</button>
+              <label>{locale === 'nl' ? 'Naam' : locale === 'de' ? 'Name' : locale === 'fr' ? 'Nom' : locale === 'es' ? 'Nombre' : 'Name'}<input name="name" required /></label>
+              <label>{locale === 'nl' ? 'E-mailadres' : locale === 'de' ? 'E-Mail-Adresse' : locale === 'fr' ? 'Adresse e-mail' : locale === 'es' ? 'Correo electrónico' : 'Email address'}<input name="email" type="email" required /></label>
+              <label>{locale === 'nl' ? 'Scan- of aankoopnummer (indien bekend)' : locale === 'de' ? 'Scan- oder Kaufreferenz (falls bekannt)' : locale === 'fr' ? 'Référence du scan ou de l’achat (si connue)' : locale === 'es' ? 'Referencia del análisis o compra (si se conoce)' : 'Scan or purchase reference (if known)'}<input name="reference" /></label>
+              <label>{locale === 'nl' ? 'Bericht' : locale === 'de' ? 'Nachricht' : locale === 'fr' ? 'Message' : locale === 'es' ? 'Mensaje' : 'Message'}<textarea name="message" rows={5} required /></label>
+              <button type="submit" className="upgrade-main-button">{locale === 'nl' ? 'Herroeping versturen' : locale === 'de' ? 'Widerruf senden' : locale === 'fr' ? 'Envoyer la demande de rétractation' : locale === 'es' ? 'Enviar desistimiento' : 'Submit withdrawal'}</button>
             </form>
           )}
         </div>
