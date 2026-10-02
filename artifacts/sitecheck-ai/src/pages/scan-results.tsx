@@ -650,8 +650,28 @@ function ResultsContent({
           <div className="locked-improvements">
             <div className="locked-improvements-icon"><LockKeyhole /></div>
             <div className="locked-improvements-copy">
-              <strong>Je hebt {issues.length} van de {totalAvailable} belangrijkste verbeterpunten gezien.</strong>
-              <p>Er staan nog {remaining} verbeterpunten klaar. Je krijgt daarnaast concrete voorstellen, prioriteiten, impact, moeilijkheid, een 30-dagen actieplan en het volledige rapport als PDF.</p>
+              <strong>
+                {locale === 'nl'
+                  ? `Je hebt ${issues.length} van de ${totalAvailable} belangrijkste verbeterpunten gezien.`
+                  : locale === 'en'
+                    ? `You have seen ${issues.length} of the ${totalAvailable} most important improvement points.`
+                    : locale === 'de'
+                      ? `Sie haben ${issues.length} der ${totalAvailable} wichtigsten Verbesserungspunkte gesehen.`
+                      : locale === 'fr'
+                        ? `Vous avez vu ${issues.length} des ${totalAvailable} points d’amélioration les plus importants.`
+                        : `Has visto ${issues.length} de los ${totalAvailable} puntos de mejora más importantes.`}
+              </strong>
+              <p>
+                {locale === 'nl'
+                  ? `Er staan nog ${remaining} verbeterpunten klaar. Je krijgt daarnaast concrete voorstellen, prioriteiten, impact, moeilijkheid, een 30-dagen actieplan en het volledige rapport als PDF.`
+                  : locale === 'en'
+                    ? `There are ${remaining} more improvement points available. You also get concrete suggestions, priorities, impact, difficulty, a 30-day action plan and the full report as a PDF.`
+                    : locale === 'de'
+                      ? `Es sind noch ${remaining} Verbesserungspunkte verfügbar. Außerdem erhalten Sie konkrete Vorschläge, Prioritäten, Auswirkungen, Aufwand, einen 30-Tage-Aktionsplan und den vollständigen Bericht als PDF.`
+                      : locale === 'fr'
+                        ? `Il reste ${remaining} points d’amélioration disponibles. Vous bénéficiez également de propositions concrètes, de priorités, de l’impact, de la difficulté, d’un plan d’action de 30 jours et du rapport complet en PDF.`
+                        : `Quedan ${remaining} puntos de mejora disponibles. Además, obtienes propuestas concretas, prioridades, impacto, dificultad, un plan de acción de 30 días y el informe completo en PDF.`}
+              </p>
             </div>
             <button
               type="button"
