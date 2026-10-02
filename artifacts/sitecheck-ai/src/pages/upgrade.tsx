@@ -88,9 +88,11 @@ export default function Upgrade() {
                   onChange={(event) => setLegalConsent(event.target.checked)}
                 />
                 <span>
-                  {locale === 'nl'
-                    ? <>Ik ga akkoord met de <a href="/nl/voorwaarden" target="_blank" rel="noreferrer">algemene voorwaarden</a> en vraag om de betaalde dienst direct te starten. Ik begrijp dat dit gevolgen kan hebben voor mijn wettelijke bedenktijd.</>
-                    : <>I agree to the <a href="/en/terms" target="_blank" rel="noreferrer">terms and conditions</a> and ask for the paid service to start immediately. I understand that this may affect my statutory withdrawal right.</>}
+                  {locale === 'nl' && <>Ik ga akkoord met de <a href="/nl/voorwaarden" target="_blank" rel="noreferrer">algemene voorwaarden</a> en vraag om de betaalde dienst direct te starten. Ik begrijp dat dit gevolgen kan hebben voor mijn wettelijke bedenktijd.</>}
+                  {locale === 'en' && <>I agree to the <a href="/en/terms" target="_blank" rel="noreferrer">terms and conditions</a> and ask for the paid service to start immediately. I understand that this may affect my statutory withdrawal right.</>}
+                  {locale === 'de' && <>Ich stimme den <a href="/de/terms" target="_blank" rel="noreferrer">Allgemeinen Geschäftsbedingungen</a> zu und bitte darum, die kostenpflichtige Leistung sofort zu starten. Ich verstehe, dass dies Auswirkungen auf mein gesetzliches Widerrufsrecht haben kann.</>}
+                  {locale === 'fr' && <>J'accepte les <a href="/fr/conditions" target="_blank" rel="noreferrer">conditions générales</a> et demande que le service payant commence immédiatement. Je comprends que cela peut avoir une incidence sur mon droit légal de rétractation.</>}
+                  {locale === 'es' && <>Acepto los <a href="/es/terminos" target="_blank" rel="noreferrer">términos y condiciones</a> y solicito que el servicio de pago comience de inmediato. Entiendo que esto puede afectar a mi derecho legal de desistimiento.</>}
                 </span>
               </label>
 

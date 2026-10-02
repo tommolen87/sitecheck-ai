@@ -5,6 +5,7 @@ import { eq } from "drizzle-orm";
 import { db, scansTable } from "@workspace/db";
 import { createHmac } from "node:crypto";
 import { sendPaymentConfirmationEmail } from "../lib/email";
+import { normalizeLocale } from "../lib/locale";
 
 const router = Router();
 
@@ -116,8 +117,7 @@ router.post("/stripe/webhook", async (req, res): Promise<void> => {
           session.customer_email ??
           null;
 
-        const locale =
-          session.metadata?.locale === "en" ? "en" : "nl";
+        const locale = normalizeLocale(session.metadata?.locale);
 
         if (customerEmail) {
           try {
