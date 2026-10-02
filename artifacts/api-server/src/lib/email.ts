@@ -1,10 +1,12 @@
 const RESEND_API_URL = "https://api.resend.com/emails";
 
+import type { Locale } from "./locale";
+
 type PaymentEmailOptions = {
   to: string;
   scanId: number;
   accessToken: string;
-  locale: "nl" | "en";
+  locale: Locale;
   siteUrl: string;
 };
 
