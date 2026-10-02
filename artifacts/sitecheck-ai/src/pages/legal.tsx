@@ -111,7 +111,7 @@ const legalContent = {
       ],
     },
   },
-} satisfies Record<Locale, Record<string, { title: string; intro: string; sections: [string, string][] }>>;
+} satisfies Partial<Record<Locale, Record<string, { title: string; intro: string; sections: [string, string][] }>>>;
 
 export default function LegalPage({ type }: { type: 'privacy' | 'terms' | 'cookies' | 'withdraw' }) {
   const { locale } = useLanguage();
