@@ -740,7 +740,7 @@ function LoadingResults() {
 
   return (
     <Localized><main className="site-shell results-shell">
-      <nav className="nav-wrap"><div className="page-frame"><Link href="/" className="brand-mark" data-testid="link-home-loading"><span className="brand-symbol" aria-hidden="true"><RefreshCw /></span><span className="brand-name">SiteCheck <span>AI</span></span></Link></div></nav>
+      <nav className="nav-wrap"><div className="page-frame"><Link href={`/${locale}`} className="brand-mark" data-testid="link-home-loading"><span className="brand-symbol" aria-hidden="true"><RefreshCw /></span><span className="brand-name">SiteCheck <span>AI</span></span></Link></div></nav>
       <div className="page-frame loading-results" role="status" data-testid="status-scan-loading">
         <div className="loading-orbit"><RefreshCw /></div>
         <div className="eyebrow">Even geduld</div>
@@ -766,14 +766,14 @@ function LoadingResults() {
 function ScanProblem({ title, message, url }: { title: string; message: string; url?: string }) {
   return (
     <Localized><main className="site-shell results-shell">
-      <nav className="nav-wrap"><div className="page-frame"><Link href="/" className="brand-mark" data-testid="link-home-problem"><span className="brand-symbol" aria-hidden="true"><RadarIcon /></span><span className="brand-name">SiteCheck <span>AI</span></span></Link></div></nav>
+      <nav className="nav-wrap"><div className="page-frame"><Link href={`/${locale}`} className="brand-mark" data-testid="link-home-problem"><span className="brand-symbol" aria-hidden="true"><RadarIcon /></span><span className="brand-name">SiteCheck <span>AI</span></span></Link></div></nav>
       <div className="page-frame scan-problem" role="alert" data-testid="status-scan-problem">
         <div className="problem-icon"><CircleAlert /></div>
         <div className="eyebrow">Scan niet beschikbaar</div>
         <h1>{title}</h1>
         <p>{message}</p>
         {url && <span className="problem-url">{url}</span>}
-        <Link href="/" className="scan-button problem-button" data-testid="link-start-new-scan"><ArrowLeft /> Terug naar een nieuwe scan</Link>
+        <Link href={`/${locale}`} className="scan-button problem-button" data-testid="link-start-new-scan"><ArrowLeft /> Terug naar een nieuwe scan</Link>
       </div>
     </main></Localized>
   );
