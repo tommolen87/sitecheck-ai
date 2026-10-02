@@ -867,6 +867,17 @@ function BlogPage() {
             <section className="section"><div className="page-frame"><div className="check-grid">
               {blogArticles.map((item) => <article className="check-card" key={item.slug}><div className="check-icon"><ClipboardCheck /></div><h2>{item[locale].title}</h2><p>{item[locale].description}</p><a className="text-link" href={blogPath + '/' + item.slug}>{locale === 'nl' ? 'Lees artikel' : 'Read article'} <ArrowRight /></a></article>)}
             </div></div></section>
+            <section className="section">
+              <div className="page-frame">
+                <div className="section-kicker">{locale === 'nl' ? 'Direct controleren' : 'Check your website'}</div>
+                <div className="check-grid">
+                  {(locale === 'nl'
+                    ? [['/nl/free-website-audit','Gratis website audit'],['/nl/ai-website-audit','AI website audit'],['/nl/website-seo-checker','Website SEO checker'],['/nl/website-performance-check','Website performance check'],['/nl/website-conversion-audit','Website conversion audit'],['/nl/website-health-check','Website health check']]
+                    : [['/en/free-website-audit','Free website audit'],['/en/ai-website-audit','AI website audit'],['/en/website-seo-checker','Website SEO checker'],['/en/website-performance-check','Website performance check'],['/en/website-conversion-audit','Website conversion audit'],['/en/website-health-check','Website health check']]
+                  ).map(([href,label]) => <a className="check-card" key={href} href={href}><h2>{label}</h2><span className="text-link">{locale === 'nl' ? 'Bekijk check' : 'View check'} <ArrowRight /></span></a>)}
+                </div>
+              </div>
+            </section>
           </>
         ) : article ? (
           <article><section className="hero"><div className="page-frame"><div className="reveal" style={{ maxWidth: '850px' }}>
