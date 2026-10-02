@@ -1126,12 +1126,24 @@ function Router() {
         <Route path="/en/blog/:slug" component={BlogPage} />
         <Route path="/nl/privacy" component={() => <LegalPage type="privacy" />} />
         <Route path="/en/privacy" component={() => <LegalPage type="privacy" />} />
+        <Route path="/de/privacy" component={() => <LegalPage type="privacy" />} />
+        <Route path="/fr/privacy" component={() => <LegalPage type="privacy" />} />
+        <Route path="/es/privacy" component={() => <LegalPage type="privacy" />} />
         <Route path="/nl/voorwaarden" component={() => <LegalPage type="terms" />} />
         <Route path="/en/terms" component={() => <LegalPage type="terms" />} />
+        <Route path="/de/terms" component={() => <LegalPage type="terms" />} />
+        <Route path="/fr/conditions" component={() => <LegalPage type="terms" />} />
+        <Route path="/es/terminos" component={() => <LegalPage type="terms" />} />
         <Route path="/nl/cookies" component={() => <LegalPage type="cookies" />} />
         <Route path="/en/cookies" component={() => <LegalPage type="cookies" />} />
+        <Route path="/de/cookies" component={() => <LegalPage type="cookies" />} />
+        <Route path="/fr/cookies" component={() => <LegalPage type="cookies" />} />
+        <Route path="/es/cookies" component={() => <LegalPage type="cookies" />} />
         <Route path="/nl/herroepen" component={() => <LegalPage type="withdraw" />} />
         <Route path="/en/withdraw" component={() => <LegalPage type="withdraw" />} />
+        <Route path="/de/withdraw" component={() => <LegalPage type="withdraw" />} />
+        <Route path="/fr/retractation" component={() => <LegalPage type="withdraw" />} />
+        <Route path="/es/desistimiento" component={() => <LegalPage type="withdraw" />} />
         <Route path="/nl" component={Home} />
         <Route path="/en" component={Home} />
         <Route path="/de" component={Home} />
