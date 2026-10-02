@@ -924,10 +924,120 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
       },
     };
 
+    const translateMissingPdfText = async (
+      values: string[],
+    ): Promise<Record<string, string>> => {
+      if (locale === "nl" || locale === "en" || values.length === 0) {
+        return {};
+      }
+
+      const apiKey =
+        process.env.AI_INTEGRATIONS_OPENAI_API_KEY ??
+        process.env.OPENAI_API_KEY;
+      if (!apiKey) return {};
+
+      try {
+        const client = new OpenAI({
+          apiKey,
+          ...(process.env.AI_INTEGRATIONS_OPENAI_BASE_URL
+            ? { baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL }
+            : {}),
+          timeout: 20_000,
+          maxRetries: 1,
+        });
+
+        const response = await client.chat.completions.create({
+          model: "gpt-5.4-mini",
+          max_completion_tokens: 9000,
+          response_format: {
+            type: "json_schema",
+            json_schema: {
+              name: "sitecheck_pdf_static_translation",
+              strict: true,
+              schema: {
+                type: "object",
+                additionalProperties: false,
+                required: ["translations"],
+                properties: {
+                  translations: {
+                    type: "array",
+                    items: {
+                      type: "object",
+                      additionalProperties: false,
+                      required: ["source", "translation"],
+                      properties: {
+                        source: { type: "string" },
+                        translation: { type: "string" },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          messages: [
+            {
+              role: "system",
+              content:
+                `Translate SiteCheck AI PDF interface/report text into natural, professional ${locale === "de" ? "German" : locale === "fr" ? "French" : "Spanish"}. Preserve numbers, percentages, URLs, product names and meaning exactly. Do not translate technical identifiers such as robots.txt, sitemap.xml, HTTPS, H1, CTA, HTTP or Core Web Vitals when they function as identifiers. Return exactly one translation for every supplied source, in the same order. Never return English unless a technical identifier or proper name must remain unchanged.`,
+            },
+            {
+              role: "user",
+              content: JSON.stringify(values),
+            },
+          ],
+        });
+
+        const content = response.choices[0]?.message?.content;
+        if (!content) return {};
+
+        const parsed = JSON.parse(content);
+        const translations = Array.isArray(parsed?.translations)
+          ? parsed.translations
+          : [];
+
+        if (
+          translations.length !== values.length ||
+          translations.some(
+            (item: any, index: number) =>
+              item?.source !== values[index] ||
+              typeof item?.translation !== "string" ||
+              !item.translation.trim(),
+          )
+        ) {
+          return {};
+        }
+
+        return Object.fromEntries(
+          translations.map((item: { source: string; translation: string }) => [
+            item.source,
+            item.translation,
+          ]),
+        );
+      } catch (error) {
+        console.warn(
+          "PDF static translation unavailable; using curated fallbacks:",
+          error instanceof Error ? error.message : "Unknown error",
+        );
+        return {};
+      }
+    };
+
+    const internationalStaticKeys = Object.keys(pdfTranslations).filter(
+      (key) => !pdfInternationalTranslations[locale]?.[key],
+    );
+    const localizedStaticTranslations =
+      await translateMissingPdfText(internationalStaticKeys);
+
     const t = (value: string): string => {
       if (locale === "nl") return value;
       if (locale === "en") return pdfTranslations[value] ?? value;
-      return pdfInternationalTranslations[locale][value] ?? pdfTranslations[value] ?? value;
+      return (
+        pdfInternationalTranslations[locale][value] ??
+        localizedStaticTranslations[value] ??
+        pdfTranslations[value] ??
+        value
+      );
     };
 
     const safe = (value: unknown, fallback = "Niet beschikbaar") => {
