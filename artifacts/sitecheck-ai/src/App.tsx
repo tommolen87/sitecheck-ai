@@ -607,6 +607,46 @@ function Home() {
         </div>
       </section>
 
+      <section className="section" aria-labelledby="popular-checks-heading">
+        <div className="page-frame">
+          <div className="checks-header">
+            <div>
+              <div className="section-kicker">{locale === 'nl' ? 'Website checks' : 'Website checks'}</div>
+              <h2 id="popular-checks-heading" className="section-title">{locale === 'nl' ? 'Waar wil je je website op controleren?' : 'What do you want to check on your website?'}</h2>
+            </div>
+            <p className="section-intro">{locale === 'nl'
+              ? 'Kies een onderwerp en ontdek welke signalen je kunt controleren.'
+              : 'Choose a topic and discover which website signals you can check.'}</p>
+          </div>
+          <div className="check-grid">
+            {(locale === 'nl'
+              ? [
+                  ['/nl/free-website-audit', 'Gratis website audit'],
+                  ['/nl/ai-website-audit', 'AI website audit'],
+                  ['/nl/website-seo-checker', 'Website SEO checker'],
+                  ['/nl/website-performance-check', 'Website performance check'],
+                  ['/nl/website-conversion-audit', 'Website conversion audit'],
+                  ['/nl/website-health-check', 'Website health check'],
+                ]
+              : [
+                  ['/en/free-website-audit', 'Free website audit'],
+                  ['/en/ai-website-audit', 'AI website audit'],
+                  ['/en/website-seo-checker', 'Website SEO checker'],
+                  ['/en/website-performance-check', 'Website performance check'],
+                  ['/en/website-conversion-audit', 'Website conversion audit'],
+                  ['/en/website-health-check', 'Website health check'],
+                ]
+            ).map(([href, label]) => (
+              <a className="check-card" key={href} href={href}>
+                <div className="check-icon"><ClipboardCheck /></div>
+                <h3>{label}</h3>
+                <span className="text-link">{locale === 'nl' ? 'Bekijk check' : 'View check'} <ArrowRight /></span>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <section className="closing">
         <div className="page-frame closing-box">
           <h2>Maak van je website een betere eerste kennismaking.</h2>
