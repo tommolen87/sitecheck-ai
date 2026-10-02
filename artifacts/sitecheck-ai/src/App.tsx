@@ -226,11 +226,9 @@ const internationalSeoPages: Record<string, Record<GlobalLocale, SeoPageContent>
 };
 
 function SeoHead() {
+  const legalPath = /^\/(nl|en|de|fr|es)\/(privacy|voorwaarden|terms|cookies|herroepen|withdraw)$/.test(window.location.pathname);
   const { locale } = useLanguage();
   const pathParts = window.location.pathname.split('/').filter(Boolean);
-  const legalPath = pathParts.length === 2
-    && ['nl', 'en', 'de', 'fr', 'es'].includes(pathParts[0])
-    && ['privacy', 'voorwaarden', 'terms', 'conditions', 'terminos', 'cookies', 'herroepen', 'withdraw', 'retractation', 'desistimiento'].includes(pathParts[1]);
   const slug = pathParts[1] || '';
   const legalType = pathParts[1];
   const legalKey = ['voorwaarden', 'terms', 'conditions', 'terminos'].includes(legalType)
