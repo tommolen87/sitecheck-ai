@@ -1026,7 +1026,7 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
             {
               role: "system",
               content:
-                "Translate the supplied SiteCheck AI report text into natural, professional ${locale === "en" ? "English" : locale === "de" ? "German" : locale === "fr" ? "French" : "Spanish"}. Preserve URLs, numbers, names, quoted website text and factual meaning exactly. Do not add or remove facts. Return exactly the same array lengths and order.",
+                `Translate the supplied SiteCheck AI report text into natural, professional ${locale === "en" ? "English" : locale === "de" ? "German" : locale === "fr" ? "French" : "Spanish"}. Preserve URLs, numbers, names, quoted website text and factual meaning exactly. Do not add or remove facts. Return exactly the same array lengths and order.`,
             },
             { role: "user", content: JSON.stringify(payload) },
           ],
