@@ -277,28 +277,18 @@ function SeoHead() {
   const basePath = pathname === '/' || /^\/(nl|en|de|fr|es)\/?$/.test(pathname)
     ? `/${locale}`
     : pathname;
-  const canonical = new URL(legalPath ? legalBase! : basePath, window.location.origin).href;
   const seoSlug = blogSlug ? 'blog/' + blogSlug : (isBlogIndex ? 'blog' : (seoPages[slug] || internationalSeoPages[slug] ? slug : ''));
-  const legalBase = legalPath
-    ? (locale === 'nl'
-      ? '/nl/' + (legalKey === 'terms' ? 'voorwaarden' : legalKey === 'withdraw' ? 'herroepen' : legalKey)
-      : locale === 'en'
-        ? '/en/' + (legalKey === 'terms' ? 'terms' : legalKey === 'withdraw' ? 'withdraw' : legalKey)
-        : locale === 'fr'
-          ? '/fr/' + (legalKey === 'terms' ? 'conditions' : legalKey === 'withdraw' ? 'retractation' : legalKey)
-          : locale === 'es'
-            ? '/es/' + (legalKey === 'terms' ? 'terminos' : legalKey === 'withdraw' ? 'desistimiento' : legalKey)
-            : '/de/' + (legalKey === 'terms' ? 'terms' : legalKey === 'withdraw' ? 'withdraw' : legalKey));
-  const nlLegal = legalKey === 'terms'
-    ? '/nl/voorwaarden'
-    : legalKey === 'withdraw'
-      ? '/nl/herroepen'
-      : '/nl/' + legalKey;
-  const enLegal = legalKey === 'terms'
-    ? '/en/terms'
-    : legalKey === 'withdraw'
-      ? '/en/withdraw'
-      : '/en/' + legalKey;
+  const legalPaths: Record<string, Record<string, string>> = {
+    nl: { privacy: '/nl/privacy', terms: '/nl/voorwaarden', cookies: '/nl/cookies', withdraw: '/nl/herroepen' },
+    en: { privacy: '/en/privacy', terms: '/en/terms', cookies: '/en/cookies', withdraw: '/en/withdraw' },
+    de: { privacy: '/de/privacy', terms: '/de/terms', cookies: '/de/cookies', withdraw: '/de/withdraw' },
+    fr: { privacy: '/fr/privacy', terms: '/fr/conditions', cookies: '/fr/cookies', withdraw: '/fr/retractation' },
+    es: { privacy: '/es/privacy', terms: '/es/terminos', cookies: '/es/cookies', withdraw: '/es/desistimiento' },
+  };
+  const legalBase = legalPath ? (legalPaths[locale]?.[legalKey] ?? `/${locale}/${legalKey}`) : null;
+  const canonical = new URL(legalBase ?? basePath, window.location.origin).href;
+  const nlLegal = legalPaths.nl[legalKey] ?? `/nl/${legalKey}`;
+  const enLegal = legalPaths.en[legalKey] ?? `/en/${legalKey}`;
   const nlUrl = new URL(legalPath ? nlLegal : (seoSlug ? `/nl/${seoSlug}` : '/nl'), window.location.origin).href;
   const enUrl = new URL(legalPath ? enLegal : (seoSlug ? `/en/${seoSlug}` : '/en'), window.location.origin).href;
   const deUrl = new URL(seoSlug ? `/de/${seoSlug}` : '/de', window.location.origin).href;
