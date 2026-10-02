@@ -666,6 +666,7 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
 
     const pdfTranslations: Record<string, string> = {
       "Website rapport": "Website report",
+      "1. Executive summary": "1. Executive summary",
       "Volledig website-rapport": "Full website report",
       "Een overzicht van wat goed gaat, wat beter kan en welke acties het meeste verschil kunnen maken.": "An overview of what is working well, what can be improved and which actions can make the biggest difference.",
       "Gegenereerd op": "Generated on",
@@ -887,6 +888,7 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
     const pdfInternationalTranslations: Record<"de" | "fr" | "es", Record<string, string>> = {
       de: {
         "Ja":"Ja","Nee":"Nein","Niet gemeten":"Nicht gemessen","Uitstekend":"Ausgezeichnet","Goed":"Gut","Redelijk":"Ordentlich","Verbetering nodig":"Verbesserung erforderlich","Veel verbetering nodig":"Deutlich verbesserungsbedürftig",
+        "1. Executive summary":"1. Zusammenfassung",
         "SiteCheck AI • Website analyse":"SiteCheck AI • Websiteanalyse","Pagina":"Seite","Website":"Website","Gegenereerd op":"Erstellt am","TOTAALSCORE":"GESAMTSCORE","Gemeten kwaliteit":"Gemessene Qualität","Meetdekking":"Messabdeckung","Totaalscore":"Gesamtscore","kwaliteit":"Qualität","van de uitgevoerde controles":"der durchgeführten Prüfungen",
         "Begrippen eenvoudig uitgelegd":"Begriffe einfach erklärt","2. Wat gaat er al goed?":"2. Was läuft bereits gut?","Sterke punten die tijdens de scan zijn aangetroffen.":"Stärken, die beim Scan festgestellt wurden.","Er zijn geen afzonderlijke sterke punten beschikbaar in de scanresultaten.":"Für die Scanergebnisse sind keine einzelnen Stärken verfügbar.",
         "3. Belangrijkste verbeterpunten":"3. Wichtigste Verbesserungspunkte","Wat we zagen":"Was wir festgestellt haben","Waarom dit belangrijk is":"Warum das wichtig ist","Aanbeveling":"Empfehlung","Concreet voorstel":"Konkreter Vorschlag","Impact":"Auswirkung","Moeite":"Aufwand",
@@ -898,6 +900,7 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
       },
       fr: {
         "Ja":"Oui","Nee":"Non","Niet gemeten":"Non mesuré","Uitstekend":"Excellent","Goed":"Bon","Redelijk":"Correct","Verbetering nodig":"Amélioration nécessaire","Veel verbetering nodig":"Amélioration importante nécessaire",
+        "1. Executive summary":"1. Résumé",
         "SiteCheck AI • Website analyse":"SiteCheck AI • Analyse de site web","Pagina":"Page","Website":"Site web","Gegenereerd op":"Généré le","TOTAALSCORE":"SCORE GLOBAL","Gemeten kwaliteit":"Qualité mesurée","Meetdekking":"Couverture des mesures","Totaalscore":"Score global","kwaliteit":"qualité","van de uitgevoerde controles":"des contrôles effectués",
         "Begrippen eenvoudig uitgelegd":"Les termes expliqués simplement","2. Wat gaat er al goed?":"2. Ce qui fonctionne déjà bien","Sterke punten die tijdens de scan zijn aangetroffen.":"Points forts constatés lors de l'analyse.","Er zijn geen afzonderlijke sterke punten beschikbaar in de scanresultaten.":"Aucun point fort individuel n'est disponible dans les résultats de l'analyse.",
         "3. Belangrijkste verbeterpunten":"3. Principaux points d'amélioration","Wat we zagen":"Ce que nous avons constaté","Waarom dit belangrijk is":"Pourquoi c'est important","Aanbeveling":"Recommandation","Concreet voorstel":"Proposition concrète","Impact":"Impact","Moeite":"Effort",
@@ -909,6 +912,7 @@ router.get("/scans/:scanId/report.pdf", async (req, res): Promise<void> => {
       },
       es: {
         "Ja":"Sí","Nee":"No","Niet gemeten":"No medido","Uitstekend":"Excelente","Goed":"Bueno","Redelijk":"Aceptable","Verbetering nodig":"Necesita mejoras","Veel verbetering nodig":"Necesita muchas mejoras",
+        "1. Executive summary":"1. Resumen",
         "SiteCheck AI • Website analyse":"SiteCheck AI • Análisis del sitio web","Pagina":"Página","Website":"Sitio web","Gegenereerd op":"Generado el","TOTAALSCORE":"PUNTUACIÓN GLOBAL","Gemeten kwaliteit":"Calidad medida","Meetdekking":"Cobertura de medición","Totaalscore":"Puntuación global","kwaliteit":"calidad","van de uitgevoerde controles":"de las comprobaciones realizadas",
         "Begrippen eenvoudig uitgelegd":"Términos explicados de forma sencilla","2. Wat gaat er al goed?":"2. Lo que ya funciona bien","Sterke punten die tijdens de scan zijn aangetroffen.":"Puntos fuertes encontrados durante el análisis.","Er zijn geen afzonderlijke sterke punten beschikbaar in de scanresultaten.":"No hay puntos fuertes individuales disponibles en los resultados del análisis.",
         "3. Belangrijkste verbeterpunten":"3. Principales puntos de mejora","Wat we zagen":"Lo que hemos detectado","Waarom dit belangrijk is":"Por qué es importante","Aanbeveling":"Recomendación","Concreet voorstel":"Propuesta concreta","Impact":"Impacto","Moeite":"Esfuerzo",
