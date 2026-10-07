@@ -45,7 +45,7 @@ function findObjectBlock(source, key) {
 }
 
 function findObjectBlocks(source, key) {
-  const blocks = [];
+  const blocks = [...sitemap.matchAll(/<url>[\s\S]*?<\/url>/g)].map((m) => m[0]);
   let cursor = 0;
   while (cursor < source.length) {
     const remaining = source.slice(cursor);
@@ -150,11 +150,11 @@ function faqAnswer(question, locale) {
 }
 
 function sitemapEntry(url) {
-  const escaped = url.replace(/[.*+?^\${}()|[\]\\\\]/g, '\\$&');
-  const blocks = [...sitemap.matchAll(/<url>[\\s\\S]*?<\\/url>/g)].map((m) => m[0]);
-  const block = blocks.find((candidate) => new RegExp(`<loc>\${escaped}</loc>`).test(candidate));
+  const escaped = url.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const blocks = [...sitemap.matchAll(/<url>[\s\S]*?<\/url>/g)].map((m) => m[0]);
+  const block = blocks.find((candidate) => new RegExp(`<loc>${escaped}</loc>`).test(candidate));
   if (!block) return [{ locale: url.split('/').filter(Boolean)[0] || 'en', href: url }];
-  return [...block.matchAll(/<xhtml:link rel="alternate" hreflang="([^"]+)" href="([^"]+)"\\s*\\/>/g)]
+  return [...block.matchAll(/<xhtml:link rel="alternate" hreflang="([^"]+)" href="([^"]+)"\s*\/>/g)]
     .map((m) => ({ locale: m[1], href: m[2] }));
 }
 function jsonLd(value) {
