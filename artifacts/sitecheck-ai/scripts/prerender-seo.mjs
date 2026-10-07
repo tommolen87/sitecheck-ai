@@ -21,7 +21,7 @@ function esc(value = '') {
 }
 
 function findObjectBlock(source, key) {
-  const escaped = key.replace(/[.*+?^${}()|[\]\\]/g, '\\const escaped = key.replace(/[.*+?^$\\{}()|[\\]\\]/g, '\\$&');');
+  const escaped = key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   const re = new RegExp(`(?:^|\\n)\\s*(?:["']${escaped}["']|${escaped})\\s*:\\s*\\{`);
   const match = re.exec(source);
   if (!match) return null;
@@ -150,7 +150,7 @@ function faqAnswer(question, locale) {
 }
 
 function sitemapEntry(url) {
-  const escaped = url.replace(/[.*+?^${}()|[\]\\]/g, '\\const escaped = url.replace(/[.*+?^$\\{}()|[\\]\\]/g, '\\$&');');
+  const escaped = url.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   const match = new RegExp(`<url>[\\s\\S]*?<loc>${escaped}</loc>[\\s\\S]*?</url>`).exec(sitemap);
   if (!match) return [{ locale: url.split('/').filter(Boolean)[3] || 'en', href: url }];
   return [...match[0].matchAll(/<xhtml:link rel="alternate" hreflang="([^"]+)" href="([^"]+)"\s*\/>/g)]
