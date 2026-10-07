@@ -250,7 +250,41 @@ for (const url of urls) {
   let data;
   let kind = 'page';
 
-  if (rest[0] === 'blog' && rest[1]) {
+  if (rest.length === 0) {
+    data = {
+      nl: {
+        title: 'Website laten controleren? | SiteCheck AI',
+        description: 'Laat je website controleren met SiteCheck AI. Ontdek SEO-, content-, techniek-, mobiel- en conversieproblemen en krijg praktische verbeteradviezen.',
+        heading: 'Hoe goed presteert jouw website?',
+        intro: 'SiteCheck AI analyseert je website en geeft praktische verbeteradviezen. Geen technisch rapport waar je doorheen moet ploegen, maar duidelijke handvatten voor de volgende stap.',
+      },
+      en: {
+        title: 'Website Audit & Website Checker | SiteCheck AI',
+        description: 'Check your website with SiteCheck AI. Find SEO, content, technical, mobile and conversion issues with practical improvement advice.',
+        heading: 'How well does your website perform?',
+        intro: 'SiteCheck AI analyzes your website and gives you practical improvement advice. No technical report to dig through — just clear guidance for what to do next.',
+      },
+      de: {
+        title: 'Website prüfen | SiteCheck AI',
+        description: 'Prüfen Sie Ihre Website mit SiteCheck AI und entdecken Sie praktische Verbesserungen für SEO, Technik, Mobile und Conversion.',
+        heading: 'Wie gut funktioniert Ihre Website?',
+        intro: 'SiteCheck AI analysiert Ihre Website und gibt Ihnen verständliche, praktische Hinweise für den nächsten Schritt.',
+      },
+      fr: {
+        title: 'Analyse de site web | SiteCheck AI',
+        description: 'Analysez votre site avec SiteCheck AI et découvrez des améliorations concrètes pour le SEO, la technique, le mobile et la conversion.',
+        heading: 'Quelle est la performance de votre site web ?',
+        intro: 'SiteCheck AI analyse votre site et vous donne des conseils pratiques et clairs pour savoir quoi améliorer ensuite.',
+      },
+      es: {
+        title: 'Analiza tu sitio web | SiteCheck AI',
+        description: 'Analiza tu sitio web con SiteCheck AI y descubre mejoras concretas de SEO, tecnología, móvil y conversión.',
+        heading: '¿Qué tan bien funciona tu sitio web?',
+        intro: 'SiteCheck AI analiza tu sitio web y te ofrece consejos prácticos y claros para decidir qué mejorar después.',
+      },
+    }[locale];
+    kind = 'home';
+  } else if (rest[0] === 'blog' && rest[1]) {
     data = blogData(rest[1], locale === 'nl' || locale === 'en' ? locale : 'en');
     kind = 'blog';
   } else if (rest[0] === 'blog') {
