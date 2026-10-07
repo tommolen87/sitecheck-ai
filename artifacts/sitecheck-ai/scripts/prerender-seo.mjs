@@ -153,7 +153,7 @@ function sitemapEntry(url) {
   const escaped = url.replace(/[.*+?^$\\{}()|[\\]\\]/g, '\\$&');
   const match = new RegExp(`<url>[\\s\\S]*?<loc>${escaped}</loc>[\\s\\S]*?</url>`).exec(sitemap);
   if (!match) return [{ locale: url.split('/').filter(Boolean)[3] || 'en', href: url }];
-  return [...match[0].matchAll(/<xhtml:link rel="alternate" hreflang="([^"]+)" href="([^"]+)"\\s*\\/>/g)]
+  return [...match[0].matchAll(/<xhtml:link rel="alternate" hreflang="([^"]+)" href="([^"]+)"\s*\/>/g)]
     .map((m) => ({ locale: m[1], href: m[2] }));
 }
 
