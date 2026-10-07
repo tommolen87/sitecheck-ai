@@ -277,7 +277,6 @@ function SeoHead() {
   const basePath = pathname === '/' || /^\/(nl|en|de|fr|es)\/?$/.test(pathname)
     ? `/${locale}`
     : pathname;
-  const seoSlug = blogSlug ? 'blog/' + blogSlug : (isBlogIndex ? 'blog' : (seoPages[slug] || internationalSeoPages[slug] ? slug : ''));
   const legalPaths: Record<string, Record<string, string>> = {
     nl: { privacy: '/nl/privacy', terms: '/nl/voorwaarden', cookies: '/nl/cookies', withdraw: '/nl/herroepen' },
     en: { privacy: '/en/privacy', terms: '/en/terms', cookies: '/en/cookies', withdraw: '/en/withdraw' },
@@ -287,13 +286,6 @@ function SeoHead() {
   };
   const legalBase = legalPath ? (legalPaths[locale]?.[legalKey] ?? `/${locale}/${legalKey}`) : null;
   const canonical = new URL(legalBase ?? basePath, window.location.origin).href;
-  const nlLegal = legalPaths.nl[legalKey] ?? `/nl/${legalKey}`;
-  const enLegal = legalPaths.en[legalKey] ?? `/en/${legalKey}`;
-  const nlUrl = new URL(legalPath ? nlLegal : (seoSlug ? `/nl/${seoSlug}` : '/nl'), window.location.origin).href;
-  const enUrl = new URL(legalPath ? enLegal : (seoSlug ? `/en/${seoSlug}` : '/en'), window.location.origin).href;
-  const deUrl = new URL(seoSlug ? `/de/${seoSlug}` : '/de', window.location.origin).href;
-  const frUrl = new URL(seoSlug ? `/fr/${seoSlug}` : '/fr', window.location.origin).href;
-  const esUrl = new URL(seoSlug ? `/es/${seoSlug}` : '/es', window.location.origin).href;
 
   useEffect(() => {
     document.title = title;
@@ -370,14 +362,6 @@ function SeoHead() {
                 { '@type': 'Offer', price: '29', priceCurrency: 'EUR', description: locale === 'nl' ? 'Volledig website rapport' : 'Full website report' },
               ],
             },
-            {
-              '@type': 'FAQPage',
-              mainEntity: page.questions.map((question) => ({
-                '@type': 'Question',
-                name: question,
-                acceptedAnswer: { '@type': 'Answer', text: faqAnswer(question, locale) },
-              })),
-            },
           ],
         }
       : {
@@ -396,7 +380,7 @@ function SeoHead() {
       document.head.appendChild(script);
     }
     script.textContent = JSON.stringify(structuredData);
-  }, [canonical, description, enUrl, deUrl, esUrl, frUrl, locale, nlUrl, title]);
+  }, [canonical, description, locale, title]);
 
   return null;
 }
