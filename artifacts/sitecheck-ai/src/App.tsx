@@ -1094,6 +1094,18 @@ const page = seoPages[slug]?.[locale as 'nl' | 'en']
                     ['/nl/website-check-hovenier', 'Hoveniers'],
                     ['/nl/website-check-installatiebedrijf', 'Installatiebedrijven'],
                     ['/nl/website-check-restaurant', 'Restaurants'],
+                    ['/nl/website-check-tandarts', 'Tandartsen'],
+                    ['/nl/website-check-fysiotherapeut', 'Fysiotherapeuten'],
+                    ['/nl/website-check-loodgieter', 'Loodgieters'],
+                    ['/nl/website-check-schilder', 'Schilders'],
+                    ['/nl/website-check-aannemer', 'Aannemers'],
+                    ['/nl/website-check-elektricien', 'Elektriciens'],
+                    ['/nl/website-check-autobedrijf', 'Autobedrijven'],
+                    ['/nl/website-check-kapsalon', 'Kapsalons'],
+                    ['/nl/website-check-schoonheidssalon', 'Schoonheidssalons'],
+                    ['/nl/website-check-advocaat', 'Advocatenkantoren'],
+                    ['/nl/website-check-boekhouder', 'Boekhouders'],
+                    ['/nl/website-check-zonnepanelen', 'Zonnepanelenbedrijven'],
                   ]
                 : locale === 'en'
                 ? [
@@ -1101,6 +1113,18 @@ const page = seoPages[slug]?.[locale as 'nl' | 'en']
                     ['/en/website-check-hovenier', 'Landscapers'],
                     ['/en/website-check-installatiebedrijf', 'Installation companies'],
                     ['/en/website-check-restaurant', 'Restaurants'],
+                    ['/en/website-check-tandarts', 'Dentists'],
+                    ['/en/website-check-fysiotherapeut', 'Physiotherapists'],
+                    ['/en/website-check-loodgieter', 'Plumbers'],
+                    ['/en/website-check-schilder', 'Painters'],
+                    ['/en/website-check-aannemer', 'Contractors'],
+                    ['/en/website-check-elektricien', 'Electricians'],
+                    ['/en/website-check-autobedrijf', 'Car dealerships'],
+                    ['/en/website-check-kapsalon', 'Hair salons'],
+                    ['/en/website-check-schoonheidssalon', 'Beauty salons'],
+                    ['/en/website-check-advocaat', 'Law firms'],
+                    ['/en/website-check-boekhouder', 'Accountants'],
+                    ['/en/website-check-zonnepanelen', 'Solar companies'],
                   ]
                 : locale === 'de'
                   ? [['/en/website-check-makelaar', 'Branchen-Checks'],['/en/website-check-hovenier', 'Website prüfen'],['/en/website-check-installatiebedrijf', 'Website-Audit'],['/en/website-check-restaurant', 'Website-Check']]
