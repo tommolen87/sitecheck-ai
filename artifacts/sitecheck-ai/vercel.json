@@ -5,7 +5,7 @@
       "destination": "https://sitecheck-ai-xvaf.onrender.com/api/:path*"
     },
     {
-      "source": "/(.*)",
+      "source": "/scans/:path*",
       "destination": "/index.html"
     }
   ],
