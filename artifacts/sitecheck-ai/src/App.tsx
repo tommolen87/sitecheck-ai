@@ -278,6 +278,17 @@ function SeoHead() {
     ? `/${locale}`
     : pathname;
   const seoSlug = blogSlug ? 'blog/' + blogSlug : (isBlogIndex ? 'blog' : (seoPages[slug] || internationalSeoPages[slug] ? slug : ''));
+  const isHighIntentSeoPage = Boolean(seoPages[slug] || internationalSeoPages[slug]) && !isBlogIndex && !blogArticle;
+  const scanCtaTitle = locale === 'nl'
+    ? 'Controleer nu gratis je website'
+    : locale === 'en'
+      ? 'Check your website for free'
+      : locale === 'de'
+        ? 'Website jetzt kostenlos prüfen'
+        : locale === 'fr'
+          ? 'Vérifiez votre site gratuitement'
+          : 'Comprueba tu web gratis';
+
   const legalPaths: Record<string, Record<string, string>> = {
     nl: { privacy: '/nl/privacy', terms: '/nl/voorwaarden', cookies: '/nl/cookies', withdraw: '/nl/herroepen' },
     en: { privacy: '/en/privacy', terms: '/en/terms', cookies: '/en/cookies', withdraw: '/en/withdraw' },
@@ -517,7 +528,12 @@ function Home() {
         }
       })
       .catch(() => {});
-    return () => controller.abort();
+    if (isHighIntentSeoPage) {
+    const cta = document.getElementById('sitecheck-seo-cta');
+    if (cta) cta.textContent = scanCtaTitle;
+  }
+
+  return () => controller.abort();
   }, []);
   const activeScan = useGetScan(activeScanId ?? 0, {
     request: activeScanId !== null && getScanAccessToken(activeScanId) ? { headers: { 'x-scan-access-token': getScanAccessToken(activeScanId)! } } : undefined,
