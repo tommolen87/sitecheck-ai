@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const root = process.cwd();
-const dist = path.join(root, 'dist');
+const dist = path.join(root, 'dist', 'public');
 const appSource = fs.readFileSync(path.join(root, 'src', 'App.tsx'), 'utf8');
 const blogSource = fs.readFileSync(path.join(root, 'src', 'lib', 'blog-data.ts'), 'utf8');
 const sitemap = fs.readFileSync(path.join(root, 'public', 'sitemap.xml'), 'utf8');
