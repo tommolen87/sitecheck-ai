@@ -8,5 +8,12 @@
       "source": "/(.*)",
       "destination": "/index.html"
     }
+  ],
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "/nl",
+      "permanent": true
+    }
   ]
 }
