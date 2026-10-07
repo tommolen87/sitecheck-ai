@@ -238,16 +238,6 @@ function SeoHead() {
       : legalType;
   const blogSlug = (pathParts[0] === 'nl' || pathParts[0] === 'en') && pathParts[1] === 'blog' ? pathParts[2] : undefined;
   const blogArticle = blogSlug ? getBlogArticle(blogSlug)?.[locale as 'nl' | 'en'] : undefined;
-  const seoIntentCta = locale === 'nl'
-    ? 'Gratis je website controleren →'
-    : locale === 'en'
-      ? 'Check your website for free →'
-      : locale === 'de'
-        ? 'Website kostenlos prüfen →'
-        : locale === 'fr'
-          ? 'Vérifier votre site gratuitement →'
-          : 'Comprobar tu web gratis →';
-
   const page = seoPages[slug]?.[locale as 'nl' | 'en'] ?? internationalSeoPages[slug]?.[locale as GlobalLocale];
   const legalTitles: Record<string, Record<GlobalLocale, string>> = {
     privacy: { nl: 'Privacyverklaring | SiteCheck AI', en: 'Privacy Policy | SiteCheck AI', de: 'Datenschutzerklärung | SiteCheck AI', fr: 'Politique de confidentialité | SiteCheck AI', es: 'Política de privacidad | SiteCheck AI' },
@@ -267,9 +257,6 @@ function SeoHead() {
       : page?.title ?? (locale === 'nl'
         ? 'Website laten controleren? | SiteCheck AI'
         : 'Website Audit & Website Checker | SiteCheck AI');
-  const seoCtaHtml = !legalPath && !isBlogIndex && !blogArticle && (seoPages[slug] || internationalSeoPages[slug])
-    ? `<a href="/${locale}/website-scan" style="display:inline-block;margin-top:16px;padding:12px 18px;border-radius:10px;background:#111827;color:#fff;text-decoration:none;font-weight:700">${seoIntentCta}</a>`
-    : '';
   const description = legalPath
     ? ({
         nl: 'Juridische informatie van SiteCheck AI, waaronder privacy, voorwaarden, cookies en herroeping.',
@@ -291,7 +278,6 @@ function SeoHead() {
     ? `/${locale}`
     : pathname;
   const seoSlug = blogSlug ? 'blog/' + blogSlug : (isBlogIndex ? 'blog' : (seoPages[slug] || internationalSeoPages[slug] ? slug : ''));
-
   const legalPaths: Record<string, Record<string, string>> = {
     nl: { privacy: '/nl/privacy', terms: '/nl/voorwaarden', cookies: '/nl/cookies', withdraw: '/nl/herroepen' },
     en: { privacy: '/en/privacy', terms: '/en/terms', cookies: '/en/cookies', withdraw: '/en/withdraw' },
