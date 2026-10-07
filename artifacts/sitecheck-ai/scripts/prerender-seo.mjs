@@ -222,11 +222,11 @@ function render(templateHtml, data, locale, canonical, alternates, kind) {
 
   let html = templateHtml
     .replace(/<html[^>]*>/i, `<html lang="${esc(locale)}">`)
-    .replace(/<title>[\\s\\S]*?<\\/title>/i, `<title>${esc(data.title)}</title>`)
+    .replace(/<title>[\\s\\S]*?<\/title>/i, `<title>${esc(data.title)}</title>`)
     .replace(/<link rel=["']canonical["'][^>]*>/gi, '')
     .replace(/<link rel=["']alternate"[^>]*hreflang=[^>]*>/gi, '')
     .replace('</head>', `<link rel="canonical" href="${esc(canonical)}">${hreflang}<script type="application/ld+json">${jsonLd(schema)}</script></head>`)
-    .replace(/<div id="root">[\\s\\S]*?<\\/div>/i, `<div id="root">${body}</div>`);
+    .replace(/<div id="root">[\\s\\S]*?<\/div>/i, `<div id="root">${body}</div>`);
 
   html = replaceMeta(html, 'description', data.description);
   html = replaceMeta(html, 'robots', 'index, follow');
@@ -236,7 +236,7 @@ function render(templateHtml, data, locale, canonical, alternates, kind) {
   return html;
 }
 
-const urls = [...sitemap.matchAll(/<loc>([^<]+)<\\/loc>/g)].map((m) => m[1]);
+const urls = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
 let generated = 0;
 
 for (const url of urls) {
