@@ -335,12 +335,6 @@ function SeoHead() {
       element.href = href;
     };
     setLink('canonical', canonical);
-    setLink('alternate', nlUrl, { hreflang: 'nl' });
-    setLink('alternate', enUrl, { hreflang: 'en' });
-    setLink('alternate', deUrl, { hreflang: 'de' });
-    setLink('alternate', frUrl, { hreflang: 'fr' });
-    setLink('alternate', esUrl, { hreflang: 'es' });
-    setLink('alternate', nlUrl, { hreflang: 'x-default' });
 
     const structuredData = blogArticle
       ? {
