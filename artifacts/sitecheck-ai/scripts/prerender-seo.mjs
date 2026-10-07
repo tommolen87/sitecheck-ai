@@ -187,9 +187,24 @@ function render(templateHtml, data, locale, canonical, alternates, kind) {
     ? `<section><h2>${locale === 'nl' ? 'Veelgestelde vragen' : locale === 'de' ? 'Häufige Fragen' : locale === 'fr' ? 'Questions fréquentes' : locale === 'es' ? 'Preguntas frecuentes' : 'Frequently asked questions'}</h2>${data.questions.map((q) => `<article><h3>${esc(q)}</h3><p>${esc(faqAnswer(q, locale))}</p></article>`).join('')}</section>`
     : '';
 
+  const navLinks = locale === 'nl' || locale === 'en'
+    ? [
+        [`/${locale}`, locale === 'nl' ? 'Home' : 'Home'],
+        [`/${locale}/website-scan`, locale === 'nl' ? 'Website scan' : 'Website scan'],
+        [`/${locale}/seo-check`, locale === 'nl' ? 'SEO check' : 'SEO check'],
+        [`/${locale}/website-analyse`, locale === 'nl' ? 'Website analyse' : 'Website analysis'],
+      ]
+    : [
+        [`/${locale}`, locale === 'de' ? 'Startseite' : locale === 'fr' ? 'Accueil' : 'Inicio'],
+        [`/${locale}/free-website-audit`, locale === 'de' ? 'Kostenloser Website-Audit' : locale === 'fr' ? 'Audit gratuit' : 'Auditoría gratuita'],
+      ];
+  const nav = `<nav aria-label="SiteCheck AI"><a href="${navLinks[0][0]}">${navLinks[0][1]}</a>${navLinks.slice(1).map(([href,label]) => ` <a href="${href}">${label}</a>`).join('')}</nav>`;
+  const context = kind === 'blog'
+    ? ''
+    : `<section><h2>${locale === 'nl' ? 'Wat je hieraan hebt' : locale === 'de' ? 'Was Sie davon haben' : locale === 'fr' ? 'Ce que vous obtenez' : locale === 'es' ? 'Qué obtienes' : 'What you get'}</h2><p>${esc(data.intro)} ${data.points?.length ? (locale === 'nl' ? 'We letten onder meer op ' : locale === 'de' ? 'Wir achten unter anderem auf ' : locale === 'fr' ? 'Nous examinons notamment ' : locale === 'es' ? 'Comprobamos, entre otras cosas, ' : 'We look at ')+esc(data.points.join(', '))+'.' : ''}</p><p>${locale === 'nl' ? 'Gebruik de uitkomst om de belangrijkste verbeteringen te prioriteren. De scan is bedoeld als praktische eerste stap en maakt duidelijk welke onderwerpen verdere aandacht verdienen.' : locale === 'de' ? 'Nutzen Sie die Ergebnisse, um die wichtigsten Verbesserungen zu priorisieren. Der Check ist ein praktischer erster Schritt und zeigt, welche Themen weitere Aufmerksamkeit verdienen.' : locale === 'fr' ? 'Utilisez les résultats pour prioriser les améliorations les plus importantes. Le contrôle constitue une première étape pratique et indique les sujets qui méritent davantage d’attention.' : locale === 'es' ? 'Utiliza los resultados para priorizar las mejoras más importantes. La comprobación es un primer paso práctico y muestra qué temas merecen más atención.' : 'Use the results to prioritize the most important improvements. The check is a practical first step and shows which topics deserve further attention.'}</p></section>`;
   const body = kind === 'blog'
-    ? `<main><article><p>SiteCheck AI</p><h1>${esc(data.heading)}</h1><p>${esc(data.description)}</p><p><a href="/${locale}">${cta}</a></p></article></main>`
-    : `<main><article><p>SiteCheck AI</p><h1>${esc(data.heading)}</h1><p>${esc(data.intro)}</p><p>${esc(data.description)}</p>${points}${faq}<p><a href="/${locale}">${cta}</a></p></article></main>`;
+    ? `<main>${nav}<article><p>SiteCheck AI</p><h1>${esc(data.heading)}</h1><p>${esc(data.description)}</p><p><a href="/${locale}">${cta}</a></p></article></main>`
+    : `<main>${nav}<article><p>SiteCheck AI</p><h1>${esc(data.heading)}</h1><p>${esc(data.intro)}</p><p>${esc(data.description)}</p>${context}${points}${faq}<p><a href="/${locale}">${cta}</a></p></article></main>`;
 
   const schema = kind === 'blog'
     ? {
@@ -264,7 +279,7 @@ for (const url of urls) {
         intro: 'SiteCheck AI analyzes your website and gives you practical improvement advice. No technical report to dig through — just clear guidance for what to do next.',
       },
       de: {
-        title: 'Website prüfen | SiteCheck AI',
+        title: 'Kostenloser Website-Check | SiteCheck AI',
         description: 'Prüfen Sie Ihre Website mit SiteCheck AI und entdecken Sie praktische Verbesserungen für SEO, Technik, Mobile und Conversion.',
         heading: 'Wie gut funktioniert Ihre Website?',
         intro: 'SiteCheck AI analysiert Ihre Website und gibt Ihnen verständliche, praktische Hinweise für den nächsten Schritt.',
