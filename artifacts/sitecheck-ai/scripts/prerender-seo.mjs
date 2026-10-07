@@ -45,7 +45,7 @@ function findObjectBlock(source, key) {
 }
 
 function findObjectBlocks(source, key) {
-  const blocks = [...sitemap.matchAll(/<url>[\s\S]*?<\/url>/g)].map((m) => m[0]);
+  const blocks = [];
   let cursor = 0;
   while (cursor < source.length) {
     const remaining = source.slice(cursor);
@@ -57,7 +57,6 @@ function findObjectBlocks(source, key) {
   }
   return blocks;
 }
-
 function readString(block, field) {
   const match = new RegExp(`${field}\\s*:\\s*(["'])(.*?)\\1\\s*(?:,|$)`, 's').exec(block);
   return match ? match[2].replace(/\\(["'])/g, '$1') : '';
