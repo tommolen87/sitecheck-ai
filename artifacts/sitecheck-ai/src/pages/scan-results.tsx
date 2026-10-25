@@ -597,7 +597,25 @@ function ResultsContent({
                   const response = await fetch(`/api/scans/${scanId}/report.pdf?lang=${locale}`, {
                     headers: { 'x-scan-access-token': accessToken },
                   });
-                  if (!response.ok) throw new Error('Het rapport kon niet worden gedownload.');
+                  if (!response.ok) {
+                    let serverMessage = '';
+                    try {
+                      const data = await response.json();
+                      serverMessage = typeof data?.error === 'string' ? data.error : '';
+                    } catch {
+                      // Response was not JSON.
+                    }
+                    console.error('PDF download failed', {
+                      status: response.status,
+                      statusText: response.statusText,
+                      serverMessage,
+                    });
+                    throw new Error(
+                      serverMessage
+                        ? `PDF downloaden mislukt (HTTP ${response.status}): ${serverMessage}`
+                        : `PDF downloaden mislukt (HTTP ${response.status}).`,
+                    );
+                  }
                   const blob = await response.blob();
                   const url = URL.createObjectURL(blob);
                   const link = document.createElement('a');
