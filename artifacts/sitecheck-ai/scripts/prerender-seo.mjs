@@ -243,7 +243,9 @@ function render(templateHtml, data, locale, canonical, alternates, kind) {
     .replace(/<div id="root">[\s\S]*?<\/div>/i, `<div id="root">${body}</div>`);
 
   html = replaceMeta(html, 'description', data.description);
-  html = replaceMeta(html, 'robots', 'index, follow');
+  // Blog articles only have authored Dutch and English versions. Do not index fallback English copies under other language paths.
+  const indexDirective = kind === 'blog' && !['nl', 'en'].includes(locale) ? 'noindex, follow' : 'index, follow';
+  html = replaceMeta(html, 'robots', indexDirective);
   html = replaceMeta(html, 'og:title', data.title, 'property');
   html = replaceMeta(html, 'og:description', data.description, 'property');
   html = replaceMeta(html, 'og:url', canonical, 'property');
