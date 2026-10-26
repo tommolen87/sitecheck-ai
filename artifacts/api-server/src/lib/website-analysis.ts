@@ -1641,7 +1641,12 @@ async function checkExternalLinks(
 
 async function runMobilePageSpeed(url: URL): Promise<MobilePageSpeedResult | null> {
   const apiKey = process.env.PAGESPEED_API_KEY;
-  if (!apiKey) return null;
+  if (!apiKey) {
+    console.info("PageSpeed mobile check skipped: PAGESPEED_API_KEY is not configured", {
+      url: url.href,
+    });
+    return null;
+  }
 
   const endpoint = new URL("https://www.googleapis.com/pagespeedonline/v5/runPagespeed");
   endpoint.searchParams.set("url", url.href);
@@ -1649,46 +1654,66 @@ async function runMobilePageSpeed(url: URL): Promise<MobilePageSpeedResult | nul
   endpoint.searchParams.set("category", "performance");
   endpoint.searchParams.set("key", apiKey);
 
-  try {
-    const response = await fetch(endpoint, {
-      headers: { accept: "application/json" },
-      signal: AbortSignal.timeout(20_000),
-    });
+  // PageSpeed/Lighthouse can take longer than a normal HTTP request. Give Google
+  // more time and retry once after a timeout/network failure, while keeping the
+  // total wait bounded so a slow external service cannot hang a scan forever.
+  const maxAttempts = 2;
+  const timeoutMs = 45_000;
 
-    if (!response.ok) {
-      console.warn("PageSpeed mobile check failed", {
-        status: response.status,
-        url: url.href,
+  for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+    try {
+      const response = await fetch(endpoint, {
+        headers: { accept: "application/json" },
+        signal: AbortSignal.timeout(timeoutMs),
       });
-      return null;
+
+      if (!response.ok) {
+        console.warn("PageSpeed mobile check failed", {
+          status: response.status,
+          url: url.href,
+          attempt,
+        });
+        // Retry only transient server/rate-limit responses.
+        if (attempt < maxAttempts && (response.status === 429 || response.status >= 500)) {
+          continue;
+        }
+        return null;
+      }
+
+      const data: unknown = await response.json();
+      if (typeof data !== "object" || data === null) return null;
+
+      const lighthouseResult = (data as Record<string, unknown>).lighthouseResult;
+      if (typeof lighthouseResult !== "object" || lighthouseResult === null) return null;
+
+      const categories = (lighthouseResult as Record<string, unknown>).categories;
+      if (typeof categories !== "object" || categories === null) return null;
+
+      const performance = (categories as Record<string, unknown>).performance;
+      if (typeof performance !== "object" || performance === null) return null;
+
+      const score = (performance as Record<string, unknown>).score;
+      if (typeof score !== "number" || !Number.isFinite(score)) return null;
+
+      return {
+        performanceScore: Math.round(score * 100),
+        mobileBrowserAvailable: true,
+      };
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      console.warn("PageSpeed mobile check unavailable", {
+        url: url.href,
+        attempt,
+        maxAttempts,
+        timeoutMs,
+        error: message,
+      });
+      if (attempt === maxAttempts) return null;
+      // A single bounded retry handles transient network failures and timeouts.
     }
-
-    const data: unknown = await response.json();
-    if (typeof data !== "object" || data === null) return null;
-
-    const lighthouseResult = (data as Record<string, unknown>).lighthouseResult;
-    if (typeof lighthouseResult !== "object" || lighthouseResult === null) return null;
-
-    const categories = (lighthouseResult as Record<string, unknown>).categories;
-    if (typeof categories !== "object" || categories === null) return null;
-
-    const performance = (categories as Record<string, unknown>).performance;
-    if (typeof performance !== "object" || performance === null) return null;
-
-    const score = (performance as Record<string, unknown>).score;
-    if (typeof score !== "number" || !Number.isFinite(score)) return null;
-
-    return {
-      performanceScore: Math.round(score * 100),
-      mobileBrowserAvailable: true,
-    };
-  } catch (error) {
-    console.warn("PageSpeed mobile check unavailable", {
-      url: url.href,
-      error: error instanceof Error ? error.message : String(error),
-    });
-    return null;
   }
+
+  return null;
 }
 
 async function createAnalysis(snapshot: WebsiteSnapshot): Promise<WebsiteAnalysisWithContext> {
