@@ -1,6 +1,13 @@
 {
   "buildCommand": "pnpm install --frozen-lockfile && pnpm --filter @workspace/sitecheck-ai build",
   "outputDirectory": "artifacts/sitecheck-ai/dist/public",
+  "redirects": [
+    {
+      "source": "/fr/blog/hoe-weet-je-of-je-website-goed-is",
+      "destination": "/nl/blog/hoe-weet-je-of-je-website-goed-is",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     {
       "source": "/api/:path*",
@@ -8,6 +15,86 @@
     },
     {
       "source": "/scans/:path*",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/nl/privacy",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/en/privacy",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/de/privacy",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/fr/privacy",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/es/privacy",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/nl/voorwaarden",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/en/terms",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/de/terms",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/fr/conditions",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/es/terminos",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/nl/cookies",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/en/cookies",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/de/cookies",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/fr/cookies",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/es/cookies",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/nl/herroepen",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/en/withdraw",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/de/withdraw",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/fr/retractation",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/es/desistimiento",
       "destination": "/index.html"
     }
   ]
