@@ -3,8 +3,8 @@
   "outputDirectory": "artifacts/sitecheck-ai/dist/public",
   "redirects": [
     {
-      "source": "/fr/blog/hoe-weet-je-of-je-website-goed-is",
-      "destination": "/nl/blog/hoe-weet-je-of-je-website-goed-is",
+      "source": "/fr/blog/:slug",
+      "destination": "/nl/blog/:slug",
       "permanent": true
     }
   ],
