@@ -102,21 +102,5 @@
       "source": "/es/desistimiento",
       "destination": "/index.html"
     }
-  ],
-  "routes": [
-    {
-      "src": "^/fr/blog/?$",
-      "headers": {
-        "Location": "/nl/blog"
-      },
-      "status": 308
-    },
-    {
-      "src": "^/fr/blog/(.*)$",
-      "headers": {
-        "Location": "/nl/blog/$1"
-      },
-      "status": 308
-    }
   ]
 }
