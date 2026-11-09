@@ -334,4 +334,26 @@ for (const url of urls) {
   generated += 1;
 }
 
-console.log(`SEO prerender: generated ${generated} static route pages.`);
+
+const legalRoutes = [
+  ['nl', 'privacy'], ['en', 'privacy'], ['de', 'privacy'], ['fr', 'privacy'], ['es', 'privacy'],
+  ['nl', 'voorwaarden'], ['en', 'terms'], ['de', 'terms'], ['fr', 'conditions'], ['es', 'terminos'],
+  ['nl', 'cookies'], ['en', 'cookies'], ['de', 'cookies'], ['fr', 'cookies'], ['es', 'cookies'],
+  ['nl', 'herroepen'], ['en', 'withdraw'], ['de', 'withdraw'], ['fr', 'retractation'], ['es', 'desistimiento'],
+];
+
+for (const [locale, slug] of legalRoutes) {
+  const route = `/${locale}/${slug}`;
+  const canonical = `${SITE}${route}`;
+  const target = path.join(dist, locale, slug, 'index.html');
+  let html = template
+    .replace(/<html[^>]*>/i, `<html lang="${locale}">`)
+    .replace(/<link rel=["']canonical["'][^>]*>/gi, '')
+    .replace('</head>', `<link rel="canonical" href="${esc(canonical)}"><meta name="robots" content="noindex, follow"></head>`);
+  fs.mkdirSync(path.dirname(target), { recursive: true });
+  fs.writeFileSync(target, html);
+  generated += 1;
+}
+
+console.log(`SEO prerender: generated ${generated} static route pages, including ${legalRoutes.length} legal routes.`);
+
