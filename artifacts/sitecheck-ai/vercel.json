@@ -8,5 +8,33 @@
       "source": "/scans/:path*",
       "destination": "/index.html"
     }
+  ],
+  "redirects": [
+    {
+      "source": "/fr/blog",
+      "destination": "/nl/blog",
+      "permanent": true
+    },
+    {
+      "source": "/fr/blog/:slug",
+      "destination": "/nl/blog/:slug",
+      "permanent": true
+    }
+  ],
+  "routes": [
+    {
+      "src": "^/fr/blog/?$",
+      "headers": {
+        "Location": "/nl/blog"
+      },
+      "status": 308
+    },
+    {
+      "src": "^/fr/blog/(.*)$",
+      "headers": {
+        "Location": "/nl/blog/$1"
+      },
+      "status": 308
+    }
   ]
 }
