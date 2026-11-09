@@ -3,6 +3,11 @@
   "outputDirectory": "artifacts/sitecheck-ai/dist/public",
   "redirects": [
     {
+      "source": "/fr/blog",
+      "destination": "/nl/blog",
+      "permanent": true
+    },
+    {
       "source": "/fr/blog/:slug",
       "destination": "/nl/blog/:slug",
       "permanent": true
